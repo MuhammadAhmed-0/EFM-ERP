@@ -1,0 +1,141 @@
+.notFoundContainer {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background: #f8fafc;
+  padding: 20px;
+  text-align: center;
+}
+
+.notFoundContent {
+  max-width: 600px;
+  width: 100%;
+}
+
+.errorCode {
+  font-size: 120px;
+  font-weight: 700;
+  color: #1e3a5c;
+  line-height: 1;
+  margin-bottom: 24px;
+}
+
+.errorTitle {
+  font-size: 32px;
+  color: #1e3a5c;
+  margin-bottom: 16px;
+  font-weight: 600;
+}
+
+.errorDescription {
+  font-size: 16px;
+  color: #64748b;
+  max-width: 500px;
+  margin: 0 auto 32px;
+  line-height: 1.5;
+}
+
+.backToHomeBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 500;
+  color: white;
+  background: linear-gradient(135deg, #234b7c 0%, #1e3a5c 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin: 0 auto;
+}
+
+.backToHomeBtn:hover {
+  opacity: 0.9;
+  transform: translateY(-2px);
+}
+
+.homeIcon {
+  font-size: 18px;
+}
+
+@media (max-width: 768px) {
+  .notFoundContainer {
+    padding: 16px;
+  }
+
+  .errorCode {
+    font-size: 96px;
+  }
+
+  .errorTitle {
+    font-size: 28px;
+  }
+
+  .errorDescription {
+    font-size: 15px;
+  }
+
+  .backToHomeBtn {
+    padding: 10px 20px;
+    font-size: 15px;
+  }
+
+  .homeIcon {
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .notFoundContainer {
+    padding: 12px;
+  }
+
+  .errorCode {
+    font-size: 72px;
+    margin-bottom: 20px;
+  }
+
+  .errorTitle {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+
+  .errorDescription {
+    font-size: 14px;
+    margin-bottom: 24px;
+  }
+
+  .backToHomeBtn {
+    padding: 8px 16px;
+    font-size: 14px;
+    gap: 6px;
+  }
+
+  .homeIcon {
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 320px) {
+  .errorCode {
+    font-size: 60px;
+  }
+
+  .errorTitle {
+    font-size: 20px;
+  }
+
+  .errorDescription {
+    font-size: 13px;
+  }
+
+  .backToHomeBtn {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}

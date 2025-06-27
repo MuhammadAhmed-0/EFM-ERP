@@ -1,0 +1,550 @@
+import { Box, Button, Typography, TextField, Chip } from "@mui/material";
+import { format } from "date-fns";
+import {
+  FaUser,
+  FaEnvelope,
+  FaPhone,
+  FaCalendarAlt,
+  FaClock,
+  FaMoneyBillWave,
+  FaUserTie,
+  FaIdCard,
+  FaPray,
+  FaGraduationCap,
+  FaBook,
+  FaBriefcase,
+  FaHistory,
+} from "react-icons/fa";
+
+const POPPINS_FONT =
+  "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
+const typographyStyles = {
+  fontFamily: POPPINS_FONT,
+};
+
+const sectionHeaderStyles = {
+  ...typographyStyles,
+  fontWeight: 600,
+  mb: 2,
+};
+
+const sectionCardStyles = {
+  p: 3,
+  border: "1px solid #e2e8f0",
+  borderRadius: "8px",
+  bgcolor: "#f8fafc",
+  mb: 4,
+};
+
+const textStyles = {
+  ...typographyStyles,
+  color: "#64748b",
+};
+
+const InfoRow = ({ label, value, icon: Icon }) => (
+  <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 2 }}>
+    {Icon && <Icon size={16} style={{ color: "#64748b", marginTop: "4px" }} />}
+    <Box>
+      <Typography variant="body2" sx={{ ...textStyles, mb: 0.5 }}>
+        {label}
+      </Typography>
+      <Typography sx={typographyStyles}>{value || "Not provided"}</Typography>
+    </Box>
+  </Box>
+);
+
+const InfoGrid = ({ label1, value1, icon1, label2, value2, icon2 }) => (
+  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+    <Box sx={{ width: "48%" }}>
+      <InfoRow label={label1} value={value1} icon={icon1} />
+    </Box>
+    <Box sx={{ width: "48%" }}>
+      <InfoRow label={label2} value={value2} icon={icon2} />
+    </Box>
+  </Box>
+);
+
+const ViewStaffModal = ({
+  staff,
+  staffType,
+  setShowModal,
+  modalStyle,
+  adminPassword,
+  setAdminPassword,
+  passwordError,
+  isInfoVisible,
+  handleAdminPasswordSubmit,
+}) => {
+  const modalBaseStyles = {
+    ...modalStyle,
+    maxHeight: "90vh",
+    display: "flex",
+    flexDirection: "column",
+    width: "800px",
+    fontFamily: POPPINS_FONT,
+  };
+
+  const scrollableContentStyles = {
+    overflowY: "auto",
+    flex: 1,
+    pr: 2,
+    mt: 3,
+    "&::-webkit-scrollbar": {
+      width: "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      background: "#f1f5f9",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      background: "#cbd5e1",
+      borderRadius: "3px",
+    },
+  };
+
+  const getRoleText = () => {
+    if (staffType === "teacher") {
+      return staff.role === "teacher_quran"
+        ? "Quran Teacher"
+        : "Subjects Teacher";
+    }
+    return staff.role === "supervisor_quran"
+      ? "Quran Supervisor"
+      : "Subjects Supervisor";
+  };
+
+  const formatDateTime = (date) => {
+    return format(new Date(date), "dd/MM/yyyy HH:mm");
+  };
+
+  const formatDate = (date) => {
+    return format(new Date(date), "dd/MM/yyyy");
+  };
+
+  return (
+    <Box sx={modalBaseStyles}>
+      {/* Header */}
+      <Box
+        sx={{
+          borderBottom: "1px solid #e2e8f0",
+          pb: 2,
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+        }}
+      >
+        <Box>
+          <Typography
+            variant="h5"
+            sx={{ ...typographyStyles, fontWeight: 600 }}
+          >
+            {staff.name}
+          </Typography>
+          <Typography
+            variant="subtitle2"
+            sx={{ ...typographyStyles, fontWeight: 600, color: "#64748b" }}
+          >
+            Staff ID: {staff.staffId}
+          </Typography>
+        </Box>
+        <Button
+          onClick={() => {
+            setShowModal(false);
+            setAdminPassword("");
+          }}
+          sx={{
+            minWidth: "32px",
+            height: "32px",
+            p: 0,
+            borderRadius: "50%",
+            color: "#64748b",
+            "&:hover": {
+              bgcolor: "#f1f5f9",
+            },
+          }}
+        >
+          ×
+        </Button>
+      </Box>
+
+      <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+        Profile Picture
+      </Typography>
+      <Box sx={{ ...sectionCardStyles }}>
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            py: 2,
+          }}
+        >
+          {staff.profilePicture ? (
+            <Box
+              sx={{
+                width: 150,
+                height: 150,
+                borderRadius: "50%",
+                overflow: "hidden",
+                border: "3px solid #e2e8f0",
+                boxShadow: "0 4px 6px -1px rgba(0, 0, 0, 0.1)",
+                mb: 2,
+                bgcolor: "#f8fafc",
+              }}
+            >
+              <img
+                src={staff.profilePicture}
+                alt={staff.name}
+                style={{
+                  width: "100%",
+                  height: "100%",
+                  objectFit: "cover",
+                }}
+              />
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                width: 150,
+                height: 150,
+                borderRadius: "50%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "#f8fafc",
+                border: "3px solid #e2e8f0",
+                mb: 2,
+              }}
+            >
+              <FaUser
+                size={50}
+                style={{
+                  color: "#94a3b8",
+                }}
+              />
+            </Box>
+          )}
+          <Typography
+            variant="body2"
+            sx={{
+              color: "#64748b",
+              fontSize: "0.875rem",
+            }}
+          >
+            {!staff.profilePicture && "No Profile Picture Available"}
+          </Typography>
+        </Box>
+      </Box>
+      <Box sx={scrollableContentStyles}>
+        {/* Basic Information */}
+        <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+          Basic Information
+        </Typography>
+        <Box sx={{ ...sectionCardStyles }}>
+          {isInfoVisible ? (
+            <>
+              <InfoGrid
+                label1="Email"
+                value1={staff.email}
+                icon1={FaEnvelope}
+                label2="Phone Number"
+                value2={staff.phoneNumber}
+                icon2={FaPhone}
+              />
+              <InfoRow
+                label="CNIC Number"
+                value={staff.profile?.cnicNumber}
+                icon={FaIdCard}
+              />
+            </>
+          ) : (
+            <Box sx={{ mt: 2, mb: 2, bgcolor: "#fff" }}>
+              <Typography
+                variant="subtitle2"
+                sx={{ mb: 2, fontWeight: "bold" }}
+              >
+                Enter Admin Password to View Sensitive Information
+              </Typography>
+              <TextField
+                fullWidth
+                type="password"
+                value={adminPassword}
+                onChange={(e) => setAdminPassword(e.target.value)}
+                error={!!passwordError}
+                helperText={passwordError}
+                placeholder="Enter password"
+                size="small"
+                sx={{
+                  mb: 2,
+                  "& .MuiOutlinedInput-root": {
+                    bgcolor: "#fff",
+                  },
+                }}
+              />
+              <Button
+                fullWidth
+                variant="contained"
+                onClick={handleAdminPasswordSubmit}
+                sx={{
+                  bgcolor: "#1f3d61",
+                  "&:hover": {
+                    bgcolor: "#1f3d70",
+                  },
+                }}
+              >
+                View Sensitive Information
+              </Button>
+            </Box>
+          )}
+
+          <InfoGrid
+            label1="Gender"
+            value1={staff.gender}
+            icon1={FaUser}
+            label2="Role"
+            value2={getRoleText()}
+            icon2={FaUserTie}
+          />
+        </Box>
+
+        {/* Personal Information */}
+        <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+          Personal Information
+        </Typography>
+        <Box sx={{ ...sectionCardStyles }}>
+          <InfoGrid
+            label1="Father's Name"
+            value1={staff.profile?.fatherName}
+            icon1={FaUser}
+            label2="Date of Birth"
+            value2={
+              staff.profile?.dateOfBirth
+                ? formatDate(staff.profile.dateOfBirth)
+                : "Not provided"
+            }
+            icon2={FaCalendarAlt}
+          />
+          <InfoRow
+            label="Religion"
+            value={staff.profile?.religion}
+            icon={FaPray}
+          />
+        </Box>
+
+        {/* Professional Information - Teacher Specific */}
+        {staffType === "teacher" && (
+          <>
+            <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+              Professional Information
+            </Typography>
+            <Box sx={{ ...sectionCardStyles }}>
+              <InfoGrid
+                label1="Qualification"
+                value1={staff.profile?.qualification}
+                icon1={FaGraduationCap}
+                label2="Department"
+                value2={staff.profile?.department}
+                icon2={FaBriefcase}
+              />
+
+              {staff.profile?.expertise?.length > 0 && (
+                <>
+                  <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+                    Expertise
+                  </Typography>
+                  <Box
+                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}
+                  >
+                    {staff.profile.expertise.map((exp, index) => (
+                      <Chip
+                        key={index}
+                        label={exp}
+                        size="small"
+                        sx={{
+                          bgcolor: "#f1f5f9",
+                          color: "#64748b",
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </>
+              )}
+
+              {staff.profile?.subjects?.length > 0 && (
+                <>
+                  <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+                    Subjects
+                  </Typography>
+                  <Box
+                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}
+                  >
+                    {staff.profile.subjects.map((subject) => (
+                      <Chip
+                        key={subject._id}
+                        label={subject.name}
+                        size="small"
+                        sx={{
+                          bgcolor: "#f1f5f9",
+                          color: "#64748b",
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </>
+              )}
+            </Box>
+          </>
+        )}
+        {(staffType === "teacher" || staffType === "supervisor") && (
+          <>
+            <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+              Schedule Information
+            </Typography>
+            <Box sx={{ ...sectionCardStyles }}>
+              {staff.profile?.availability?.days?.length > 0 && (
+                <>
+                  <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+                    Available Days
+                  </Typography>
+                  <Box
+                    sx={{ display: "flex", flexWrap: "wrap", gap: 1, mb: 2 }}
+                  >
+                    {staff.profile.availability.days.map((day) => (
+                      <Chip
+                        key={day}
+                        label={day}
+                        size="small"
+                        sx={{
+                          bgcolor: "#f1f5f9",
+                          color: "#64748b",
+                        }}
+                      />
+                    ))}
+                  </Box>
+                </>
+              )}
+              <InfoGrid
+                label1="Start Time"
+                value1={staff.profile?.availability?.startTime || "Not set"}
+                icon1={FaClock}
+                label2="End Time"
+                value2={staff.profile?.availability?.endTime || "Not set"}
+                icon2={FaClock}
+              />
+            </Box>
+          </>
+        )}
+        {/* Employment Information */}
+        <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+          Employment Information
+        </Typography>
+        <Box sx={{ ...sectionCardStyles }}>
+          <InfoGrid
+            label1="Department"
+            value1={staff.profile?.department}
+            icon1={FaBriefcase}
+            label2="Shift"
+            value2={staff.profile?.shift}
+            icon2={FaClock}
+          />
+          <InfoGrid
+            label1="Manager"
+            value1={`${staff.profile?.managerName} (${
+              staff.profile?.manager?.role === "admin"
+                ? "Admin"
+                : staff.profile?.manager?.role === "supervisor_quran"
+                ? "Quran Supervisor"
+                : "Subjects Supervisor"
+            })`}
+            icon1={FaUserTie}
+            label2="Salary"
+            value2={`PKR ${staff.profile?.salary}`}
+            icon2={FaMoneyBillWave}
+          />
+          <InfoRow
+            label="Status"
+            value={
+              <span
+                className={`status-tag ${
+                  staff.isActive ? "active" : "inactive"
+                }`}
+              >
+                {staff.isActive ? "Active" : "Inactive"}
+              </span>
+            }
+            icon={FaUser}
+          />
+        </Box>
+
+        {/* System Information */}
+        <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+          System Information
+        </Typography>
+        <Box sx={{ ...sectionCardStyles }}>
+          <InfoGrid
+            label1="Created At"
+            value1={formatDateTime(staff.createdAt)}
+            icon1={FaHistory}
+            label2="Last Updated"
+            value2={formatDateTime(staff.updatedAt)}
+            icon2={FaHistory}
+          />
+        </Box>
+
+        {/* Salary History */}
+        {staff.profile?.salaryHistory?.length > 0 && (
+          <>
+            <Typography variant="subtitle1" sx={sectionHeaderStyles}>
+              Salary History
+            </Typography>
+            <Box sx={{ ...sectionCardStyles }}>
+              {staff.profile.salaryHistory.map((history, index) => (
+                <Box
+                  key={index}
+                  sx={{
+                    p: 3,
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    mb: 2,
+                  }}
+                >
+                  <InfoGrid
+                    label1="Month"
+                    value1={history.month}
+                    icon1={FaCalendarAlt}
+                    label2="Amount"
+                    value2={`PKR ${history.amount}`}
+                    icon2={FaMoneyBillWave}
+                  />
+                  {history.bonusAmount > 0 && (
+                    <InfoRow
+                      label="Bonus Amount"
+                      value={`PKR ${history.bonusAmount}`}
+                      icon={FaMoneyBillWave}
+                    />
+                  )}
+                  {history.deduction > 0 && (
+                    <InfoRow
+                      label="Deduction"
+                      value={`PKR ${history.deduction}`}
+                      icon={FaMoneyBillWave}
+                    />
+                  )}
+                  {history.remarks && (
+                    <InfoRow
+                      label="Remarks"
+                      value={history.remarks}
+                      icon={FaBook}
+                    />
+                  )}
+                </Box>
+              ))}
+            </Box>
+          </>
+        )}
+      </Box>
+    </Box>
+  );
+};
+
+export default ViewStaffModal;

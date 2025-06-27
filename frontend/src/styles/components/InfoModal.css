@@ -1,0 +1,246 @@
+/* InfoModal - Complete CSS with Button Sizing Focus */
+
+/* Base Styles */
+.MuiModal-root {
+    z-index: 1300;
+  }
+  
+  .MuiTypography-root {
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+  
+  .MuiTextField-root {
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+  
+  .MuiOutlinedInput-root {
+    border-radius: 8px;
+  }
+  
+  .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+    border-color: #1f3d61;
+  }
+  
+  .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+    border-color: #1f3d61;
+    border-width: 2px;
+  }
+  
+  .MuiInputLabel-root.Mui-focused {
+    color: #1f3d61;
+  }
+  
+  .MuiAlert-root {
+    border-radius: 8px;
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif;
+  }
+  
+  /* Button Styles - Main Focus with !important to override inline styles */
+  .MuiButton-root {
+    font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+      sans-serif !important;
+    text-transform: none !important;
+    font-weight: 500 !important;
+    border-radius: 8px !important;
+    transition: all 0.2s ease !important;
+  }
+  
+  /* Desktop Button Sizing (1200px+) */
+  @media (min-width: 1200px) {
+    .MuiButton-root {
+      padding: 12px 24px !important;
+      font-size: 0.875rem !important;
+      min-height: 40px !important;
+    }
+  }
+  
+  /* Large Desktop Button Sizing (1024px - 1199px) */
+  @media (max-width: 1199px) and (min-width: 1024px) {
+    .MuiButton-root {
+      padding: 10px 20px !important;
+      font-size: 0.875rem !important;
+      min-height: 40px !important;
+    }
+  }
+  
+  /* Tablet Button Sizing (768px - 1023px) */
+  @media (max-width: 1023px) and (min-width: 769px) {
+    .MuiButton-root {
+      padding: 10px 18px !important;
+      font-size: 0.875rem !important;
+      min-height: 42px !important;
+    }
+  }
+  
+  /* Mobile Button Sizing (640px - 768px) */
+  @media (max-width: 768px) and (min-width: 641px) {
+    .MuiButton-root {
+      padding: 12px 16px !important;
+      font-size: 0.875rem !important;
+      min-height: 44px !important;
+    }
+  }
+  
+  /* Large Mobile Button Sizing (480px - 640px) */
+  @media (max-width: 640px) and (min-width: 481px) {
+    .MuiButton-root {
+      padding: 14px 16px !important;
+      font-size: 0.875rem !important;
+      min-height: 46px !important;
+      font-weight: 600 !important;
+    }
+  }
+  
+  /* Small Mobile Button Sizing (320px - 480px) */
+  @media (max-width: 480px) and (min-width: 321px) {
+    .MuiButton-root {
+      padding: 16px 16px !important;
+      font-size: 0.875rem !important;
+      min-height: 48px !important;
+      font-weight: 600 !important;
+    }
+  }
+  
+  /* Very Small Mobile Button Sizing (320px and below) */
+  @media (max-width: 320px) {
+    .MuiButton-root {
+      padding: 18px 14px !important;
+      font-size: 0.8125rem !important;
+      min-height: 52px !important;
+      font-weight: 600 !important;
+    }
+  }
+  
+  /* Touch Device Button Optimization */
+  @media (hover: none) and (pointer: coarse) {
+    .MuiButton-root {
+      min-height: 44px !important;
+      min-width: 44px !important;
+    }
+  
+    @media (max-width: 640px) {
+      .MuiButton-root {
+        min-height: 46px !important;
+      }
+    }
+  
+    @media (max-width: 480px) {
+      .MuiButton-root {
+        min-height: 48px !important;
+      }
+    }
+  
+    @media (max-width: 320px) {
+      .MuiButton-root {
+        min-height: 52px !important;
+      }
+    }
+  }
+  
+  /* Override specific button padding from inline styles */
+  @media (max-width: 768px) {
+    .MuiButton-root {
+      padding: 12px 16px !important;
+      font-size: 0.8125rem !important;
+    }
+  }
+  
+  @media (max-width: 640px) {
+    .MuiButton-root {
+      padding: 14px 16px !important;
+      font-size: 0.8125rem !important;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .MuiButton-root {
+      padding: 10px 12px !important;
+      font-size: 0.75rem !important;
+      min-height: 40px !important;
+    }
+  }
+  
+  @media (max-width: 320px) {
+    .MuiButton-root {
+      padding: 8px 10px !important;
+      font-size: 0.6875rem !important;
+      min-height: 36px !important;
+    }
+  }
+  
+  /* Other Component Styles */
+  .MuiTextField-root .MuiInputBase-input {
+    padding: 12px 14px;
+    font-size: 1rem;
+  }
+  
+  .MuiAlert-root {
+    padding: 14px 18px;
+  }
+  
+  .MuiAlert-icon {
+    font-size: 20px;
+    margin-right: 12px;
+  }
+  
+  /* Responsive adjustments for other components */
+  @media (max-width: 768px) {
+    .MuiModal-root {
+      padding: 8px;
+    }
+  
+    .MuiAlert-root {
+      padding: 8px 12px !important;
+    }
+  
+    .MuiAlert-icon {
+      font-size: 16px !important;
+    }
+  
+    .MuiTextField-root .MuiInputBase-input {
+      padding: 8px 12px !important;
+      font-size: 0.875rem;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .MuiModal-root {
+      padding: 4px;
+    }
+  
+    .MuiAlert-root {
+      padding: 6px 10px !important;
+    }
+  
+    .MuiTextField-root .MuiInputBase-input {
+      padding: 6px 10px !important;
+      font-size: 0.8125rem;
+    }
+  }
+  
+  @media (max-width: 320px) {
+    .MuiModal-root {
+      padding: 2px;
+    }
+  
+    .MuiTypography-root {
+      word-break: break-word;
+    }
+  
+    .MuiTextField-root .MuiInputBase-input {
+      padding: 6px 8px;
+      font-size: 0.75rem;
+    }
+  
+    .MuiAlert-root {
+      padding: 4px 6px;
+    }
+  
+    .MuiAlert-icon {
+      font-size: 12px;
+      margin-right: 6px;
+    }
+  }

@@ -1,0 +1,87 @@
+/* Accordion Content Styles */
+.schedule-details {
+  padding: 24px;
+  background: white;
+  border-radius: 8px;
+}
+
+.schedule-details-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.schedule-details-header h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #1e293b;
+  margin: 0;
+}
+
+.schedule-details-header .date {
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+.info-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.info-item {
+  display: flex;
+  gap: 12px;
+}
+
+.info-item .label {
+  color: #64748b;
+  font-size: 0.875rem;
+  min-width: 100px;
+}
+
+.info-item .value {
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.status-indicator {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 500;
+}
+
+.status-indicator.pending {
+  background-color: #fff7ed;
+  color: #c2410c;
+}
+
+.status-indicator.scheduled {
+  background-color: #f0f9ff;
+  color: #0369a1;
+}
+
+.student-on-leave {
+  background-color: #fffbeb;
+  color: #b45309;
+  padding: 12px 16px;
+  border-radius: 6px;
+  margin-top: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.student-on-leave svg {
+  color: #d97706;
+}
+
+.student-on-leave p {
+  margin: 0;
+  font-size: 0.875rem;
+}

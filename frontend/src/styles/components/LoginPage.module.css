@@ -1,0 +1,425 @@
+.loginContainer {
+  display: flex;
+  min-height: 100vh;
+}
+
+.loginLeftSection {
+  width: 40%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.loginLeftSection::before {
+  content: "";
+  position: absolute;
+  width: 200%;
+  height: 200%;
+  background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%238c9eff' fill-opacity='0.12'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  opacity: 0.15;
+  animation: slide 20s linear infinite;
+}
+
+.leftContent {
+  text-align: center;
+  color: white;
+  width: 100%;
+  max-width: 400px;
+  position: relative;
+  z-index: 1;
+}
+
+.heroIcon {
+  font-size: 4rem;
+  margin-bottom: 1.5rem;
+}
+
+.leftContent h1 {
+  font-size: 3.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  letter-spacing: 1px;
+}
+
+.heroText {
+  font-size: 1.5rem;
+  opacity: 0.9;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.titleUnderline {
+  width: 60px;
+  height: 4px;
+  background: white;
+  margin: 1rem auto;
+  border-radius: 2px;
+}
+
+.loginRightSection {
+  width: 60%;
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+}
+
+.loginContent {
+  width: 100%;
+  max-width: 400px;
+}
+
+.loginHeader {
+  text-align: center;
+  margin-bottom: 2.5rem;
+}
+
+.roleIcon {
+  font-size: 3rem;
+  color: var(--theme-color);
+  margin-bottom: 1rem;
+}
+
+.loginHeader h2 {
+  font-size: 2.5rem;
+  color: var(--theme-color);
+  margin-bottom: 0.5rem;
+  font-weight: 700;
+}
+
+.loginDescription {
+  color: #64748b;
+  font-size: 1.1rem;
+}
+
+.loginFormContainer {
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.formGroup {
+  margin-bottom: 1.5rem;
+}
+
+.inputIconWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: #f8fafc;
+  border-radius: 12px;
+  transition: all 0.3s ease;
+  border: 2px solid var(--theme-color);
+}
+
+.inputIconWrapper:focus-within {
+  background: white;
+  box-shadow: 0 0 0 2px rgba(var(--theme-color), 0.1);
+}
+
+.inputIcon {
+  position: absolute;
+  left: 16px;
+  font-size: 1.2rem;
+  color: #94a3b8;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 1rem 1rem 1rem 3rem;
+  font-size: 1rem;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  background: transparent;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.passwordToggle {
+  position: absolute;
+  right: 16px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+  padding: 0;
+}
+
+.loginButton {
+  width: 100%;
+  padding: 1rem;
+  border: none;
+  border-radius: 12px;
+  color: white;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 1rem;
+  height: 3.5rem;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, #234b7c 0%, #1e3a5c 100%);
+  box-shadow: 0 4px 12px rgba(30, 58, 92, 0.11), 0 1.5px 6px rgba(0, 0, 0, 0.07);
+}
+
+/* Shiny sweep effect */
+.loginButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 60%,
+    rgba(255, 255, 255, 0.18) 80%,
+    transparent 100%
+  );
+  transition: left 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.loginButton:hover:not(:disabled),
+.loginButton:focus-visible:not(:disabled) {
+  background: linear-gradient(135deg, #1e3a5c 0%, #152b44 100%);
+  transform: translateY(-2px) scale(1.025);
+  box-shadow: 0 8px 24px rgba(35, 75, 124, 0.15), 0 2px 8px rgba(0, 0, 0, 0.09);
+}
+
+.loginButton:hover:not(:disabled)::before,
+.loginButton:focus-visible:not(:disabled)::before {
+  left: 120%;
+}
+
+.loginButton:active:not(:disabled) {
+  transform: translateY(0) scale(0.98);
+  background: linear-gradient(135deg, #152b44 0%, #0f1f32 100%);
+  box-shadow: 0 1px 2px rgba(30, 58, 92, 0.16),
+    inset 0 1px 2px rgba(0, 0, 0, 0.12);
+}
+
+.loginButton:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  box-shadow: none;
+  transform: none;
+}
+
+.loginButton:disabled::before {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loginButton {
+    transition: none;
+  }
+
+  .loginButton::before {
+    display: none;
+  }
+}
+.errorMessage {
+  background-color: #ffebee;
+  color: #c62828;
+  padding: 12px;
+  border-radius: 4px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.loginPageMain {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.loginPageMain img {
+  width: 70%;
+  border-radius: 50%;
+}
+
+@keyframes slide {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+@media (max-width: 1024px) {
+  .loginContainer {
+    flex-direction: column;
+  }
+
+  .loginLeftSection,
+  .loginRightSection {
+    width: 100%;
+  }
+
+  .loginLeftSection {
+    min-height: 40vh;
+  }
+
+  .leftContent h1 {
+    font-size: 2.5rem;
+  }
+
+  .heroText {
+    font-size: 1.2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .loginLeftSection {
+    min-height: 30vh;
+    padding: 1.5rem;
+  }
+
+  .loginRightSection {
+    padding: 1rem;
+  }
+
+  .leftContent h1 {
+    font-size: 2rem;
+  }
+
+  .heroText {
+    font-size: 1rem;
+  }
+
+  .loginHeader h2 {
+    font-size: 2rem;
+  }
+
+  .roleIcon {
+    font-size: 2.5rem;
+  }
+
+  .loginFormContainer {
+    padding: 1.5rem;
+  }
+
+  .loginPageMain img {
+    width: 60%;
+  }
+}
+
+@media (max-width: 480px) {
+  .loginLeftSection {
+    min-height: 25vh;
+    padding: 1rem;
+  }
+
+  .loginRightSection {
+    padding: 0.5rem;
+  }
+
+  .loginContent {
+    padding: 0.5rem;
+  }
+
+  .leftContent h1 {
+    font-size: 1.8rem;
+  }
+
+  .heroText {
+    font-size: 0.9rem;
+  }
+
+  .loginHeader h2 {
+    font-size: 1.8rem;
+  }
+
+  .roleIcon {
+    font-size: 2rem;
+  }
+
+  .loginFormContainer {
+    padding: 1rem;
+  }
+
+  .formGroup input {
+    padding: 0.8rem 0.8rem 0.8rem 2.5rem;
+    font-size: 0.9rem;
+  }
+
+  .inputIcon {
+    left: 12px;
+    font-size: 1rem;
+  }
+
+  .passwordToggle {
+    right: 12px;
+    font-size: 1rem;
+  }
+
+  .loginButton {
+    height: 3rem;
+    font-size: 1rem;
+  }
+
+  .loginPageMain img {
+    width: 50%;
+  }
+
+  .titleUnderline {
+    width: 40px;
+    height: 3px;
+  }
+}
+
+@media (max-width: 320px) {
+  .loginLeftSection {
+    min-height: 20vh;
+    padding: 0.75rem;
+  }
+
+  .leftContent h1 {
+    font-size: 1.5rem;
+  }
+
+  .heroText {
+    font-size: 0.8rem;
+  }
+
+  .loginHeader h2 {
+    font-size: 1.5rem;
+  }
+
+  .roleIcon {
+    font-size: 1.8rem;
+  }
+
+  .loginFormContainer {
+    padding: 0.75rem;
+  }
+
+  .formGroup input {
+    padding: 0.7rem 0.7rem 0.7rem 2.2rem;
+    font-size: 0.85rem;
+  }
+
+  .loginButton {
+    height: 2.5rem;
+    font-size: 0.9rem;
+  }
+
+  .loginPageMain img {
+    width: 45%;
+  }
+}

@@ -1,0 +1,1107 @@
+/* Main Container */
+.homeContainer {
+  padding: 24px;
+  background-color: #f8fafc;
+  min-height: 100vh;
+  box-sizing: border-box;
+  padding-bottom: max(24px, env(safe-area-inset-bottom, 80px));
+}
+
+/* Header Styles */
+.homeHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+  min-height: 60px;
+}
+
+.homeHeader > div:first-child {
+  display: flex;
+  align-items: center;
+}
+
+.homeHeader h2 {
+  margin: 0;
+  font-size: 28px;
+  color: #1e293b;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.headerButtons {
+  display: flex;
+  align-items: center;
+  height: 100%;
+}
+
+/* Stats Grids */
+.homeStatsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.homeStatsGridThree {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.homeStatsGridFour {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+/* Stat Cards */
+.homeStatCard {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border-left: 5px solid;
+  min-width: 0;
+}
+
+.homeStatCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* Stat Card Header */
+.statHeader {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.statIcon {
+  font-size: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+  border-radius: 12px;
+  background-color: #f8fafc;
+  flex-shrink: 0;
+}
+
+.statTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #1e293b;
+  line-height: 1.2;
+}
+
+.statCount {
+  font-size: 36px;
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 20px;
+  word-break: break-all;
+}
+
+/* Stat Details - Fixed for supervisor dashboard */
+.statDetailsGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+
+.statDetailItem {
+  padding: 8px 6px;
+  border-radius: 12px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.detailValue {
+  font-size: 16px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.detailLabel {
+  font-size: 11px;
+  font-weight: 500;
+  word-break: break-word;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Analytics Section */
+.homeAnalyticsSection {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 24px;
+}
+
+.homeAnalyticsSection h3 {
+  margin: 0 0 24px 0;
+  font-size: 20px;
+  font-weight: 600;
+  color: #1e293b;
+}
+
+/* FIXED: Chart Container Height */
+.homeChartContainer {
+  height: 500px;
+  width: 100%;
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 12px;
+  border: 1px solid #e2e8f0;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Section Title */
+.sectionTitle {
+  display: flex;
+  align-items: center;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.sectionIcon {
+  margin-right: 8px;
+  color: #3949ab;
+  font-size: 20px;
+  flex-shrink: 0;
+}
+
+/* Detail Components */
+.detailSection {
+  margin-bottom: 10px;
+}
+
+.detailSectionTitle {
+  display: flex;
+  align-items: center;
+  color: #1e293b;
+  font-size: 18px;
+  font-weight: 600;
+  margin: 0 0 16px 0;
+}
+
+.detailGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.detailItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.detailItem .detailLabel {
+  color: #64748b;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.detailItem .detailValue {
+  color: #1e293b;
+  font-size: 16px;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+/* Today's Classes */
+.todayClassesGrid {
+  display: grid;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.todayClassCard {
+  background-color: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.inactiveStudentLabel {
+  color: #dc2626;
+  font-size: 0.85rem;
+  font-weight: bold;
+  margin-left: 4px;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  color: #64748b;
+  text-align: center;
+}
+
+.emptyStateIcon {
+  font-size: 48px;
+  margin-bottom: 16px;
+  color: #94a3b8;
+}
+
+.emptyStateTitle {
+  font-size: 16px;
+  font-weight: 500;
+  margin: 0;
+}
+
+.emptyStateText {
+  font-size: 14px;
+  margin-top: 8px;
+  color: #94a3b8;
+}
+
+/* Charts Section */
+.homeChartsSection {
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  margin-top: 24px;
+  overflow: hidden;
+}
+
+.homeChartsSection h3 {
+  color: #1e293b;
+  margin-bottom: 24px;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.chartsGrid {
+  display: grid;
+  gap: 16px;
+  margin-top: 16px;
+  width: 100%;
+}
+
+.chartCard {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e2e8f0;
+  width: 100%;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.chartCard h4 {
+  color: #475569;
+  margin-bottom: 16px;
+  text-align: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+/* Student Details */
+.studentDetailsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.studentDetailsTitle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.studentDetailsTitle h3 {
+  margin: 0;
+}
+
+.selectContainer {
+  position: relative;
+  min-width: 200px;
+  flex-shrink: 0;
+}
+
+.studentSelect {
+  width: 100%;
+  padding: 8px 32px 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  font-size: 14px;
+  color: #1e293b;
+  background-color: white;
+  appearance: none;
+  cursor: pointer;
+  outline: none;
+  height: 40px;
+  transition: all 0.2s ease;
+}
+
+.studentSelect:hover {
+  border-color: #cbd5e1;
+}
+
+.studentSelect:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 1px #3b82f6;
+}
+
+.selectIcon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #64748b;
+  transition: transform 0.2s ease;
+}
+
+.studentDetailsGrid {
+  display: grid;
+  gap: 24px;
+}
+
+/* Loading */
+.loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+  font-size: 1.2rem;
+  color: #64748b;
+}
+
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden;
+  }
+
+  .homeContainer {
+    min-height: calc(100vh - 80px);
+    padding-bottom: 100px;
+  }
+
+  .homeAnalyticsSection:last-child {
+    margin-bottom: 60px;
+  }
+}
+
+/* Extra Large Desktop (1600px+) */
+@media (min-width: 1600px) {
+  .homeStatsGridFour {
+    grid-template-columns: repeat(4, 1fr);
+    max-width: 1600px;
+    margin: 20px auto 0;
+  }
+
+  .homeChartContainer {
+    /* height: 600px;
+    min-height: 600px; */
+    padding: 30px;
+  }
+
+  .chartCard {
+    min-height: 500px;
+  }
+}
+
+/* Large Desktop (1400px - 1599px) */
+@media (max-width: 1599px) and (min-width: 1400px) {
+  .homeContainer {
+    padding: 32px;
+  }
+
+  .homeStatsGridFour {
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+  }
+
+  .homeAnalyticsSection {
+    padding: 32px;
+  }
+
+  .homeChartContainer {
+    height: 550px;
+    min-height: 550px;
+    padding: 25px;
+  }
+  .chartCard {
+    min-height: 450px;
+  }
+}
+
+/* Desktop (1200px - 1399px) */
+@media (max-width: 1399px) and (min-width: 1200px) {
+  .homeStatsGridFour {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .homeStatsGridThree {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .homeChartContainer {
+    height: 500px;
+    min-height: 500px;
+    padding: 20px;
+  }
+
+  .chartCard {
+    min-height: 400px;
+  }
+}
+
+/* Medium Desktop (1024px - 1199px) */
+@media (max-width: 1199px) and (min-width: 1024px) {
+  .homeContainer {
+    padding: 20px;
+  }
+
+  .homeStatsGrid,
+  .homeStatsGridThree,
+  .homeStatsGridFour {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .homeAnalyticsSection {
+    padding: 20px;
+  }
+
+  .homeChartContainer {
+    height: 450px;
+    min-height: 450px;
+    padding: 20px;
+  }
+
+  .chartsGrid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+  }
+
+  .chartCard {
+    min-height: 350px;
+  }
+}
+
+/* Large Tablet (768px - 1023px) */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .homeContainer {
+    padding: 16px;
+  }
+
+  .homeHeader h2 {
+    font-size: 24px;
+  }
+
+  .homeStatsGrid,
+  .homeStatsGridThree,
+  .homeStatsGridFour {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+
+  .homeStatCard {
+    padding: 20px;
+    margin-bottom: 4px;
+  }
+
+  .statCount {
+    font-size: 32px;
+  }
+
+  .homeAnalyticsSection {
+    padding: 16px;
+  }
+
+  .homeChartContainer {
+    height: 400px;
+    min-height: 400px;
+    padding: 15px;
+  }
+  .chartsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .chartCard {
+    min-height: 300px;
+  }
+
+  .studentDetailsHeader {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+
+  .selectContainer {
+    min-width: auto;
+  }
+
+  .detailGrid {
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+  }
+
+  .statDetailsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+}
+
+/* Small Tablet/Large Mobile (640px - 767px) */
+@media (max-width: 767px) and (min-width: 640px) {
+  .homeContainer {
+    padding: 12px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 60px));
+  }
+
+  .homeHeader {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .homeHeader h2 {
+    font-size: 22px;
+    text-align: center;
+  }
+
+  .homeStatsGrid,
+  .homeStatsGridThree,
+  .homeStatsGridFour {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+
+  .homeStatCard {
+    padding: 16px;
+    margin-bottom: 4px;
+  }
+
+  .statHeader {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .statIcon {
+    font-size: 24px;
+    padding: 10px;
+  }
+
+  .statTitle {
+    font-size: 16px;
+  }
+
+  .statCount {
+    font-size: 28px;
+    margin-bottom: 16px;
+  }
+
+  .statDetailsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .detailValue {
+    font-size: 14px;
+  }
+
+  .detailLabel {
+    font-size: 10px;
+  }
+
+  .homeAnalyticsSection {
+    padding: 12px;
+  }
+
+  .homeChartContainer {
+    height: 350px;
+    min-height: 350px;
+    padding: 15px;
+  }
+
+  .chartCard {
+    min-height: 280px;
+  }
+
+  .studentDetailsHeader {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .studentDetailsTitle {
+    justify-content: center;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .todayClassCard {
+    padding: 12px;
+  }
+
+  .emptyState {
+    padding: 30px 15px;
+  }
+
+  .emptyStateIcon {
+    font-size: 36px;
+  }
+}
+
+/* Mobile (480px - 639px) */
+@media (max-width: 639px) and (min-width: 480px) {
+  .homeContainer {
+    padding: 12px;
+    padding-bottom: 80px;
+  }
+
+  .homeHeader {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+
+  .homeHeader h2 {
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .homeStatsGrid,
+  .homeStatsGridThree,
+  .homeStatsGridFour {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .homeStatCard {
+    padding: 20px;
+    margin-bottom: 8px;
+    min-height: 220px;
+    border-left-width: 8px;
+  }
+
+  .statCount {
+    font-size: 32px;
+    margin-bottom: 18px;
+    display: block !important;
+    visibility: visible !important;
+  }
+
+  .statHeader {
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+
+  .statIcon {
+    font-size: 24px;
+    padding: 10px;
+  }
+
+  .statTitle {
+    font-size: 16px;
+  }
+
+  .statDetailsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 6px;
+  }
+
+  .homeChartContainer {
+    height: 350px;
+    min-height: 350px;
+    padding: 15px;
+  }
+
+  .chartCard {
+    min-height: 250px;
+    padding: 12px;
+  }
+
+  .chartCard h4 {
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .studentDetailsHeader {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .studentDetailsTitle {
+    justify-content: center;
+  }
+
+  .detailGrid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+
+  .todayClassCard {
+    padding: 12px;
+  }
+
+  .emptyState {
+    padding: 30px 15px;
+  }
+
+  .emptyStateIcon {
+    font-size: 36px;
+  }
+}
+
+/* Small Mobile (320px - 479px) */
+@media (max-width: 479px) {
+  .homeContainer {
+    padding: 8px;
+    padding-bottom: 30px;
+  }
+
+  .homeHeader {
+    margin-bottom: 16px;
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .homeHeader h2 {
+    font-size: 18px;
+    text-align: center;
+  }
+
+  .homeStatsGrid,
+  .homeStatsGridThree,
+  .homeStatsGridFour {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .homeStatCard {
+    padding: 16px;
+    margin-bottom: 8px;
+    min-height: 200px;
+    border-left-width: 8px;
+  }
+
+  .statHeader {
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .statIcon {
+    font-size: 20px;
+    padding: 8px;
+  }
+
+  .statTitle {
+    font-size: 14px;
+  }
+
+  .statCount {
+    font-size: 28px;
+    margin-bottom: 16px;
+    display: block !important;
+    visibility: visible !important;
+    line-height: 1.2;
+  }
+  .statDetailsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 4px;
+  }
+
+  .statDetailItem {
+    padding: 6px 4px;
+  }
+
+  .detailValue {
+    font-size: 12px;
+  }
+
+  .detailLabel {
+    font-size: 10px;
+  }
+
+  .homeChartContainer {
+    height: 320px;
+    min-height: 320px;
+    padding: 12px;
+  }
+
+  .chartCard {
+    min-height: 220px;
+    padding: 10px;
+  }
+
+  .chartCard h4 {
+    font-size: 11px;
+    margin-bottom: 6px;
+  }
+  .studentSelect {
+    font-size: 12px;
+    height: 36px;
+    padding: 6px 28px 6px 10px;
+  }
+
+  .selectIcon {
+    right: 10px;
+  }
+
+  .todayClassCard {
+    padding: 8px;
+  }
+
+  .emptyState {
+    padding: 20px 10px;
+  }
+
+  .emptyStateIcon {
+    font-size: 32px;
+  }
+
+  .emptyStateTitle {
+    font-size: 14px;
+  }
+
+  .emptyStateText {
+    font-size: 12px;
+  }
+}
+
+/* Very Small Mobile (below 320px) */
+@media (max-width: 319px) {
+  .homeContainer {
+    padding: 4px;
+    padding-bottom: 30px;
+  }
+  .homeStatCard {
+    padding: 12px;
+    margin-bottom: 6px;
+    min-height: 180px;
+    border-left-width: 10px;
+  }
+  .statTitle {
+    font-size: 12px;
+  }
+
+  .statCount {
+    font-size: 24px;
+    margin-bottom: 14px;
+    display: block !important;
+    visibility: visible !important;
+    line-height: 1.2;
+  }
+  .statDetailsGrid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .detailValue {
+    font-size: 10px;
+  }
+
+  .detailLabel {
+    font-size: 9px;
+  }
+
+  .homeChartContainer {
+    height: 300px;
+    min-height: 300px;
+    padding: 10px;
+  }
+
+  .chartCard {
+    min-height: 200px;
+    padding: 8px;
+  }
+
+  .chartCard h4 {
+    font-size: 10px;
+    margin-bottom: 4px;
+  }
+}
+
+/* Landscape Mobile Optimization */
+@media (orientation: landscape) and (max-height: 600px) {
+  .homeContainer {
+    padding: 8px;
+  }
+
+  .homeHeader {
+    margin-bottom: 16px;
+  }
+
+  .homeChartContainer {
+    height: 280px;
+    min-height: 280px;
+  }
+
+  .chartCard {
+    min-height: 220px;
+  }
+
+  .emptyState {
+    padding: 20px;
+  }
+
+  .homeStatCard {
+    padding: 12px;
+    margin-bottom: 3px;
+  }
+
+  .statCount {
+    font-size: 24px;
+    margin-bottom: 12px;
+  }
+}
+
+/* High DPI / Retina Display Optimization */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+  .homeStatCard {
+    border-width: 3px;
+  }
+}
+.timetableButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #234b7c 0%, #1e3a5c 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 4px rgba(30, 58, 92, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+  font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  letter-spacing: 0.025em;
+}
+
+.timetableButton::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.2),
+    transparent
+  );
+  transition: left 0.5s;
+}
+
+.timetableButton:hover {
+  background: linear-gradient(135deg, #1e3a5c 0%, #152b44 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(30, 58, 92, 0.4), 0 2px 4px rgba(0, 0, 0, 0.25);
+}
+
+.timetableButton:hover::before {
+  left: 100%;
+}
+
+.timetableButton:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 2px rgba(30, 58, 92, 0.3),
+    inset 0 1px 2px rgba(0, 0, 0, 0.2);
+  background: linear-gradient(135deg, #152b44 0%, #0f1f32 100%);
+}
+
+.timetableButton:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(35, 75, 124, 0.3), 0 2px 4px rgba(30, 58, 92, 0.3),
+    0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.timetableButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+}
+
+.timetableButton:disabled:hover {
+  background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%);
+  transform: none;
+  box-shadow: 0 2px 4px rgba(30, 58, 92, 0.3), 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.timetableButton:disabled::before {
+  display: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .timetableButton {
+    transition: none;
+  }
+
+  .timetableButton::before {
+    display: none;
+  }
+}
+/* Show both icon and text by default */
+.timetableButtonText {
+  display: inline;
+}
+/* Hide text on small screens - show only icon */
+@media (max-width: 767px) {
+  .timetableButtonText {
+    display: none;
+  }
+
+  .timetableButton {
+    padding: 14px 16px;
+    min-width: none;
+  }
+}
+/* For very small screens */
+@media (max-width: 479px) {
+  .timetableButton {
+    padding: 8px 10px;
+    min-width: 40px;
+  }
+}

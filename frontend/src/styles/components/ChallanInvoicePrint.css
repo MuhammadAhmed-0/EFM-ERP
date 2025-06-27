@@ -1,0 +1,212 @@
+.challan-print-wrapper {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: Arial, sans-serif;
+}
+
+.challan-print-container {
+  max-width: 800px;
+  margin: 20px auto;
+  padding: 30px;
+  background: white;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.challan-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 2px solid #000;
+  padding-bottom: 20px;
+}
+
+.challan-logo-wrapper {
+  width: 80px;
+  height: 80px;
+}
+
+.challan-logo-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.challan-company-info {
+  flex-grow: 1;
+  text-align: center;
+}
+
+.challan-company-title {
+  font-size: 24px;
+  margin-bottom: 5px;
+}
+
+.challan-company-subtitle {
+  color: #666;
+  font-size: 16px;
+}
+
+.challan-client-section {
+  border: 1px solid #000;
+  margin-bottom: 20px;
+  padding: 15px;
+}
+
+.challan-client-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.challan-client-cell {
+  padding: 8px;
+}
+
+.challan-cell-label {
+  font-weight: normal;
+  width: 150px;
+  color: #666;
+}
+
+.challan-fee-section {
+  margin-top: 30px;
+}
+
+.challan-fee-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px;
+}
+
+.challan-fee-header {
+  background-color: #f5f5f5;
+  font-weight: bold;
+}
+
+.challan-fee-cell {
+  border: 1px solid #000;
+  padding: 10px;
+  text-align: left;
+}
+
+.challan-fee-amount {
+  text-align: right;
+  border-bottom: 1px solid #000;
+}
+
+.challan-total-row {
+  font-weight: bold;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+}
+
+.challan-print-footer {
+  margin-top: 30px;
+  text-align: right;
+}
+
+.challan-print-btn {
+  padding: 10px 20px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  margin-top: 20px;
+}
+
+.challan-print-btn:hover {
+  background-color: #0056b3;
+}
+
+.challan-loading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #666;
+}
+
+.challan-error {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  font-size: 18px;
+  color: #dc3545;
+}
+
+.challan-footer {
+  margin-top: 30px;
+  padding-top: 20px;
+}
+
+.challan-remarks {
+  margin-bottom: 15px;
+  color: #666;
+}
+
+.challan-status {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+@media print {
+  .challan-print-container {
+    margin: 0;
+    padding: 20px;
+    box-shadow: none;
+  }
+
+  .challan-print-btn {
+    display: none;
+  }
+
+  .challan-fee-header {
+    background-color: #f5f5f5 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+/* Add these new styles to your existing CSS */
+.negative {
+  color: #dc2626;
+}
+
+.challan-info {
+  margin-top: 20px;
+  text-align: left;
+  padding: 0 20px;
+}
+
+.challan-info p {
+  margin: 5px 0;
+  font-size: 14px;
+}
+
+@media print {
+  .challan-print-btn {
+    display: none;
+  }
+
+  .negative {
+    color: #dc2626 !important;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+}
+
+.challan-fee-amount,
+td.challan-fee-cell:nth-child(2) {
+  text-align: right; 
+}
+
+.challan-fee-cell.number {
+  text-align: right;
+}

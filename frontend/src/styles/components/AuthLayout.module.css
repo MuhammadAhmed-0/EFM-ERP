@@ -1,0 +1,23 @@
+.authLayout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.authContent {
+  flex: 1;
+  padding: 2rem;
+  background: #f8fafc;
+}
+
+@media (max-width: 768px) {
+  .authContent {
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .authContent {
+    padding: 0.5rem;
+  }
+}

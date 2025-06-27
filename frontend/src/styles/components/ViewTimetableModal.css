@@ -1,0 +1,986 @@
+.custom-select-wrapper {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+}
+
+.subject-filter {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  padding: 8px 30px 8px 16px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 160px;
+  border: 1px solid #e2e8f0;
+  width: 100%;
+}
+
+.subject-filter:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.subject-filter option {
+  color: #333;
+  padding: 8px;
+  font-weight: 500;
+}
+
+.custom-dropdown-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+  color: #666;
+  font-size: 12px;
+}
+
+.timetable-controls {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 20px 24px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-bottom: 2px solid #e5e7eb;
+  flex-wrap: wrap;
+  gap: 20px;
+  box-shadow: 0 2px 4px -1px rgba(0, 0, 0, 0.1);
+}
+
+.color-legend {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  flex: 1;
+}
+
+.legend-title {
+  font-weight: 700;
+  color: #1f2937;
+  font-size: 15px;
+  letter-spacing: 0.025em;
+}
+
+.legend-items {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: #374151;
+  font-weight: 500;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+}
+
+.legend-color {
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+  border: 2px solid rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.legend-color.regular {
+  background: #dbeafe;
+  border-color: #3b82f6;
+}
+
+.legend-color.trial {
+  background: #dcfce7;
+  border-color: #22c55e;
+}
+
+.legend-color.freeze {
+  background: #fef3c7;
+  border-color: #f59e0b;
+}
+
+.legend-color.mixed {
+  background: linear-gradient(45deg, #dcfce7 50%, #fef3c7 50%);
+  border-color: #8b5cf6;
+}
+
+.legend-color.empty {
+  background: #f3f4f6;
+  border-color: #9ca3af;
+}
+
+.filter-section {
+  display: flex;
+  align-items: flex-start;
+  gap: 20px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  flex-wrap: wrap;
+  min-width: 300px;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.filter-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 600;
+  color: #374151;
+  font-size: 14px;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.filter-icon {
+  font-size: 16px;
+  color: #64748b;
+}
+
+.date-filter-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0;
+  border-radius: 10px;
+}
+
+.date-filter-input {
+  padding: 8px 12px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  background: rgba(255, 255, 255, 0.9);
+  color: #333;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 150px;
+}
+
+.date-filter-input:focus {
+  outline: none;
+  border-color: #6366f1;
+  box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.2);
+}
+
+.clear-date-btn {
+  padding: 6px 12px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  color: #475569;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.clear-date-btn:hover {
+  background: #e2e8f0;
+  color: #334155;
+}
+
+.no-data {
+  text-align: center;
+  padding: 50px;
+  color: #6b7280;
+  font-style: italic;
+  font-size: 16px;
+  background: #f9fafb;
+}
+
+.time-slot-cell[style*="linear-gradient"] {
+  border: 2px solid #8b5cf6 !important;
+  box-shadow: 0 2px 4px rgba(139, 92, 246, 0.2) !important;
+}
+
+.student-info-box[data-tooltip]:hover::after {
+  content: attr(data-tooltip);
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #1f2937;
+  color: white;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  white-space: pre-line;
+  z-index: 1000;
+  box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.3);
+  margin-top: 8px;
+  min-width: 250px;
+  max-width: 350px;
+  width: max-content;
+  line-height: 1.4;
+}
+
+.student-info-box[data-tooltip]:hover::before {
+  content: "";
+  position: absolute;
+  top: 96%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 6px solid transparent;
+  border-bottom-color: #1f2937;
+  z-index: 1000;
+}
+
+.timetable-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.timetable-modal {
+  background: #ffffff;
+  border-radius: 8px;
+  width: 100%;
+  height: 95vh;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e5e7eb;
+}
+
+.timetable-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 24px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f8fafc;
+  border-radius: 8px 8px 0 0;
+}
+
+.timetable-header h2 {
+  margin: 0;
+  color: #333;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.timetable-header-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.timetable-header-buttons button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  font-size: 14px;
+  transition: background-color 0.2s;
+}
+
+.timetable-header-buttons button:first-child {
+  background: #214571;
+  color: white;
+}
+
+.timetable-header-buttons button:first-child:hover {
+  background: #1e3b5d;
+}
+
+.timetable-header-buttons button:last-child {
+  background: #b91c1c;
+  color: white;
+}
+
+.timetable-header-buttons button:last-child:hover {
+  background: #961919;
+}
+
+.timetable-content {
+  flex: 1;
+  overflow: auto;
+  padding: 0;
+  border-radius: 11px;
+  background: #ffffff;
+}
+
+.timetable-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  font-size: 1.1rem;
+  color: #6b7280;
+}
+
+.timetable-container {
+  width: 100%;
+  height: 100%;
+  overflow: auto;
+}
+
+.timetable-container::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+.timetable-container::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+.timetable-container::-webkit-scrollbar-thumb {
+  background: #214571;
+  border-radius: 3px;
+}
+
+.timetable-container::-webkit-scrollbar-thumb:hover {
+  background: #1e3b5d;
+}
+
+.timetable-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  min-width: 2400px;
+  background: white;
+}
+
+.teacher-column {
+  position: sticky;
+  left: 0;
+  background: #f8fafc;
+  border-right: 2px solid #e5e7eb;
+  width: 160px;
+  min-width: 160px;
+  z-index: 10;
+  font-weight: 600;
+  color: #374151;
+  text-align: center;
+  padding: 12px 8px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.time-slot-column-horizontal {
+  background: #f8fafc;
+  border: 1px solid #e5e7eb;
+  padding: 10px 6px;
+  text-align: center;
+  font-weight: 600;
+  color: #374151;
+  width: 120px;
+  min-width: 120px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.time-slot-text-horizontal {
+  font-size: 10px;
+  line-height: 1.2;
+  font-weight: 600;
+}
+
+.teacher-cell {
+  position: sticky;
+  left: 0;
+  background: #ffffff;
+  border-right: 2px solid #e5e7eb;
+  border-bottom: 1px solid #f3f4f6;
+  padding: 12px;
+  font-weight: 500;
+  z-index: 5;
+}
+
+.teacher-info {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: center;
+}
+
+.teacher-name {
+  font-size: 14px;
+  color: #1f2937;
+  font-weight: 600;
+  text-align: center;
+}
+
+.teacher-name.inactive {
+  color: #9ca3af;
+}
+
+.inactive-badge {
+  font-size: 9px;
+  color: #ef4444;
+  font-weight: 500;
+  background: #fef2f2;
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+.time-slot-cell {
+  border: 1px solid #e5e7eb;
+  padding: 8px 6px;
+  vertical-align: top;
+  height: 85px;
+  width: 120px;
+  min-width: 120px;
+  position: relative;
+}
+
+.class-info {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.subject-name {
+  font-weight: 600;
+  color: #1f2937;
+  font-size: 11px;
+  text-align: center;
+  margin-bottom: 4px;
+  padding: 2px 4px;
+  background: #f3f4f6;
+  border-radius: 4px;
+}
+
+.students-info {
+  flex: 1;
+}
+
+.student-info-box {
+  font-size: 10px;
+  margin-bottom: 2px;
+  cursor: pointer;
+  padding: 3px 4px;
+  border-radius: 3px;
+  transition: background-color 0.15s;
+  background: rgba(255, 255, 255, 0.8);
+  border: 1px solid rgba(229, 231, 235, 0.5);
+  position: relative;
+}
+
+.student-info-box:hover {
+  background: #f1f5f9;
+  border-color: #3b82f6;
+}
+
+.empty-slot {
+  color: #9ca3af;
+  text-align: center;
+  font-size: 14px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 300;
+}
+
+.spinning {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 1440px) {
+  .timetable-modal-overlay {
+    padding: 10px;
+  }
+
+  .timetable-modal {
+    height: 97vh;
+  }
+
+  .legend-items {
+    gap: 12px;
+  }
+
+  .legend-item {
+    font-size: 12px;
+    padding: 3px 6px;
+  }
+}
+
+@media (max-width: 1200px) {
+  .timetable-table {
+    min-width: 2000px;
+  }
+
+  .time-slot-column-horizontal,
+  .time-slot-cell {
+    width: 100px;
+    min-width: 100px;
+  }
+
+  .time-slot-text-horizontal {
+    font-size: 9px;
+  }
+
+  .teacher-column,
+  .teacher-cell {
+    width: 140px;
+    min-width: 140px;
+  }
+
+  .filter-section {
+    min-width: 250px;
+    gap: 15px;
+  }
+
+  .date-filter-input {
+    min-width: 130px;
+  }
+
+  .subject-filter {
+    min-width: 140px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .timetable-modal {
+    height: 98vh;
+  }
+
+  .timetable-header {
+    padding: 16px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .timetable-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .timetable-header-buttons {
+    gap: 8px;
+  }
+
+  .timetable-header-buttons button {
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .timetable-controls {
+    padding: 16px 20px;
+    gap: 16px;
+  }
+
+  .legend-title {
+    font-size: 14px;
+  }
+
+  .filter-label {
+    font-size: 13px;
+  }
+
+  .subject-filter {
+    min-width: 120px;
+    padding: 8px 12px;
+    font-size: 13px;
+  }
+
+  .date-filter-input {
+    min-width: 120px;
+    font-size: 13px;
+  }
+
+  .filter-section {
+    min-width: 200px;
+    gap: 12px;
+  }
+}
+
+@media (max-width: 768px) {
+  .timetable-modal-overlay {
+    padding: 5px;
+  }
+
+  .timetable-modal {
+    border-radius: 6px;
+    height: 99vh;
+  }
+
+  .timetable-header {
+    padding: 12px 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .timetable-header h2 {
+    font-size: 1.1rem;
+    line-height: 1.3;
+  }
+
+  .timetable-header-buttons {
+    width: 100%;
+    justify-content: flex-end;
+  }
+
+  .timetable-controls {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .color-legend {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+  }
+
+  .legend-items {
+    gap: 8px;
+    width: 100%;
+    justify-content: flex-start;
+  }
+
+  .legend-item {
+    font-size: 11px;
+    padding: 2px 5px;
+  }
+
+  .legend-color {
+    width: 16px;
+    height: 16px;
+  }
+
+  .filter-section {
+    width: 100%;
+    justify-content: space-between;
+    padding: 8px 0;
+    flex-direction: row;
+    gap: 12px;
+    min-width: auto;
+  }
+
+  .filter-group {
+    flex: 1;
+    min-width: auto;
+  }
+
+  .date-filter-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 0;
+    width: 100%;
+  }
+
+  .date-filter-input {
+    min-width: 130px;
+    font-size: 13px;
+    width: 100%;
+  }
+
+  .subject-filter {
+    min-width: 120px;
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .clear-date-btn {
+    font-size: 11px;
+    padding: 5px 8px;
+    align-self: flex-start;
+  }
+
+  .timetable-table {
+    min-width: 1600px;
+  }
+
+  .teacher-column,
+  .teacher-cell {
+    width: 120px;
+    min-width: 120px;
+    padding: 8px;
+  }
+
+  .teacher-name {
+    font-size: 12px;
+  }
+
+  .time-slot-column-horizontal,
+  .time-slot-cell {
+    width: 90px;
+    min-width: 90px;
+    padding: 6px 4px;
+  }
+
+  .time-slot-text-horizontal {
+    font-size: 8px;
+  }
+
+  .time-slot-cell {
+    height: 75px;
+  }
+
+  .subject-name {
+    font-size: 10px;
+    padding: 1px 3px;
+  }
+
+  .student-info-box {
+    font-size: 9px;
+    padding: 2px 3px;
+  }
+
+  .student-info-box[data-tooltip]:hover::after {
+    min-width: 200px;
+    max-width: 280px;
+    font-size: 10px;
+    padding: 8px 10px;
+  }
+}
+
+@media (max-width: 640px) {
+  .timetable-modal-overlay {
+    padding: 0;
+  }
+
+  .timetable-modal {
+    border-radius: 0;
+    height: 100vh;
+  }
+
+  .timetable-header h2 {
+    font-size: 1rem;
+  }
+
+  .timetable-header-buttons button {
+    padding: 6px 8px;
+    font-size: 12px;
+    gap: 4px;
+  }
+
+  .legend-items {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+    gap: 6px;
+  }
+
+  .legend-item {
+    font-size: 10px;
+    padding: 2px 4px;
+    justify-content: center;
+  }
+
+  .filter-label {
+    font-size: 12px;
+  }
+
+  .filter-section {
+    flex-direction: row;
+    gap: 8px;
+  }
+
+  .date-filter-wrapper {
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .date-filter-input {
+    min-width: 100px;
+    font-size: 11px;
+    flex: 1;
+  }
+
+  .subject-filter {
+    min-width: 100px;
+    font-size: 11px;
+  }
+
+  .clear-date-btn {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  .timetable-table {
+    min-width: 1400px;
+    font-size: 10px;
+  }
+
+  .teacher-column,
+  .teacher-cell {
+    width: 100px;
+    min-width: 100px;
+    padding: 6px;
+  }
+
+  .teacher-name {
+    font-size: 11px;
+  }
+
+  .time-slot-column-horizontal,
+  .time-slot-cell {
+    width: 80px;
+    min-width: 80px;
+    padding: 4px 2px;
+  }
+
+  .time-slot-text-horizontal {
+    font-size: 7px;
+  }
+
+  .time-slot-cell {
+    height: 65px;
+  }
+
+  .subject-name {
+    font-size: 9px;
+  }
+
+  .student-info-box {
+    font-size: 8px;
+    padding: 1px 2px;
+  }
+
+  .student-info-box[data-tooltip]:hover::after {
+    min-width: 180px;
+    max-width: 250px;
+    font-size: 9px;
+    padding: 6px 8px;
+  }
+
+  .no-data {
+    padding: 30px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .timetable-header {
+    padding: 8px 12px;
+  }
+
+  .timetable-controls {
+    padding: 8px 12px;
+  }
+
+  .filter-section {
+    gap: 8px;
+  }
+
+  .date-filter-wrapper {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+
+  .date-filter-input {
+    min-width: 90px;
+    font-size: 10px;
+    width: 100%;
+  }
+
+  .subject-filter {
+    min-width: 90px;
+    font-size: 10px;
+  }
+
+  .timetable-table {
+    min-width: 1200px;
+  }
+
+  .teacher-column,
+  .teacher-cell {
+    width: 80px;
+    min-width: 80px;
+    padding: 4px;
+  }
+
+  .time-slot-column-horizontal,
+  .time-slot-cell {
+    width: 70px;
+    min-width: 70px;
+  }
+
+  .time-slot-cell {
+    height: 55px;
+  }
+
+  .student-info-box[data-tooltip]:hover::after {
+    min-width: 160px;
+    max-width: 220px;
+  }
+}
+
+@media (max-width: 360px) {
+  .timetable-header h2 {
+    font-size: 0.9rem;
+  }
+
+  .date-filter-input {
+    min-width: 80px;
+    font-size: 9px;
+  }
+
+  .subject-filter {
+    min-width: 80px;
+    font-size: 9px;
+  }
+
+  .timetable-table {
+    min-width: 1000px;
+  }
+
+  .teacher-column,
+  .teacher-cell {
+    width: 70px;
+    min-width: 70px;
+  }
+
+  .time-slot-column-horizontal,
+  .time-slot-cell {
+    width: 60px;
+    min-width: 60px;
+  }
+
+  .time-slot-cell {
+    height: 50px;
+  }
+
+  .student-info-box[data-tooltip]:hover::after {
+    min-width: 140px;
+    max-width: 200px;
+    font-size: 8px;
+  }
+}

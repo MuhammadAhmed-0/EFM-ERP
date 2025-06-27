@@ -1,0 +1,261 @@
+.syncBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  min-width: 40px;
+  padding: 10px;
+  background: rgba(248, 250, 252, 0.2);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  color: #64748b;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(100, 116, 139, 0.1), 0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.4),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.syncBtn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.5),
+    transparent
+  );
+  transition: left 0.6s ease;
+  z-index: 1;
+}
+
+.syncBtn::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(255, 255, 255, 0.2) 0%,
+    transparent 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.syncBtn svg {
+  transition: transform 0.3s ease;
+  font-size: 16px;
+  z-index: 2;
+  position: relative;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.1));
+}
+
+.syncBtn.syncing svg,
+.rotate {
+  animation: rotate 1s linear infinite;
+}
+
+.syncBtn:hover:not(:disabled) {
+  background: rgba(241, 245, 249, 0.3);
+  color: #3949ab;
+  border-color: rgba(57, 73, 171, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 15px rgba(57, 73, 171, 0.15), 0 2px 4px rgba(0, 0, 0, 0.1),
+    inset 0 1px 0 rgba(255, 255, 255, 0.5),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.syncBtn:hover:not(:disabled)::before {
+  left: 100%;
+}
+
+.syncBtn:hover:not(:disabled) svg {
+  color: #3949ab;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.15));
+  transform: scale(1.1);
+}
+
+.syncBtn:active {
+  transform: translateY(0);
+  background: rgba(241, 245, 249, 0.4);
+  box-shadow: 0 1px 4px rgba(57, 73, 171, 0.1),
+    inset 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.3);
+}
+
+.syncBtn:active svg {
+  transform: scale(1.05);
+}
+
+.syncBtn:disabled {
+  background: rgba(248, 250, 252, 0.1);
+  opacity: 0.6;
+  cursor: not-allowed;
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.syncBtn:disabled::before {
+  display: none;
+}
+
+.syncBtn:disabled svg {
+  opacity: 0.7;
+  filter: none;
+}
+
+@keyframes rotate {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .syncBtn {
+    height: 40px;
+    min-width: 40px;
+    padding: 10px;
+    gap: 0;
+    justify-content: center;
+  }
+
+  .syncBtn svg {
+    font-size: 15px;
+  }
+}
+
+@media (max-width: 479px) {
+  .syncBtn {
+    height: 36px;
+    min-width: 36px;
+    padding: 8px;
+    border-radius: 6px;
+  }
+
+  .syncBtn svg {
+    font-size: 14px;
+  }
+}
+
+@media (hover: none) and (pointer: coarse) {
+  .syncBtn {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  .syncBtn:hover {
+    background: rgba(248, 250, 252, 0.2);
+    color: #64748b;
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: none;
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+  }
+
+  .syncBtn:hover::before {
+    left: -100%;
+  }
+
+  .syncBtn:active:not(:disabled) {
+    background: rgba(241, 245, 249, 0.3);
+    color: #3949ab;
+    border-color: rgba(57, 73, 171, 0.4);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+  }
+}
+
+.syncBtn:focus-visible {
+  outline: 2px solid rgba(57, 73, 171, 0.5);
+  outline-offset: 2px;
+  box-shadow: 0 0 0 3px rgba(57, 73, 171, 0.1),
+    0 2px 8px rgba(100, 116, 139, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.4);
+}
+
+.syncing {
+  pointer-events: none;
+  background: rgba(57, 73, 171, 0.15);
+  color: #3949ab;
+  border-color: rgba(57, 73, 171, 0.3);
+}
+
+.syncing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: rgba(57, 73, 171, 0.05);
+  border-radius: inherit;
+  z-index: 0;
+}
+
+.syncing svg {
+  color: #3949ab;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+}
+
+/* Enhanced shine effect for syncing state */
+.syncing::after {
+  background: linear-gradient(
+    135deg,
+    rgba(57, 73, 171, 0.1) 0%,
+    transparent 50%,
+    rgba(57, 73, 171, 0.05) 100%
+  );
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .syncBtn svg,
+  .rotate,
+  .syncBtn.syncing svg {
+    animation: none;
+  }
+
+  .syncBtn {
+    transition: none;
+  }
+
+  .syncBtn::before {
+    transition: none;
+    display: none;
+  }
+
+  .syncBtn::after {
+    transition: none;
+  }
+}
+
+/* Additional glass effect enhancements */
+.syncBtn {
+  /* Add subtle text shadow for better readability */
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+.syncBtn:hover:not(:disabled) {
+  text-shadow: 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+/* Ensure proper stacking context */
+.syncBtn svg {
+  position: relative;
+  z-index: 3;
+}
