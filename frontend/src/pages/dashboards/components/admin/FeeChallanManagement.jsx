@@ -35,7 +35,7 @@ import ViewChallanModal from "./viewModals/ViewChallanModal";
 import useNotification from "../../../../hooks/useNotification";
 import NotificationSnackbar from "../../../../components/common/NotificationSnackbar";
 import SyncButton from "../../../../components/common/SyncButton";
-import WhatsAppButton from "../../../../components/WhatsappButton";
+// import WhatsAppButton from "../../../../components/WhatsappButton";
 const MONTHS = [
   "January",
   "February",
@@ -1591,7 +1591,7 @@ const FeeChallanManagement = () => {
                             <FaPrint color="#64748b" />
                           </a>
                         </button>
-                        <WhatsAppButton
+                        {/* <WhatsAppButton
                           challan={{
                             ...challan,
                             clientPhoneNumber: challan.clientPhoneNumber,
@@ -1601,7 +1601,7 @@ const FeeChallanManagement = () => {
                             showNotification(message, "success")
                           }
                           onError={(error) => showNotification(error, "error")}
-                        />
+                        /> */}
                         <button
                           onClick={() => handleDeleteChallan(challan)}
                           title="Delete challan"
