@@ -22,27 +22,16 @@ import {
 const POPPINS_FONT =
   "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
-const typographyStyles = {
-  fontFamily: POPPINS_FONT,
-};
-
-const sectionHeaderStyles = {
-  ...typographyStyles,
-  fontWeight: 600,
-  mb: 2,
-};
-
-const sectionCardStyles = {
-  p: 3,
-  border: "1px solid #e2e8f0",
-  borderRadius: "8px",
-  bgcolor: "#f8fafc",
-  mb: 4,
+// Responsive breakpoints
+const useResponsive = () => {
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+  return { isMobile, isTablet };
 };
 
 const formatTimeAgo = (date) => {
   if (!date) return "";
-  const now = new Date("2025-05-15 09:39:43"); // Use your current time
+  const now = new Date("2025-07-01 08:15:20"); // Use current time
   const diff = now - new Date(date);
   const minutes = Math.floor(diff / 60000);
 
@@ -55,11 +44,31 @@ const formatTimeAgo = (date) => {
   const days = Math.floor(hours / 24);
   return `${days} days ago`;
 };
-const textStyles = {
-  ...typographyStyles,
-  color: "#64748b",
+
+const convertTo12Hour = (time) => {
+  if (!time) return "";
+  const [hours, minutes] = time.split(":");
+  const hour = parseInt(hours);
+  const ampm = hour >= 12 ? "PM" : "AM";
+  const hour12 = hour % 12 || 12;
+  return `${hour12.toString().padStart(2, "0")}:${minutes} ${ampm}`;
 };
+
+const formatDate = (dateString) => {
+  if (!dateString) return "Not available";
+  const date = new Date(dateString);
+  const formattedDate = format(date, "dd/MM/yyyy");
+  const formattedTime = format(date, "HH:mm:ss");
+  return `${formattedDate} ${convertTo12Hour(formattedTime)}`;
+};
+
+const formatTimeRange = (startTime, endTime) => {
+  return `${convertTo12Hour(startTime)} - ${convertTo12Hour(endTime)}`;
+};
+
 const TimingDetail = ({ label, value, type }) => {
+  const { isMobile } = useResponsive();
+
   const getTimingStatusColor = (type) => {
     switch (type) {
       case "late":
@@ -83,221 +92,339 @@ const TimingDetail = ({ label, value, type }) => {
           display: "flex",
           alignItems: "center",
           gap: 1,
+          fontSize: isMobile ? "0.8rem" : "0.875rem",
         }}
       >
-        <FaClock size={12} />
+        <FaClock size={isMobile ? 10 : 12} />
         {label}: {value}
       </Typography>
     </Box>
   );
 };
-const InfoRow = ({ label, value, icon: Icon }) => (
-  <Box sx={{ display: "flex", alignItems: "flex-start", gap: 1.5, mb: 2 }}>
-    {Icon && <Icon size={16} style={{ color: "#64748b", marginTop: "4px" }} />}
-    <Box>
-      <Typography variant="body2" sx={{ ...textStyles, mb: 0.5 }}>
-        {label}
-      </Typography>
-      <Typography sx={typographyStyles}>
-        {value === true
-          ? "Yes"
-          : value === false
-          ? "No"
-          : value || "Not provided"}
-      </Typography>
-    </Box>
-  </Box>
-);
 
-const InfoGrid = ({ label1, value1, icon1, label2, value2, icon2 }) => (
-  <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
-    <Box sx={{ width: "48%" }}>
-      {label1.toLowerCase().includes("status") ? (
-        <Box>
-          <Typography variant="body2" sx={{ ...textStyles, mb: 0.5 }}>
-            {label1}
-          </Typography>
-          <Box
-            component="span"
-            sx={{
-              padding: "4px 8px",
-              borderRadius: "4px",
-              fontSize: "0.875rem",
-              fontWeight: 500,
-              backgroundColor:
-                value1 === "scheduled"
-                  ? "#e3f2fd"
-                  : value1 === "completed"
-                  ? "#dcfce7"
-                  : value1 === "cancelled"
-                  ? "#fee2e2"
-                  : value1 === "rescheduled"
-                  ? "#f3e8ff"
-                  : value1 === "pending"
-                  ? "#fff3e0"
-                  : value1 === "in_progress"
-                  ? "#e8f5e9"
-                  : value1 === "available"
-                  ? "#e3f2fd"
-                  : "#f1f5f9",
-              color:
-                value1 === "scheduled"
-                  ? "#1565c0"
-                  : value1 === "completed"
-                  ? "#166534"
-                  : value1 === "cancelled"
-                  ? "#991b1b"
-                  : value1 === "rescheduled"
-                  ? "#6b21a8"
-                  : value1 === "pending"
-                  ? "#ef6c00"
-                  : value1 === "in_progress"
-                  ? "#2e7d32"
-                  : value1 === "available"
-                  ? "#1565c0"
-                  : "#64748b",
-              textTransform: "capitalize",
-            }}
-          >
-            {value1?.replace("_", " ")}
-          </Box>
-        </Box>
-      ) : (
-        <InfoRow label={label1} value={value1} icon={icon1} />
-      )}
-    </Box>
-    <Box sx={{ width: "48%" }}>
-      {label2?.toLowerCase().includes("status") ? ( // Changed condition and added optional chaining
-        <Box>
-          <Typography variant="body2" sx={{ ...textStyles, mb: 0.5 }}>
-            {label2}
-          </Typography>
-          <Box
-            component="span"
-            sx={{
-              padding: "4px 8px",
-              borderRadius: "4px",
-              fontSize: "0.875rem",
-              fontWeight: 500,
-              backgroundColor:
-                value2 === "scheduled"
-                  ? "#e3f2fd"
-                  : value2 === "completed"
-                  ? "#dcfce7"
-                  : value2 === "cancelled"
-                  ? "#fee2e2"
-                  : value2 === "rescheduled"
-                  ? "#f3e8ff"
-                  : value2 === "pending"
-                  ? "#fff3e0"
-                  : value2 === "in_progress"
-                  ? "#e8f5e9"
-                  : value2 === "available"
-                  ? "#e3f2fd"
-                  : "#f1f5f9",
-              color:
-                value2 === "scheduled"
-                  ? "#1565c0"
-                  : value2 === "completed"
-                  ? "#166534"
-                  : value2 === "cancelled"
-                  ? "#991b1b"
-                  : value2 === "rescheduled"
-                  ? "#6b21a8"
-                  : value2 === "pending"
-                  ? "#ef6c00"
-                  : value2 === "in_progress"
-                  ? "#2e7d32"
-                  : value2 === "available"
-                  ? "#1565c0"
-                  : "#64748b",
-              textTransform: "capitalize",
-            }}
-          >
-            {value2?.replace("_", " ")}
-          </Box>
-        </Box>
-      ) : (
-        label2 && <InfoRow label={label2} value={value2} icon={icon2} />
-      )}
-    </Box>
-  </Box>
-);
-const formatDate = (dateString) => {
-  if (!dateString) return "Not available";
-  const date = new Date(dateString);
-  const formattedDate = format(date, "dd/MM/yyyy");
-  const formattedTime = format(date, "HH:mm:ss");
-  return `${formattedDate} ${convertTo12Hour(formattedTime)}`;
-};
-const convertTo12Hour = (time) => {
-  if (!time) return "";
-  const [hours, minutes] = time.split(":");
-  const hour = parseInt(hours);
-  const ampm = hour >= 12 ? "PM" : "AM";
-  const hour12 = hour % 12 || 12;
-  return `${hour12.toString().padStart(2, "0")}:${minutes} ${ampm}`;
-};
-const formatTimeRange = (startTime, endTime) => {
-  return `${convertTo12Hour(startTime)} - ${convertTo12Hour(endTime)}`;
-};
+const InfoRow = ({ label, value, icon: Icon }) => {
+  const { isMobile } = useResponsive();
 
-const LessonCard = ({ lesson }) => (
-  <Box
-    sx={{
-      p: 2,
-      border: "1px solid #e2e8f0",
-      borderRadius: "8px",
-      mb: 2,
-      bgcolor: "#fff",
-    }}
-  >
-    <Typography variant="subtitle2" sx={{ ...sectionHeaderStyles, mb: 1 }}>
-      {lesson.title}
-    </Typography>
-    <Typography
-      variant="body2"
-      sx={{ ...textStyles, mb: 2, color: "#374151", fontWeight: 500 }}
-    >
-      {lesson.description}
-    </Typography>
+  return (
     <Box
       sx={{
         display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
+        alignItems: "flex-start",
+        gap: isMobile ? 1 : 1.5,
+        mb: isMobile ? 1.5 : 2,
+        flexDirection: isMobile ? "column" : "row",
       }}
     >
-      <Typography variant="body2" sx={textStyles}>
-        Added: {format(new Date(lesson.addedAt), "dd/MM/yyyy")}{" "}
-        {convertTo12Hour(format(new Date(lesson.addedAt), "HH:mm"))}
-      </Typography>
+      {Icon && (
+        <Icon
+          size={isMobile ? 14 : 16}
+          style={{
+            color: "#64748b",
+            marginTop: isMobile ? "0px" : "4px",
+            flexShrink: 0,
+          }}
+        />
+      )}
+      <Box sx={{ width: "100%" }}>
+        <Typography
+          variant="body2"
+          sx={{
+            fontFamily: POPPINS_FONT,
+            color: "#64748b",
+            mb: 0.5,
+            fontSize: isMobile ? "0.75rem" : "0.875rem",
+          }}
+        >
+          {label}
+        </Typography>
+        <Typography
+          sx={{
+            fontFamily: POPPINS_FONT,
+            fontSize: isMobile ? "0.85rem" : "1rem",
+            wordBreak: "break-word",
+          }}
+        >
+          {value === true
+            ? "Yes"
+            : value === false
+            ? "No"
+            : value || "Not provided"}
+        </Typography>
+      </Box>
     </Box>
-    {lesson.remarks && (
-      <Typography variant="body2" sx={{ ...textStyles, mt: 1 }}>
-        Remarks: {lesson.remarks}
+  );
+};
+
+const InfoGrid = ({ label1, value1, icon1, label2, value2, icon2 }) => {
+  const { isMobile } = useResponsive();
+
+  const renderStatusBadge = (value) => (
+    <Box
+      component="span"
+      sx={{
+        padding: isMobile ? "3px 6px" : "4px 8px",
+        borderRadius: "4px",
+        fontSize: isMobile ? "0.75rem" : "0.875rem",
+        fontWeight: 500,
+        backgroundColor:
+          value === "scheduled"
+            ? "#e3f2fd"
+            : value === "completed"
+            ? "#dcfce7"
+            : value === "cancelled"
+            ? "#fee2e2"
+            : value === "rescheduled"
+            ? "#f3e8ff"
+            : value === "pending"
+            ? "#fff3e0"
+            : value === "in_progress"
+            ? "#e8f5e9"
+            : value === "available"
+            ? "#e3f2fd"
+            : "#f1f5f9",
+        color:
+          value === "scheduled"
+            ? "#1565c0"
+            : value === "completed"
+            ? "#166534"
+            : value === "cancelled"
+            ? "#991b1b"
+            : value === "rescheduled"
+            ? "#6b21a8"
+            : value === "pending"
+            ? "#ef6c00"
+            : value === "in_progress"
+            ? "#2e7d32"
+            : value === "available"
+            ? "#1565c0"
+            : "#64748b",
+        textTransform: "capitalize",
+        display: "inline-block",
+        whiteSpace: "nowrap",
+      }}
+    >
+      {value?.replace("_", " ")}
+    </Box>
+  );
+
+  if (isMobile) {
+    return (
+      <Box sx={{ mb: 2 }}>
+        {/* First item */}
+        <Box sx={{ mb: label2 ? 2 : 0 }}>
+          {label1.toLowerCase().includes("status") ? (
+            <Box>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontFamily: POPPINS_FONT,
+                  color: "#64748b",
+                  mb: 0.5,
+                  fontSize: "0.75rem",
+                }}
+              >
+                {label1}
+              </Typography>
+              {renderStatusBadge(value1)}
+            </Box>
+          ) : (
+            <InfoRow label={label1} value={value1} icon={icon1} />
+          )}
+        </Box>
+
+        {/* Second item */}
+        {label2 && (
+          <Box>
+            {label2.toLowerCase().includes("status") ? (
+              <Box>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    fontFamily: POPPINS_FONT,
+                    color: "#64748b",
+                    mb: 0.5,
+                    fontSize: "0.75rem",
+                  }}
+                >
+                  {label2}
+                </Typography>
+                {renderStatusBadge(value2)}
+              </Box>
+            ) : (
+              <InfoRow label={label2} value={value2} icon={icon2} />
+            )}
+          </Box>
+        )}
+      </Box>
+    );
+  }
+
+  return (
+    <Box
+      sx={{ display: "flex", justifyContent: "space-between", mb: 2, gap: 2 }}
+    >
+      <Box sx={{ width: "48%" }}>
+        {label1.toLowerCase().includes("status") ? (
+          <Box>
+            <Typography
+              variant="body2"
+              sx={{
+                fontFamily: POPPINS_FONT,
+                color: "#64748b",
+                mb: 0.5,
+              }}
+            >
+              {label1}
+            </Typography>
+            {renderStatusBadge(value1)}
+          </Box>
+        ) : (
+          <InfoRow label={label1} value={value1} icon={icon1} />
+        )}
+      </Box>
+      <Box sx={{ width: "48%" }}>
+        {label2?.toLowerCase().includes("status") ? (
+          <Box>
+            <Typography
+              variant="body2"
+              sx={{
+                fontFamily: POPPINS_FONT,
+                color: "#64748b",
+                mb: 0.5,
+              }}
+            >
+              {label2}
+            </Typography>
+            {renderStatusBadge(value2)}
+          </Box>
+        ) : (
+          label2 && <InfoRow label={label2} value={value2} icon={icon2} />
+        )}
+      </Box>
+    </Box>
+  );
+};
+
+const LessonCard = ({ lesson }) => {
+  const { isMobile } = useResponsive();
+
+  return (
+    <Box
+      sx={{
+        p: isMobile ? 1.5 : 2,
+        border: "1px solid #e2e8f0",
+        borderRadius: "8px",
+        mb: 2,
+        bgcolor: "#fff",
+      }}
+    >
+      <Typography
+        variant="subtitle2"
+        sx={{
+          fontFamily: POPPINS_FONT,
+          fontWeight: 600,
+          mb: 1,
+          fontSize: isMobile ? "0.9rem" : "1rem",
+        }}
+      >
+        {lesson.title}
       </Typography>
-    )}
-  </Box>
-);
+      <Typography
+        variant="body2"
+        sx={{
+          fontFamily: POPPINS_FONT,
+          color: "#374151",
+          fontWeight: 500,
+          mb: 2,
+          fontSize: isMobile ? "0.8rem" : "0.875rem",
+          lineHeight: 1.4,
+        }}
+      >
+        {lesson.description}
+      </Typography>
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexDirection: isMobile ? "column" : "row",
+          alignItems: isMobile ? "flex-start" : "center",
+          gap: isMobile ? 1 : 0,
+        }}
+      >
+        <Typography
+          variant="body2"
+          sx={{
+            fontFamily: POPPINS_FONT,
+            color: "#64748b",
+            fontSize: isMobile ? "0.75rem" : "0.875rem",
+          }}
+        >
+          Added: {format(new Date(lesson.addedAt), "dd/MM/yyyy")}{" "}
+          {convertTo12Hour(format(new Date(lesson.addedAt), "HH:mm"))}
+        </Typography>
+      </Box>
+      {lesson.remarks && (
+        <Typography
+          variant="body2"
+          sx={{
+            fontFamily: POPPINS_FONT,
+            color: "#64748b",
+            mt: 1,
+            fontSize: isMobile ? "0.75rem" : "0.875rem",
+          }}
+        >
+          Remarks: {lesson.remarks}
+        </Typography>
+      )}
+    </Box>
+  );
+};
 
 const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
-  const modalBaseStyles = {
+  const { isMobile, isTablet } = useResponsive();
+
+  const responsiveModalStyles = {
     ...modalStyle,
-    maxHeight: "90vh",
+    maxHeight: isMobile ? "95vh" : "90vh",
     display: "flex",
     flexDirection: "column",
-    width: "800px",
+    width: isMobile ? "95vw" : isTablet ? "85vw" : "800px",
+    maxWidth: isMobile ? "400px" : isTablet ? "600px" : "800px",
     fontFamily: POPPINS_FONT,
+    p: isMobile ? 2 : isTablet ? 3 : 4,
+  };
+
+  const typographyStyles = {
+    fontFamily: POPPINS_FONT,
+  };
+
+  const sectionHeaderStyles = {
+    ...typographyStyles,
+    fontWeight: 600,
+    mb: isMobile ? 1.5 : 2,
+    fontSize: isMobile ? "1rem" : "1.125rem",
+  };
+
+  const sectionCardStyles = {
+    p: isMobile ? 2 : 3,
+    border: "1px solid #e2e8f0",
+    borderRadius: "8px",
+    bgcolor: "#f8fafc",
+    mb: isMobile ? 2 : 4,
+  };
+
+  const textStyles = {
+    ...typographyStyles,
+    color: "#64748b",
   };
 
   const scrollableContentStyles = {
     overflowY: "auto",
     flex: 1,
-    pr: 2,
-    mt: 3,
+    pr: isMobile ? 1 : 2,
+    mt: isMobile ? 2 : 3,
     "&::-webkit-scrollbar": {
-      width: "6px",
+      width: isMobile ? "4px" : "6px",
     },
     "&::-webkit-scrollbar-track": {
       background: "#f1f5f9",
@@ -309,36 +436,50 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
   };
 
   return (
-    <Box sx={modalBaseStyles}>
+    <Box sx={responsiveModalStyles}>
       {/* Header */}
       <Box
         sx={{
           borderBottom: "1px solid #e2e8f0",
-          pb: 2,
+          pb: isMobile ? 1.5 : 2,
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
+          alignItems: isMobile ? "flex-start" : "center",
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? 1 : 0,
         }}
       >
-        <Box>
+        <Box sx={{ width: isMobile ? "100%" : "auto" }}>
           <Typography
             variant="h5"
-            sx={{ ...typographyStyles, fontWeight: 600 }}
+            sx={{
+              ...typographyStyles,
+              fontWeight: 600,
+              fontSize: isMobile ? "1.2rem" : "1.5rem",
+            }}
           >
             Schedule Details
           </Typography>
-          <Typography variant="body2" sx={textStyles}>
+          <Typography
+            variant="body2"
+            sx={{
+              ...textStyles,
+              fontSize: isMobile ? "0.8rem" : "0.875rem",
+            }}
+          >
             Class Date: {format(new Date(schedule.classDate), "dd/MM/yyyy")}
           </Typography>
         </Box>
         <Button
           onClick={() => setShowModal(false)}
           sx={{
-            minWidth: "32px",
-            height: "32px",
+            minWidth: isMobile ? "28px" : "32px",
+            height: isMobile ? "28px" : "32px",
             p: 0,
             borderRadius: "50%",
             color: "#64748b",
+            fontSize: isMobile ? "18px" : "20px",
+            alignSelf: isMobile ? "flex-end" : "center",
             "&:hover": {
               bgcolor: "#f1f5f9",
             },
@@ -387,14 +528,17 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
             icon2={null}
           />
         </Box>
+
         <Box sx={sectionCardStyles}>
           <InfoRow
             label="Session Progress"
             value={
               schedule.sessionStatus === "completed" ? (
                 <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
-                  <FaCheckCircle color="#22c55e" />
-                  Completed
+                  <FaCheckCircle color="#22c55e" size={isMobile ? 14 : 16} />
+                  <Typography sx={{ fontSize: isMobile ? "0.85rem" : "1rem" }}>
+                    Completed
+                  </Typography>
                 </Box>
               ) : schedule.sessionStatus === "in_progress" ? (
                 <Box
@@ -405,8 +549,10 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
                     color: "#2563eb",
                   }}
                 >
-                  <FaCircle />
-                  In Progress
+                  <FaCircle size={isMobile ? 14 : 16} />
+                  <Typography sx={{ fontSize: isMobile ? "0.85rem" : "1rem" }}>
+                    In Progress
+                  </Typography>
                 </Box>
               ) : schedule.sessionStatus === "available" ? (
                 <Box
@@ -417,8 +563,10 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
                     color: "#f59e0b",
                   }}
                 >
-                  <FaClock />
-                  Teacher Available
+                  <FaClock size={isMobile ? 14 : 16} />
+                  <Typography sx={{ fontSize: isMobile ? "0.85rem" : "1rem" }}>
+                    Teacher Available
+                  </Typography>
                 </Box>
               ) : (
                 <Box
@@ -429,13 +577,16 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
                     color: "#64748b",
                   }}
                 >
-                  <FaRegClock />
-                  Pending
+                  <FaRegClock size={isMobile ? 14 : 16} />
+                  <Typography sx={{ fontSize: isMobile ? "0.85rem" : "1rem" }}>
+                    Pending
+                  </Typography>
                 </Box>
               )
             }
           />
         </Box>
+
         {/* Recurring Information */}
         <Typography variant="subtitle1" sx={sectionHeaderStyles}>
           Schedule Settings
@@ -459,9 +610,9 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
                       key={day}
                       component="span"
                       sx={{
-                        padding: "4px 8px",
+                        padding: isMobile ? "3px 6px" : "4px 8px",
                         borderRadius: "4px",
-                        fontSize: "0.875rem",
+                        fontSize: isMobile ? "0.75rem" : "0.875rem",
                         fontWeight: 500,
                         backgroundColor: "#e3f2fd",
                         color: "#1565c0",
@@ -485,6 +636,8 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
             icon={FaBook}
           />
         </Box>
+
+        {/* Attendance Records */}
         <Typography variant="subtitle1" sx={sectionHeaderStyles}>
           Attendance Records
         </Typography>
@@ -504,21 +657,35 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
                     index !== schedule.studentAttendances.length - 1
                       ? "1px solid #e2e8f0"
                       : "none",
+                  flexDirection: isMobile ? "column" : "row",
+                  gap: isMobile ? 1 : 0,
                 }}
               >
-                <Box>
+                <Box sx={{ width: isMobile ? "100%" : "auto" }}>
                   <Typography
-                    sx={{ ...typographyStyles, fontWeight: 500, mb: 0.5 }}
+                    sx={{
+                      ...typographyStyles,
+                      fontWeight: 500,
+                      mb: 0.5,
+                      fontSize: isMobile ? "0.9rem" : "1rem",
+                    }}
                   >
                     {attendance.studentName}
                   </Typography>
-                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: 1,
+                      flexDirection: isMobile ? "column" : "row",
+                      alignItems: isMobile ? "flex-start" : "center",
+                    }}
+                  >
                     <Chip
                       label={
                         attendance.status.charAt(0).toUpperCase() +
                         attendance.status.slice(1)
                       }
-                      size="medium"
+                      size={isMobile ? "small" : "medium"}
                       sx={{
                         backgroundColor:
                           attendance.status === "present"
@@ -544,7 +711,7 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
 
                         textTransform: "capitalize",
                         fontWeight: 500,
-                        fontSize: "0.875rem",
+                        fontSize: isMobile ? "0.75rem" : "0.875rem",
                       }}
                     />
                     {attendance.remarks && (
@@ -552,7 +719,7 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
                         variant="body2"
                         sx={{
                           color: "#64748b",
-                          fontSize: "0.75rem",
+                          fontSize: isMobile ? "0.7rem" : "0.75rem",
                           fontStyle: "italic",
                         }}
                       >
@@ -562,13 +729,18 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
                   </Box>
                 </Box>
                 {(attendance.markedBy || attendance.markedAt) && (
-                  <Box sx={{ textAlign: "right" }}>
+                  <Box
+                    sx={{
+                      textAlign: isMobile ? "left" : "right",
+                      width: isMobile ? "100%" : "auto",
+                    }}
+                  >
                     {attendance.markedBy && (
                       <Typography
                         variant="body2"
                         sx={{
                           color: "#64748b",
-                          fontSize: "0.75rem",
+                          fontSize: isMobile ? "0.7rem" : "0.75rem",
                         }}
                       >
                         Marked by: {attendance.markedBy}
@@ -579,7 +751,7 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
                         variant="body2"
                         sx={{
                           color: "#94a3b8",
-                          fontSize: "0.75rem",
+                          fontSize: isMobile ? "0.7rem" : "0.75rem",
                         }}
                       >
                         {formatDate(attendance.markedAt)}
@@ -590,11 +762,18 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
               </Box>
             ))
           ) : (
-            <Typography sx={{ ...textStyles, fontStyle: "italic" }}>
+            <Typography
+              sx={{
+                ...textStyles,
+                fontStyle: "italic",
+                fontSize: isMobile ? "0.85rem" : "1rem",
+              }}
+            >
               No attendance records available
             </Typography>
           )}
         </Box>
+
         {/* Session Timings */}
         <Typography variant="subtitle1" sx={sectionHeaderStyles}>
           Session Timeline
@@ -614,11 +793,17 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
             icon={FaHistory}
           />
         </Box>
+
         {schedule.sessionStatus === "completed" && (
           <Box>
             <Typography
               variant="subtitle2"
-              sx={{ mt: 2, mb: 1, fontWeight: 600 }}
+              sx={{
+                mt: 2,
+                mb: 1,
+                fontWeight: 600,
+                fontSize: isMobile ? "0.9rem" : "1rem",
+              }}
             >
               Timing Analysis
             </Typography>
@@ -644,6 +829,7 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
             )}
           </Box>
         )}
+
         {/* Lessons */}
         <Typography variant="subtitle1" sx={sectionHeaderStyles}>
           Lessons
@@ -653,10 +839,17 @@ const ViewScheduleModal = ({ schedule, setShowModal, modalStyle }) => {
             <LessonCard key={lesson._id} lesson={lesson} />
           ))
         ) : (
-          <Typography sx={{ ...textStyles, fontStyle: "italic" }}>
+          <Typography
+            sx={{
+              ...textStyles,
+              fontStyle: "italic",
+              fontSize: isMobile ? "0.85rem" : "1rem",
+            }}
+          >
             No lessons added yet
           </Typography>
         )}
+
         {/* System Information */}
         <Typography variant="subtitle1" sx={sectionHeaderStyles}>
           System Details

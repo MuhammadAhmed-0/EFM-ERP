@@ -74,6 +74,33 @@ const CURRENCIES = [
   "BHD",
 ];
 
+const useResponsive = () => {
+  const [screenSize, setScreenSize] = useState({
+    isMobile: false,
+    isTablet: false,
+    isDesktop: false,
+    width: 0,
+  });
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setScreenSize({
+        isMobile: width < 768,
+        isTablet: width >= 768 && width < 1024,
+        isDesktop: width >= 1024,
+        width,
+      });
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  return screenSize;
+};
+
 const ModalContent = ({
   formData,
   handleChange,
@@ -89,298 +116,820 @@ const ModalContent = ({
   handleMonthToggle,
   getNextTwelveMonths,
   calculatePaymentTotals,
-}) => (
-  <Box sx={getModalStyles()}>
-    <Typography variant="h6" sx={{ mb: 2 }}>
-      {currentChallan ? "Edit Fee Challan" : "Add New Fee Challan"}
-    </Typography>
+}) => {
+  const { isMobile, isTablet } = useResponsive();
 
-    <form onSubmit={currentChallan ? handleEditSubmit : handleAddSubmit}>
-      <FormControl fullWidth margin="normal" size="small" required>
-        <Autocomplete
-          id="client-select-autocomplete"
-          options={clients.filter((client) => client.isActive !== false)}
-          getOptionLabel={(option) =>
-            `${option.clientId || ""} - ${option.name}`
-          }
-          value={
-            clients.find((client) => client._id === formData.clientId) || null
-          }
-          onChange={(event, newValue) => {
-            handleChange({
-              target: {
-                name: "clientId",
-                value: newValue ? newValue._id : "",
-              },
-            });
-          }}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              label="Client (Active Only)"
-              error={!!errors.clientId}
-              size="small"
-              required
-              helperText={errors.clientId || "Only active clients are shown"}
-            />
-          )}
-        />
-      </FormControl>
-      <TextField
-        fullWidth
-        label={`Amount (${formData.clientCurrency})`}
-        name="amount"
-        type="number"
-        value={formData.amount}
-        onChange={handleChange}
-        required
-        margin="normal"
-        size="small"
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              {formData.clientCurrency}
-            </InputAdornment>
-          ),
+  return (
+    <Box
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: {
+          xs: "95vw",
+          sm: "90vw",
+          md: "700px",
+          lg: "800px",
+          xl: "900px",
+        },
+        maxWidth: {
+          xs: "400px",
+          sm: "600px",
+          md: "700px",
+          lg: "800px",
+          xl: "900px",
+        },
+        maxHeight: {
+          xs: "95vh",
+          sm: "90vh",
+          md: "85vh",
+        },
+        bgcolor: "background.paper",
+        borderRadius: "12px",
+        boxShadow:
+          "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        p: {
+          xs: 2,
+          sm: 3,
+          md: 4,
+        },
+        overflowY: "auto",
+        "&:focus-visible": {
+          outline: "none",
+        },
+        fontFamily:
+          "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          mb: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
+          textAlign: "center",
+          fontSize: {
+            xs: "1.1rem",
+            sm: "1.2rem",
+            md: "1.25rem",
+            lg: "1.3rem",
+          },
+          fontWeight: 500,
+          color: "#1e293b",
         }}
-      />
+      >
+        {currentChallan ? "Edit Fee Challan" : "Add New Fee Challan"}
+      </Typography>
 
-      {formData.clientId && (
-        <Typography variant="caption" color="textSecondary" sx={{ ml: 1 }}>
-          Basic fee from client profile: {formData.clientCurrency}{" "}
-          {clients.find((c) => c._id === formData.clientId)?.totalFee || 0}
-        </Typography>
-      )}
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          Select Months
-        </Typography>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {MONTHS.map((month) => (
-            <Chip
-              key={month}
-              label={month}
-              onClick={() => handleMonthToggle(month)}
-              color={formData.months.includes(month) ? "primary" : "default"}
-              sx={{
-                cursor: "pointer",
-                bgcolor: formData.months.includes(month)
-                  ? "#1f3d61"
-                  : "default",
-                color: formData.months.includes(month) ? "white" : "inherit",
-                "&:hover": {
-                  bgcolor: formData.months.includes(month)
-                    ? "#1f3d70"
-                    : "default",
+      <form onSubmit={currentChallan ? handleEditSubmit : handleAddSubmit}>
+        <FormControl
+          fullWidth
+          margin="normal"
+          size="small"
+          required
+          sx={{
+            mb: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+          }}
+        >
+          <Autocomplete
+            id="client-select-autocomplete"
+            options={clients.filter((client) => client.isActive !== false)}
+            getOptionLabel={(option) =>
+              `${option.clientId || ""} - ${option.name}`
+            }
+            value={
+              clients.find((client) => client._id === formData.clientId) || null
+            }
+            onChange={(event, newValue) => {
+              handleChange({
+                target: {
+                  name: "clientId",
+                  value: newValue ? newValue._id : "",
                 },
-              }}
-            />
-          ))}
-        </Box>
-        {errors.months && (
-          <Typography color="error" variant="caption" sx={{ mt: 1 }}>
-            {errors.months}
+              });
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Client (Active Only)"
+                error={!!errors.clientId}
+                size="small"
+                required
+                helperText={errors.clientId || "Only active clients are shown"}
+                sx={{
+                  "& .MuiInputBase-root": {
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "0.9rem",
+                      md: "1rem",
+                    },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "0.9rem",
+                      md: "1rem",
+                    },
+                  },
+                }}
+              />
+            )}
+          />
+        </FormControl>
+
+        <TextField
+          fullWidth
+          label={`Amount (${formData.clientCurrency})`}
+          name="amount"
+          type="number"
+          value={formData.amount}
+          onChange={handleChange}
+          required
+          margin="normal"
+          size="small"
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                {formData.clientCurrency}
+              </InputAdornment>
+            ),
+          }}
+          sx={{
+            mb: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+            "& .MuiInputBase-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
+        />
+
+        {formData.clientId && (
+          <Typography
+            variant="caption"
+            color="textSecondary"
+            sx={{
+              ml: 1,
+              fontSize: {
+                xs: "0.75rem",
+                sm: "0.8rem",
+              },
+            }}
+          >
+            Basic fee from client profile: {formData.clientCurrency}{" "}
+            {clients.find((c) => c._id === formData.clientId)?.totalFee || 0}
           </Typography>
         )}
-      </Box>
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <LocalizationProvider dateAdapter={AdapterDateFns}>
-          <DatePicker
-            label="From Date"
-            value={formData.fromDate}
-            onChange={(date) => handleDateChange(date, "fromDate")}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                margin: "normal",
-                size: "small",
-                required: true,
-              },
-            }}
-          />
-          <DatePicker
-            label="To Date"
-            value={formData.toDate}
-            onChange={(date) => handleDateChange(date, "toDate")}
-            slotProps={{
-              textField: {
-                fullWidth: true,
-                margin: "normal",
-                size: "small",
-                required: true,
-              },
-            }}
-          />
-        </LocalizationProvider>
-      </Box>
 
-      <FormControl fullWidth margin="normal" size="small" required>
-        <InputLabel>Due Month</InputLabel>
-        <Select
-          name="dueMonth"
-          value={formData.dueMonth}
-          label="Due Month"
-          onChange={handleChange}
+        <Box
+          sx={{
+            mb: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+          }}
         >
-          <MenuItem value="">Select Due Month</MenuItem>
-          {getNextTwelveMonths().map((monthYear) => (
-            <MenuItem key={monthYear} value={monthYear}>
-              {monthYear}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-      {currentChallan && (
-        <>
-          <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
-            Payment Details
-          </Typography>
-
-          {/* Show current payment status and history */}
-          <Box sx={{ mb: 2, p: 2, bgcolor: "#f8fafc", borderRadius: 1 }}>
-            <Typography variant="subtitle2" sx={{ mb: 1 }}>
-              Current Payment Status
-            </Typography>
-            <Typography variant="body2">
-              Total Amount: {currentChallan.clientCurrency}{" "}
-              {currentChallan.amount}
-            </Typography>
-            <Typography variant="body2" color="success.main">
-              Paid: {currentChallan.clientCurrency}{" "}
-              {calculatePaymentTotals(currentChallan).totalPaid}
-            </Typography>
-            <Typography variant="body2" color="error.main">
-              Pending: {currentChallan.clientCurrency}{" "}
-              {calculatePaymentTotals(currentChallan).pendingAmount}
-            </Typography>
-          </Box>
-
-          {/* Add new payment section */}
-          <Typography variant="subtitle2" sx={{ mb: 1 }}>
-            Add New Payment
-          </Typography>
-
-          <TextField
-            fullWidth
-            label="Payment Amount"
-            name="amountPaid"
-            type="number"
-            value={formData.amountPaid}
-            onChange={handleChange}
-            margin="normal"
-            size="small"
-            inputProps={{
-              max: calculatePaymentTotals(currentChallan).pendingAmount,
-              min: 0,
-              step: "0.01",
+          <Typography
+            variant="subtitle2"
+            sx={{
+              mb: 1,
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
             }}
-            helperText={`Maximum: ${currentChallan.clientCurrency} ${
-              calculatePaymentTotals(currentChallan).pendingAmount
-            }`}
-          />
-
-          <FormControl fullWidth margin="normal" size="small">
-            <InputLabel>Payment Method</InputLabel>
-            <Select
-              name="paymentMethod"
-              value={formData.paymentMethod || ""}
-              label="Payment Method"
-              onChange={handleChange}
+          >
+            Select Months
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: {
+                xs: 0.5,
+                sm: 1,
+              },
+            }}
+          >
+            {MONTHS.map((month) => (
+              <Chip
+                key={month}
+                label={month}
+                onClick={() => handleMonthToggle(month)}
+                color={formData.months.includes(month) ? "primary" : "default"}
+                size={isMobile ? "small" : "medium"}
+                sx={{
+                  cursor: "pointer",
+                  bgcolor: formData.months.includes(month)
+                    ? "#1f3d61"
+                    : "default",
+                  color: formData.months.includes(month) ? "white" : "inherit",
+                  fontSize: {
+                    xs: "0.75rem",
+                    sm: "0.8rem",
+                    md: "0.875rem",
+                  },
+                  "&:hover": {
+                    bgcolor: formData.months.includes(month)
+                      ? "#1f3d70"
+                      : "default",
+                  },
+                }}
+              />
+            ))}
+          </Box>
+          {errors.months && (
+            <Typography
+              color="error"
+              variant="caption"
+              sx={{
+                mt: 1,
+                fontSize: {
+                  xs: "0.75rem",
+                  sm: "0.8rem",
+                },
+              }}
             >
-              {PAYMENT_METHODS.map((method) => (
-                <MenuItem key={method} value={method}>
-                  {method.charAt(0).toUpperCase() + method.slice(1)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
+              {errors.months}
+            </Typography>
+          )}
+        </Box>
 
-          <TextField
-            fullWidth
-            label="Transaction ID"
-            name="transactionId"
-            value={formData.transactionId}
-            onChange={handleChange}
-            margin="normal"
-            size="small"
-          />
-
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+          }}
+        >
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
-              label="Payment Date"
-              value={
-                formData.paymentDate
-                  ? new Date(formData.paymentDate)
-                  : new Date()
-              }
-              onChange={(date) => handleDateChange(date, "paymentDate")}
+              label="From Date"
+              value={formData.fromDate}
+              onChange={(date) => handleDateChange(date, "fromDate")}
               slotProps={{
                 textField: {
                   fullWidth: true,
                   margin: "normal",
                   size: "small",
+                  required: true,
+                  sx: {
+                    "& .MuiInputBase-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                  },
+                },
+              }}
+            />
+            <DatePicker
+              label="To Date"
+              value={formData.toDate}
+              onChange={(date) => handleDateChange(date, "toDate")}
+              slotProps={{
+                textField: {
+                  fullWidth: true,
+                  margin: "normal",
+                  size: "small",
+                  required: true,
+                  sx: {
+                    "& .MuiInputBase-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                  },
                 },
               }}
             />
           </LocalizationProvider>
+        </Box>
 
-          {/* Update other challan details */}
-          <Typography variant="h6" sx={{ mt: 3, mb: 1 }}>
-            Update Challan Details
-          </Typography>
-
-          <FormControl fullWidth margin="normal" size="small">
-            <InputLabel>Status Override</InputLabel>
-            <Select
-              name="status"
-              value={formData.status || ""}
-              label="Status Override"
-              onChange={handleChange}
-            >
-              <MenuItem value="">Auto (Based on Payments)</MenuItem>
-              {STATUS_OPTIONS.map((status) => (
-                <MenuItem key={status} value={status.toLowerCase()}>
-                  {capitalizeStatus(status)}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-        </>
-      )}
-
-      <TextField
-        fullWidth
-        label="Remarks"
-        name="remarks"
-        value={formData.remarks}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-        multiline
-        rows={2}
-      />
-
-      <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-        <button
-          className="clear-filters-btn"
-          onClick={() => setShowModal(false)}
-          disabled={isLoading}
+        <FormControl
+          fullWidth
+          margin="normal"
+          size="small"
+          required
+          sx={{
+            mb: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+          }}
         >
-          Cancel
-        </button>
-        <button className="add-btn" type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <div className="loading-spinner"></div>
-          ) : currentChallan ? (
-            "Update Challan"
-          ) : (
-            "Add Challan"
-          )}
-        </button>
-      </Box>
-    </form>
-  </Box>
-);
+          <InputLabel
+            sx={{
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            }}
+          >
+            Due Month
+          </InputLabel>
+          <Select
+            name="dueMonth"
+            value={formData.dueMonth}
+            label="Due Month"
+            onChange={handleChange}
+            sx={{
+              "& .MuiSelect-select": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+            }}
+          >
+            <MenuItem value="">Select Due Month</MenuItem>
+            {getNextTwelveMonths().map((monthYear) => (
+              <MenuItem key={monthYear} value={monthYear}>
+                {monthYear}
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+
+        {currentChallan && (
+          <>
+            <Typography
+              variant="h6"
+              sx={{
+                mt: {
+                  xs: 2,
+                  sm: 2.5,
+                  md: 3,
+                },
+                mb: 1,
+                fontSize: {
+                  xs: "1rem",
+                  sm: "1.1rem",
+                  md: "1.25rem",
+                },
+              }}
+            >
+              Payment Details
+            </Typography>
+
+            <Box
+              sx={{
+                mb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+                p: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+                bgcolor: "#f8fafc",
+                borderRadius: 1,
+              }}
+            >
+              <Typography
+                variant="subtitle2"
+                sx={{
+                  mb: 1,
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                }}
+              >
+                Current Payment Status
+              </Typography>
+              <Typography
+                variant="body2"
+                sx={{
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
+              >
+                Total Amount: {currentChallan.clientCurrency}{" "}
+                {currentChallan.amount}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="success.main"
+                sx={{
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
+              >
+                Paid: {currentChallan.clientCurrency}{" "}
+                {calculatePaymentTotals(currentChallan).totalPaid}
+              </Typography>
+              <Typography
+                variant="body2"
+                color="error.main"
+                sx={{
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
+              >
+                Pending: {currentChallan.clientCurrency}{" "}
+                {calculatePaymentTotals(currentChallan).pendingAmount}
+              </Typography>
+            </Box>
+
+            <Typography
+              variant="subtitle2"
+              sx={{
+                mb: 1,
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              }}
+            >
+              Add New Payment
+            </Typography>
+
+            <TextField
+              fullWidth
+              label="Payment Amount"
+              name="amountPaid"
+              type="number"
+              value={formData.amountPaid}
+              onChange={handleChange}
+              margin="normal"
+              size="small"
+              inputProps={{
+                max: calculatePaymentTotals(currentChallan).pendingAmount,
+                min: 0,
+                step: "0.01",
+              }}
+              helperText={`Maximum: ${currentChallan.clientCurrency} ${
+                calculatePaymentTotals(currentChallan).pendingAmount
+              }`}
+              sx={{
+                mb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+                "& .MuiInputBase-root": {
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                },
+              }}
+            />
+
+            <FormControl
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{
+                mb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+              }}
+            >
+              <InputLabel
+                sx={{
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                }}
+              >
+                Payment Method
+              </InputLabel>
+              <Select
+                name="paymentMethod"
+                value={formData.paymentMethod || ""}
+                label="Payment Method"
+                onChange={handleChange}
+                sx={{
+                  "& .MuiSelect-select": {
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "0.9rem",
+                      md: "1rem",
+                    },
+                  },
+                }}
+              >
+                {PAYMENT_METHODS.map((method) => (
+                  <MenuItem key={method} value={method}>
+                    {method.charAt(0).toUpperCase() + method.slice(1)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <TextField
+              fullWidth
+              label="Transaction ID"
+              name="transactionId"
+              value={formData.transactionId}
+              onChange={handleChange}
+              margin="normal"
+              size="small"
+              sx={{
+                mb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+                "& .MuiInputBase-root": {
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                },
+              }}
+            />
+
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <DatePicker
+                label="Payment Date"
+                value={
+                  formData.paymentDate
+                    ? new Date(formData.paymentDate)
+                    : new Date()
+                }
+                onChange={(date) => handleDateChange(date, "paymentDate")}
+                slotProps={{
+                  textField: {
+                    fullWidth: true,
+                    margin: "normal",
+                    size: "small",
+                    sx: {
+                      mb: {
+                        xs: 1.5,
+                        sm: 2,
+                      },
+                      "& .MuiInputBase-root": {
+                        fontSize: {
+                          xs: "0.875rem",
+                          sm: "0.9rem",
+                          md: "1rem",
+                        },
+                      },
+                      "& .MuiInputLabel-root": {
+                        fontSize: {
+                          xs: "0.875rem",
+                          sm: "0.9rem",
+                          md: "1rem",
+                        },
+                      },
+                    },
+                  },
+                }}
+              />
+            </LocalizationProvider>
+
+            <Typography
+              variant="h6"
+              sx={{
+                mt: {
+                  xs: 2,
+                  sm: 2.5,
+                  md: 3,
+                },
+                mb: 1,
+                fontSize: {
+                  xs: "1rem",
+                  sm: "1.1rem",
+                  md: "1.25rem",
+                },
+              }}
+            >
+              Update Challan Details
+            </Typography>
+
+            <FormControl
+              fullWidth
+              margin="normal"
+              size="small"
+              sx={{
+                mb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+              }}
+            >
+              <InputLabel
+                sx={{
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                }}
+              >
+                Status Override
+              </InputLabel>
+              <Select
+                name="status"
+                value={formData.status || ""}
+                label="Status Override"
+                onChange={handleChange}
+                sx={{
+                  "& .MuiSelect-select": {
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "0.9rem",
+                      md: "1rem",
+                    },
+                  },
+                }}
+              >
+                <MenuItem value="">Auto (Based on Payments)</MenuItem>
+                {STATUS_OPTIONS.map((status) => (
+                  <MenuItem key={status} value={status.toLowerCase()}>
+                    {capitalizeStatus(status)}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+          </>
+        )}
+
+        <TextField
+          fullWidth
+          label="Remarks"
+          name="remarks"
+          value={formData.remarks}
+          onChange={handleChange}
+          margin="normal"
+          size="small"
+          multiline
+          rows={isMobile ? 2 : 3}
+          sx={{
+            mb: {
+              xs: 2,
+              sm: 2.5,
+              md: 3,
+            },
+            "& .MuiInputBase-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+              minHeight: {
+                xs: "80px",
+                sm: "100px",
+                md: "120px",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
+        />
+
+        <Box
+          sx={{
+            mt: {
+              xs: 3,
+              sm: 3.5,
+              md: 4,
+            },
+            pt: {
+              xs: 1.5,
+              sm: 2,
+            },
+            display: "flex",
+            justifyContent: {
+              xs: "center",
+              sm: "flex-end",
+            },
+            gap: {
+              xs: 1.5,
+              sm: 2,
+            },
+            borderTop: "1px solid #e2e8f0",
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+            "& button": {
+              minHeight: {
+                xs: "44px",
+                sm: "40px",
+                md: "44px",
+              },
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+              padding: {
+                xs: "12px 20px",
+                sm: "10px 16px",
+                md: "10px 20px",
+              },
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              textAlign: "center",
+              justifyContent: "center",
+              display: "flex",
+              alignItems: "center",
+            },
+          }}
+        >
+          <button
+            className="clear-filters-btn"
+            onClick={() => setShowModal(false)}
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+          <button className="add-btn" type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <div className="loading-spinner"></div>
+            ) : currentChallan ? (
+              "Update Challan"
+            ) : (
+              "Add Challan"
+            )}
+          </button>
+        </Box>
+      </form>
+    </Box>
+  );
+};
 
 const FeeChallanManagement = () => {
   const initialFormState = {
@@ -998,15 +1547,17 @@ const FeeChallanManagement = () => {
           />
 
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={() => {
               setIsViewMode(false);
               setCurrentChallan(null);
               setFormData(initialFormState);
               setShowModal(true);
             }}
+            title="Add Challan"
           >
-            <FaPlus /> Add Challan
+            <FaPlus />
+            <span className="add-btn-text">Add Challan</span>
           </button>
         </div>
       </div>
@@ -1047,43 +1598,71 @@ const FeeChallanManagement = () => {
         <div
           className="date-filter-group"
           style={{
-            padding: "15px",
+            padding: window.innerWidth < 768 ? "12px" : "15px",
             backgroundColor: "#fff",
             borderRadius: "5px",
             border: "1px solid #d4d4d4",
             width: "100%",
             display: "flex",
-            alignItems: "center",
-            gap: "15px",
+            alignItems: window.innerWidth < 768 ? "flex-start" : "center",
+            gap: window.innerWidth < 768 ? "10px" : "15px",
+            flexDirection: window.innerWidth < 768 ? "column" : "row",
           }}
         >
           <Typography
             variant="subtitle1"
             sx={{
               color: "#475569",
-              minWidth: "120px",
+              minWidth: window.innerWidth < 768 ? "auto" : "120px",
               fontWeight: "700",
+              fontSize: {
+                xs: "0.9rem",
+                sm: "1rem",
+                md: "1.1rem",
+              },
+              textAlign: window.innerWidth < 768 ? "center" : "left",
+              width: window.innerWidth < 768 ? "100%" : "auto",
             }}
           >
             Filter by Creation:
           </Typography>
-          <div style={{ display: "flex", gap: "10px", alignItems: "center" }}>
-            <div className="filter-box">
+          <div
+            style={{
+              display: "flex",
+              gap: window.innerWidth < 768 ? "8px" : "10px",
+              alignItems: "center",
+              flexDirection: window.innerWidth < 480 ? "column" : "row",
+              width: window.innerWidth < 768 ? "100%" : "auto",
+              justifyContent: window.innerWidth < 768 ? "center" : "flex-start",
+            }}
+          >
+            <div className="filter-box" style={{ position: "relative" }}>
               <FaFilter className="filter-icon" />
               <Select
                 value={selectedCreationMonth}
                 onChange={(e) => setSelectedCreationMonth(e.target.value)}
                 className="client-select"
                 sx={{
-                  width: "200px",
+                  width: {
+                    xs: "100%",
+                    sm: "180px",
+                    md: "200px",
+                  },
+                  minWidth: {
+                    xs: "100%",
+                    sm: "150px",
+                  },
                   height: "40px",
                   ".MuiSelect-select": {
-                    padding: "8px 12px 8px 36px",
+                    padding:
+                      window.innerWidth <= 768
+                        ? "6px 25px"
+                        : "8px 12px 8px 36px",
                     backgroundColor: "white",
-                    border: "1px solid #e2e8f0",
                     borderRadius: "6px",
                     fontSize: "0.875rem",
                     color: "#475569",
+                    marginTop: 0.5,
                   },
                   ".MuiOutlinedInput-notchedOutline": {
                     border: "none",
@@ -1098,22 +1677,33 @@ const FeeChallanManagement = () => {
                 ))}
               </Select>
             </div>
-            <div className="filter-box">
+            <div className="filter-box" style={{ position: "relative" }}>
               <FaFilter className="filter-icon" />
               <Select
                 value={selectedCreationYear}
                 onChange={(e) => setSelectedCreationYear(e.target.value)}
                 className="client-select"
                 sx={{
-                  width: "200px",
+                  width: {
+                    xs: "100%",
+                    sm: "180px",
+                    md: "200px",
+                  },
+                  minWidth: {
+                    xs: "100%",
+                    sm: "150px",
+                  },
                   height: "40px",
                   ".MuiSelect-select": {
-                    padding: "8px 12px 8px 36px",
+                    padding:
+                      window.innerWidth <= 768
+                        ? "6px 25px"
+                        : "8px 12px 8px 36px",
                     backgroundColor: "white",
-                    border: "1px solid #e2e8f0",
                     borderRadius: "6px",
                     fontSize: "0.875rem",
                     color: "#475569",
+                    marginTop: 0.5,
                   },
                   ".MuiOutlinedInput-notchedOutline": {
                     border: "none",
@@ -1160,52 +1750,31 @@ const FeeChallanManagement = () => {
             <span className="checkbox-text">Inactive Clients</span>
           </label>
         </div>
-        {/* <div className="filter-box">
-          <FaFilter className="filter-icon" />
-          <Select
-            className="client-select"
-            value={selectedClient}
-            onChange={(e) => setSelectedClient(e.target.value)}
-            sx={{
-              width: "200px",
-              height: "40px",
-              ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
-                backgroundColor: "white",
-                border: "1px solid #e2e8f0",
-                borderRadius: "6px",
-                fontSize: "0.875rem",
-                color: "#475569",
-              },
-              ".MuiOutlinedInput-notchedOutline": {
-                border: "none",
-              },
-            }}
-          >
-            <MenuItem value="all">All Clients</MenuItem>
-            {clients.map((client) => (
-              <MenuItem key={client._id} value={client._id}>
-                {client.clientId} - {client.name}
-              </MenuItem>
-            ))}
-          </Select>
-        </div> */}
-        <div className="filter-box">
+        <div className="filter-box" style={{ position: "relative" }}>
           <FaFilter className="filter-icon" />
           <Select
             className="month-select"
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -1220,14 +1789,23 @@ const FeeChallanManagement = () => {
             ))}
           </Select>
         </div>
-        <div className="filter-box">
+
+        <div className="filter-box" style={{ position: "relative" }}>
           <FaFilter className="filter-icon" />
           <Select
             className="status-select"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -1250,14 +1828,23 @@ const FeeChallanManagement = () => {
             ))}
           </Select>
         </div>
-        <div className="filter-box">
+
+        <div className="filter-box" style={{ position: "relative" }}>
           <FaFilter className="filter-icon" />
           <Select
             className="currency-select"
             value={selectedCurrency}
             onChange={(e) => setSelectedCurrency(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",

@@ -138,62 +138,130 @@ const DeleteAttendanceModal = ({
       .join(", ");
   };
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 700,
-    maxHeight: "90vh",
-    bgcolor: "background.paper",
-    borderRadius: "12px",
-    boxShadow:
-      "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-    p: 4,
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    fontFamily:
-      "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    "&:focus-visible": {
-      outline: "none",
-    },
-    "& *": {
-      fontFamily:
-        "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important",
-    },
-  };
-
   return (
     <Modal
       open={showModal}
       onClose={handleModalClose}
       aria-labelledby="delete-attendance-modal"
     >
-      <Box sx={modalStyle}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: {
+            xs: "95vw",
+            sm: "90vw",
+            md: "700px",
+            lg: "800px",
+            xl: "900px",
+          },
+          maxWidth: {
+            xs: "400px",
+            sm: "600px",
+            md: "700px",
+            lg: "800px",
+            xl: "900px",
+          },
+          maxHeight: {
+            xs: "95vh",
+            sm: "90vh",
+            md: "85vh",
+          },
+          bgcolor: "background.paper",
+          borderRadius: "12px",
+          boxShadow:
+            "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+          p: {
+            xs: 2,
+            sm: 3,
+            md: 4,
+          },
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          fontFamily:
+            "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+          "&:focus-visible": {
+            outline: "none",
+          },
+          "& *": {
+            fontFamily:
+              "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important",
+          },
+        }}
+      >
         {!showPasswordConfirm ? (
           <>
-            <Box sx={{ borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
+            <Box
+              sx={{
+                borderBottom: "1px solid #e2e8f0",
+                pb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+                mb: {
+                  xs: 2,
+                  sm: 3,
+                },
+              }}
+            >
               <Typography
                 variant="h6"
                 component="h2"
-                sx={{ color: "#dc2626", fontWeight: 600 }}
+                sx={{
+                  color: "#dc2626",
+                  fontWeight: 600,
+                  fontSize: {
+                    xs: "1.1rem",
+                    sm: "1.25rem",
+                    md: "1.5rem",
+                  },
+                }}
               >
                 Delete Student Attendance
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  mt: 1,
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
+              >
                 Select students to delete all their attendance records
                 permanently
               </Typography>
               {studentsWithAttendance.length === 0 && (
-                <Typography variant="body2" sx={{ mt: 1, color: "#f59e0b" }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 1,
+                    color: "#f59e0b",
+                    fontSize: {
+                      xs: "0.8rem",
+                      sm: "0.875rem",
+                    },
+                  }}
+                >
                   ⚠️ No students with attendance records found
                 </Typography>
               )}
             </Box>
 
             {studentsWithAttendance.length > 0 && (
-              <Box sx={{ mb: 2 }}>
+              <Box
+                sx={{
+                  mb: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
+                }}
+              >
                 <Autocomplete
                   options={studentsWithAttendance}
                   getOptionLabel={(option) =>
@@ -212,6 +280,10 @@ const DeleteAttendanceModal = ({
                         "& .MuiOutlinedInput-root": {
                           backgroundColor: "#fafafa",
                           fontFamily: "'Poppins', sans-serif",
+                          fontSize: {
+                            xs: "0.875rem",
+                            sm: "1rem",
+                          },
                           "&:hover": {
                             backgroundColor: "#f5f5f5",
                           },
@@ -221,6 +293,10 @@ const DeleteAttendanceModal = ({
                         },
                         "& .MuiInputLabel-root": {
                           fontFamily: "'Poppins', sans-serif",
+                          fontSize: {
+                            xs: "0.875rem",
+                            sm: "1rem",
+                          },
                         },
                         "& .MuiAutocomplete-input": {
                           fontFamily: "'Poppins', sans-serif",
@@ -241,12 +317,27 @@ const DeleteAttendanceModal = ({
                           }}
                         >
                           <Box>
-                            <Typography variant="body2" fontWeight="500">
+                            <Typography
+                              variant="body2"
+                              fontWeight="500"
+                              sx={{
+                                fontSize: {
+                                  xs: "0.8rem",
+                                  sm: "0.875rem",
+                                },
+                              }}
+                            >
                               {option.name?.replace(" (Inactive Student)", "")}
                             </Typography>
                             <Typography
                               variant="caption"
                               color="text.secondary"
+                              sx={{
+                                fontSize: {
+                                  xs: "0.7rem",
+                                  sm: "0.75rem",
+                                },
+                              }}
                             >
                               ID: {option.profile?.studentId}
                             </Typography>
@@ -261,7 +352,10 @@ const DeleteAttendanceModal = ({
                             <Typography
                               variant="caption"
                               sx={{
-                                fontSize: "0.6rem",
+                                fontSize: {
+                                  xs: "0.55rem",
+                                  sm: "0.6rem",
+                                },
                                 color: "#dc2626",
                                 mt: 0.5,
                               }}
@@ -304,24 +398,63 @@ const DeleteAttendanceModal = ({
               <Box
                 sx={{
                   bgcolor: "#fef2f2",
-                  p: 2,
+                  p: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
                   borderBottom: "1px solid #e2e8f0",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  flexDirection: {
+                    xs: "column",
+                    sm: "row",
+                  },
+                  gap: {
+                    xs: 1,
+                    sm: 0,
+                  },
                 }}
               >
                 <Typography
                   variant="subtitle2"
                   fontWeight="600"
-                  sx={{ color: "#dc2626" }}
+                  sx={{
+                    color: "#dc2626",
+                    fontSize: {
+                      xs: "0.9rem",
+                      sm: "1rem",
+                    },
+                  }}
                 >
                   Students with Attendance ({studentsWithAttendance.length}{" "}
                   total)
                 </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: {
+                      xs: 1,
+                      sm: 2,
+                    },
+                    flexDirection: {
+                      xs: "column",
+                      sm: "row",
+                    },
+                  }}
+                >
                   {selectedStudents.length > 0 && (
-                    <Typography variant="caption" sx={{ color: "#dc2626" }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "#dc2626",
+                        fontSize: {
+                          xs: "0.75rem",
+                          sm: "0.8rem",
+                        },
+                      }}
+                    >
                       {selectedStudents.length} selected for deletion
                     </Typography>
                   )}
@@ -332,6 +465,14 @@ const DeleteAttendanceModal = ({
                       sx={{
                         textTransform: "none",
                         color: "#dc2626",
+                        fontSize: {
+                          xs: "0.75rem",
+                          sm: "0.875rem",
+                        },
+                        padding: {
+                          xs: "4px 8px",
+                          sm: "6px 12px",
+                        },
                         "&:hover": { bgcolor: "rgba(220, 38, 38, 0.1)" },
                       }}
                     >
@@ -343,7 +484,20 @@ const DeleteAttendanceModal = ({
                 </Box>
               </Box>
 
-              <Box sx={{ maxHeight: "350px", overflowY: "auto", p: 1 }}>
+              <Box
+                sx={{
+                  maxHeight: {
+                    xs: "250px",
+                    sm: "300px",
+                    md: "350px",
+                  },
+                  overflowY: "auto",
+                  p: {
+                    xs: 0.5,
+                    sm: 1,
+                  },
+                }}
+              >
                 {studentsWithAttendance.length === 0 ? (
                   <Box
                     sx={{
@@ -351,23 +505,50 @@ const DeleteAttendanceModal = ({
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
-                      p: 4,
+                      p: {
+                        xs: 2,
+                        sm: 3,
+                        md: 4,
+                      },
                       color: "#64748b",
                     }}
                   >
-                    <Typography variant="h6" sx={{ mb: 1, color: "#f59e0b" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 1,
+                        color: "#f59e0b",
+                        fontSize: {
+                          xs: "1rem",
+                          sm: "1.25rem",
+                        },
+                      }}
+                    >
                       📊 No Records Found
                     </Typography>
                     <Typography
                       variant="body2"
-                      sx={{ mb: 1, textAlign: "center" }}
+                      sx={{
+                        mb: 1,
+                        textAlign: "center",
+                        fontSize: {
+                          xs: "0.8rem",
+                          sm: "0.875rem",
+                        },
+                      }}
                     >
                       No students with attendance records found
                     </Typography>
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ textAlign: "center" }}
+                      sx={{
+                        textAlign: "center",
+                        fontSize: {
+                          xs: "0.7rem",
+                          sm: "0.75rem",
+                        },
+                      }}
                     >
                       Only students with existing attendance records can be
                       deleted
@@ -380,7 +561,11 @@ const DeleteAttendanceModal = ({
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        p: 2,
+                        p: {
+                          xs: 1,
+                          sm: 1.5,
+                          md: 2,
+                        },
                         borderRadius: "6px",
                         cursor: "pointer",
                         mb: 1,
@@ -400,13 +585,38 @@ const DeleteAttendanceModal = ({
                         type="checkbox"
                         checked={selectedStudents.includes(student._id)}
                         onChange={() => handleStudentSelect(student._id)}
-                        style={{ marginRight: "12px", accentColor: "#dc2626" }}
+                        style={{
+                          marginRight: "12px",
+                          accentColor: "#dc2626",
+                          transform: {
+                            xs: "scale(0.9)",
+                            sm: "scale(1)",
+                          },
+                        }}
                       />
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" fontWeight="500">
+                        <Typography
+                          variant="body2"
+                          fontWeight="500"
+                          sx={{
+                            fontSize: {
+                              xs: "0.8rem",
+                              sm: "0.875rem",
+                            },
+                          }}
+                        >
                           {student.name?.replace(" (Inactive Student)", "")}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            fontSize: {
+                              xs: "0.7rem",
+                              sm: "0.75rem",
+                            },
+                          }}
+                        >
                           Student ID: {student.profile?.studentId}
                         </Typography>
                         <Typography
@@ -416,6 +626,10 @@ const DeleteAttendanceModal = ({
                             display: "block",
                             fontWeight: 500,
                             mt: 0.5,
+                            fontSize: {
+                              xs: "0.7rem",
+                              sm: "0.75rem",
+                            },
                           }}
                         >
                           📋 {student.attendanceCount} attendance record
@@ -430,7 +644,10 @@ const DeleteAttendanceModal = ({
                               padding: "2px 6px",
                               borderRadius: "4px",
                               marginLeft: "8px",
-                              fontSize: "0.7rem",
+                              fontSize: {
+                                xs: "0.6rem",
+                                sm: "0.7rem",
+                              },
                               display: "inline-block",
                               mt: 0.5,
                             }}
@@ -451,7 +668,10 @@ const DeleteAttendanceModal = ({
                           variant="caption"
                           sx={{
                             color: "#64748b",
-                            fontSize: "0.7rem",
+                            fontSize: {
+                              xs: "0.65rem",
+                              sm: "0.7rem",
+                            },
                             backgroundColor: "#f1f5f9",
                             padding: "2px 6px",
                             borderRadius: "4px",
@@ -469,8 +689,14 @@ const DeleteAttendanceModal = ({
             {selectedStudents.length > 0 && (
               <Box
                 sx={{
-                  mt: 2,
-                  p: 2,
+                  mt: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
+                  p: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
                   bgcolor: "#fef2f2",
                   border: "1px solid #fecaca",
                   borderRadius: "6px",
@@ -478,7 +704,14 @@ const DeleteAttendanceModal = ({
               >
                 <Typography
                   variant="body2"
-                  sx={{ color: "#dc2626", fontWeight: 500 }}
+                  sx={{
+                    color: "#dc2626",
+                    fontWeight: 500,
+                    fontSize: {
+                      xs: "0.8rem",
+                      sm: "0.875rem",
+                    },
+                  }}
                 >
                   ⚠️ Warning: This will permanently delete all attendance
                   records for{" "}
@@ -497,15 +730,33 @@ const DeleteAttendanceModal = ({
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: 2,
-                mt: 3,
-                pt: 2,
+                gap: {
+                  xs: 1,
+                  sm: 2,
+                },
+                mt: {
+                  xs: 2,
+                  sm: 3,
+                },
+                pt: {
+                  xs: 1.5,
+                  sm: 2,
+                },
                 borderTop: "1px solid #e2e8f0",
+                flexDirection: {
+                  xs: "column",
+                  sm: "row",
+                },
               }}
             >
               <button
                 className="clear-filters-btn"
                 onClick={() => setShowModal(false)}
+                style={{
+                  fontSize: window.innerWidth < 768 ? "0.8rem" : "0.875rem",
+                  padding: window.innerWidth < 768 ? "10px 16px" : "12px 20px",
+                  width: window.innerWidth < 768 ? "100%" : "auto",
+                }}
               >
                 Cancel
               </button>
@@ -516,6 +767,11 @@ const DeleteAttendanceModal = ({
                   selectedStudents.length === 0 ||
                   studentsWithAttendance.length === 0
                 }
+                style={{
+                  fontSize: window.innerWidth < 768 ? "0.8rem" : "0.875rem",
+                  padding: window.innerWidth < 768 ? "10px 16px" : "12px 20px",
+                  width: window.innerWidth < 768 ? "100%" : "auto",
+                }}
               >
                 {studentsWithAttendance.length === 0
                   ? "No Records to Delete"
@@ -527,15 +783,44 @@ const DeleteAttendanceModal = ({
           </>
         ) : (
           <>
-            <Box sx={{ borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
+            <Box
+              sx={{
+                borderBottom: "1px solid #e2e8f0",
+                pb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+                mb: {
+                  xs: 2,
+                  sm: 3,
+                },
+              }}
+            >
               <Typography
                 variant="h6"
                 component="h2"
-                sx={{ color: "#dc2626", fontWeight: 600 }}
+                sx={{
+                  color: "#dc2626",
+                  fontWeight: 600,
+                  fontSize: {
+                    xs: "1.1rem",
+                    sm: "1.25rem",
+                  },
+                }}
               >
                 🔒 Confirm Multiple Deletion
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  mt: 1,
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
+              >
                 Enter admin password to confirm deletion of all attendance
                 records for{" "}
                 <strong>
@@ -545,7 +830,14 @@ const DeleteAttendanceModal = ({
               </Typography>
             </Box>
 
-            <Box sx={{ my: 3 }}>
+            <Box
+              sx={{
+                my: {
+                  xs: 2,
+                  sm: 3,
+                },
+              }}
+            >
               <TextField
                 fullWidth
                 type="password"
@@ -568,6 +860,10 @@ const DeleteAttendanceModal = ({
                   fontFamily: "'Poppins', sans-serif",
                   "& .MuiOutlinedInput-root": {
                     fontFamily: "'Poppins', sans-serif",
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "1rem",
+                    },
                     "&.Mui-error": {
                       "& fieldset": {
                         borderColor: "#dc2626",
@@ -576,9 +872,17 @@ const DeleteAttendanceModal = ({
                   },
                   "& .MuiInputLabel-root": {
                     fontFamily: "'Poppins', sans-serif",
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "1rem",
+                    },
                   },
                   "& .MuiFormHelperText-root": {
                     fontFamily: "'Poppins', sans-serif",
+                    fontSize: {
+                      xs: "0.75rem",
+                      sm: "0.875rem",
+                    },
                   },
                 }}
               />
@@ -586,16 +890,29 @@ const DeleteAttendanceModal = ({
 
             <Box
               sx={{
-                p: 2,
+                p: {
+                  xs: 1.5,
+                  sm: 2,
+                },
                 bgcolor: "#fef2f2",
                 border: "1px solid #fecaca",
                 borderRadius: "6px",
-                mb: 3,
+                mb: {
+                  xs: 2,
+                  sm: 3,
+                },
               }}
             >
               <Typography
                 variant="body2"
-                sx={{ color: "#dc2626", fontWeight: 500 }}
+                sx={{
+                  color: "#dc2626",
+                  fontWeight: 500,
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
               >
                 ⚠️ Final Warning: You are about to permanently delete all
                 attendance records for{" "}
@@ -613,9 +930,19 @@ const DeleteAttendanceModal = ({
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: 2,
-                pt: 2,
+                gap: {
+                  xs: 1,
+                  sm: 2,
+                },
+                pt: {
+                  xs: 1.5,
+                  sm: 2,
+                },
                 borderTop: "1px solid #e2e8f0",
+                flexDirection: {
+                  xs: "column",
+                  sm: "row",
+                },
               }}
             >
               <Button
@@ -625,6 +952,18 @@ const DeleteAttendanceModal = ({
                 sx={{
                   borderColor: "#64748b",
                   color: "#64748b",
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                  padding: {
+                    xs: "8px 16px",
+                    sm: "10px 20px",
+                  },
+                  width: {
+                    xs: "100%",
+                    sm: "auto",
+                  },
                   "&:hover": {
                     borderColor: "#475569",
                     backgroundColor: "rgba(100, 116, 139, 0.1)",
@@ -639,6 +978,18 @@ const DeleteAttendanceModal = ({
                 disabled={!password || isDeleting}
                 sx={{
                   bgcolor: "#dc2626",
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                  padding: {
+                    xs: "8px 16px",
+                    sm: "10px 20px",
+                  },
+                  width: {
+                    xs: "100%",
+                    sm: "auto",
+                  },
                   "&:hover": {
                     bgcolor: "#b91c1c",
                   },
@@ -648,7 +999,10 @@ const DeleteAttendanceModal = ({
                 }}
               >
                 {isDeleting ? (
-                  <CircularProgress size={24} sx={{ color: "white" }} />
+                  <CircularProgress
+                    size={window.innerWidth < 768 ? 20 : 24}
+                    sx={{ color: "white" }}
+                  />
                 ) : (
                   "Confirm Delete All"
                 )}
@@ -1024,7 +1378,14 @@ const StudentAttendance = () => {
 
   return (
     <div className="management-container">
-      <div className="management-header">
+      <div
+        className="management-header"
+        style={{
+          flexDirection: window.innerWidth < 768 ? "column" : "row",
+          gap: window.innerWidth < 768 ? "16px" : "0",
+          alignItems: window.innerWidth < 768 ? "stretch" : "flex-start",
+        }}
+      >
         <div>
           <h2>Student Attendance</h2>
           <p className="total-count">
@@ -1032,31 +1393,65 @@ const StudentAttendance = () => {
             {stats.attendancePercentage}
           </p>
         </div>
-        <div className="header-buttons">
+        <div
+          className="header-buttons"
+          style={{
+            width: window.innerWidth < 768 ? "100%" : "auto",
+            justifyContent: window.innerWidth < 768 ? "center" : "flex-end",
+            gap: window.innerWidth < 768 ? "8px" : "12px",
+          }}
+        >
           <SyncButton
             isSyncing={isSyncing}
             onClick={() => fetchAttendance(true)}
           />
           <button
-            className="add-btn"
+            className="add-btn responsive-btn"
             onClick={exportToPDF}
             disabled={isLoading || filteredAttendance.length === 0}
-            style={{ marginRight: "8px" }}
+            title="Export PDF"
+            style={{
+              marginRight: "8px",
+              padding: window.innerWidth < 1024 ? "12px" : "10px 20px",
+              minWidth: window.innerWidth < 1024 ? "44px" : "auto",
+              width: window.innerWidth < 1024 ? "44px" : "auto",
+              justifyContent: "center",
+            }}
           >
-            <FaFilePdf /> Export PDF
+            <FaFilePdf />
+            {window.innerWidth >= 1024 && (
+              <span style={{ marginLeft: "8px" }}>Export PDF</span>
+            )}
           </button>
           <button
-            className="add-btn"
+            className="add-btn responsive-btn"
             onClick={() => setShowDeleteModal(true)}
             disabled={isLoading}
-            style={{ marginRight: "8px" }}
+            title="Delete Attendance"
+            style={{
+              marginRight: "8px",
+              padding: window.innerWidth < 1024 ? "12px" : "10px 20px",
+              minWidth: window.innerWidth < 1024 ? "44px" : "auto",
+              width: window.innerWidth < 1024 ? "44px" : "auto",
+              justifyContent: "center",
+            }}
           >
-            <FaTrash /> Delete Attendance
+            <FaTrash />
+            {window.innerWidth >= 1024 && (
+              <span style={{ marginLeft: "8px" }}>Delete Attendance</span>
+            )}
           </button>
         </div>
       </div>
 
-      <div className="stats-cards">
+      {/* Stats cards with responsive layout */}
+      <div
+        className="stats-cards"
+        style={{
+          flexDirection: window.innerWidth < 768 ? "column" : "row",
+          gap: window.innerWidth < 768 ? "12px" : "20px",
+        }}
+      >
         <div className="stat-card today-present">
           <h3>Today's Present</h3>
           <p>{stats.todayPresent}</p>
@@ -1093,8 +1488,22 @@ const StudentAttendance = () => {
         </div>
       </div>
 
-      <div className="filter-section">
-        <div className="search-box">
+      {/* Responsive filter section */}
+      <div
+        className="filter-section"
+        style={{
+          flexDirection: window.innerWidth < 768 ? "column" : "row",
+          gap: window.innerWidth < 768 ? "12px" : "16px",
+          alignItems: window.innerWidth < 768 ? "stretch" : "center",
+        }}
+      >
+        <div
+          className="search-box"
+          style={{
+            maxWidth: window.innerWidth < 768 ? "none" : "300px",
+            width: window.innerWidth < 768 ? "100%" : "300px",
+          }}
+        >
           <FaSearch className="search-icon" />
           <input
             type="text"
@@ -1103,7 +1512,16 @@ const StudentAttendance = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
-        <div className="filter-box checkbox-filter">
+
+        {/* Rest of filters with responsive styling */}
+        <div
+          className="filter-box checkbox-filter"
+          style={{
+            minWidth: window.innerWidth < 768 ? "auto" : "320px",
+            width: window.innerWidth < 768 ? "100%" : "auto",
+            justifyContent: window.innerWidth < 768 ? "flex-start" : "center",
+          }}
+        >
           <label className="checkbox-label">
             <input
               type="checkbox"
@@ -1123,6 +1541,8 @@ const StudentAttendance = () => {
             <span className="checkbox-text">Inactive Students</span>
           </label>
         </div>
+
+        {/* Student Select with responsive width */}
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
@@ -1130,7 +1550,7 @@ const StudentAttendance = () => {
             value={selectedStudent}
             onChange={(e) => setSelectedStudent(e.target.value)}
             sx={{
-              width: "200px",
+              width: window.innerWidth < 768 ? "100%" : "200px",
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -1180,6 +1600,8 @@ const StudentAttendance = () => {
             ))}
           </Select>
         </div>
+
+        {/* Subject Select with responsive width */}
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
@@ -1187,7 +1609,7 @@ const StudentAttendance = () => {
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
             sx={{
-              width: "200px",
+              width: window.innerWidth < 768 ? "100%" : "200px",
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -1211,6 +1633,7 @@ const StudentAttendance = () => {
           </Select>
         </div>
 
+        {/* Date picker with responsive styling */}
         <div className="filter-box">
           <ReactDatePicker
             selectsRange={true}
@@ -1222,8 +1645,27 @@ const StudentAttendance = () => {
             isClearable={true}
             dateFormat="dd/MM/yyyy"
             customInput={
-              <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+              <div
+                className="date-input-wrapper"
+                style={{
+                  width: window.innerWidth < 768 ? "100%" : "200px",
+                  position: "relative",
+                }}
+              >
+                {window.innerWidth >= 768 && (
+                  <FaFilter
+                    className="filter-icon"
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      zIndex: 1,
+                    }}
+                  />
+                )}
                 <input
                   className="date-range-input"
                   placeholder="Select date range"
@@ -1236,13 +1678,37 @@ const StudentAttendance = () => {
                       : ""
                   }
                   readOnly
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    padding:
+                      window.innerWidth < 768
+                        ? "8px 12px"
+                        : "8px 12px 8px 36px",
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    color: "#475569",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
             }
           />
         </div>
+
+        {/* Time range with responsive layout */}
         <div className="filter-box">
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
             <input
               type="time"
               value={timeRange.start}
@@ -1255,10 +1721,17 @@ const StudentAttendance = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
-            <span style={{ color: "#64748b" }}>to</span>
+            <span
+              style={{
+                color: "#64748b",
+                textAlign: window.innerWidth < 768 ? "center" : "left",
+              }}
+            >
+              to
+            </span>
             <input
               type="time"
               value={timeRange.end}
@@ -1271,11 +1744,13 @@ const StudentAttendance = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
           </div>
         </div>
+
+        {/* Clear filters button with responsive styling */}
         <button
           className="clear-filters-btn"
           onClick={() => {
@@ -1287,39 +1762,81 @@ const StudentAttendance = () => {
             setShowActiveStudents(false);
             setShowInactiveStudents(false);
           }}
+          style={{
+            width: window.innerWidth < 768 ? "100%" : "auto",
+            fontSize: window.innerWidth < 768 ? "0.875rem" : "1rem",
+            padding: window.innerWidth < 768 ? "12px 20px" : "10px 20px",
+          }}
         >
           Clear Filters
         </button>
       </div>
 
+      {/* Responsive table container */}
       <div className="table-container">
         {isLoading ? (
           <div className="loading-container">
             <CircularProgress />
           </div>
         ) : filteredAttendance.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th style={{ width: "200px" }}>Student</th>
-                <th style={{ width: "200px" }}>Subject</th>
-                <th>Teacher</th>
-                <th>Date</th>
-                <th>Time</th>
-                <th>Status</th>
-                <th>Remarks</th>
-                <th>Marked By</th>
-              </tr>
-            </thead>
-            <tbody>
-              {filteredAttendance.map((record) => (
-                <tr key={record._id}>
-                  <td>
-                    <div style={{ fontWeight: "500" }}>
-                      {record.user.name &&
-                      record.user.name.includes("(Inactive Student)") ? (
+          <div style={{ overflowX: "auto" }}>
+            <table
+              style={{ minWidth: window.innerWidth < 768 ? "600px" : "auto" }}
+            >
+              <thead>
+                <tr>
+                  <th style={{ width: "200px" }}>Student</th>
+                  <th style={{ width: "200px" }}>Subject</th>
+                  <th>Teacher</th>
+                  <th>Date</th>
+                  <th>Time</th>
+                  <th>Status</th>
+                  <th>Remarks</th>
+                  <th>Marked By</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredAttendance.map((record) => (
+                  <tr key={record._id}>
+                    <td>
+                      <div style={{ fontWeight: "500" }}>
+                        {record.user.name &&
+                        record.user.name.includes("(Inactive Student)") ? (
+                          <>
+                            {record.user.name.replace(
+                              " (Inactive Student)",
+                              ""
+                            )}
+                            <div
+                              style={{
+                                color: "#dc2626",
+                                fontSize: "0.75rem",
+                                fontWeight: "500",
+                                marginTop: "2px",
+                              }}
+                            >
+                              (Inactive Student)
+                            </div>
+                          </>
+                        ) : (
+                          record.user.name
+                        )}
+                      </div>
+                      <span style={{ color: "#64748b", fontSize: "0.8125rem" }}>
+                        ID: {record.studentId}
+                      </span>
+                    </td>
+                    <td>{record.subjectName}</td>
+                    <td>
+                      {record.schedule.teacherName &&
+                      record.schedule.teacherName.includes(
+                        "(Inactive Teacher)"
+                      ) ? (
                         <>
-                          {record.user.name.replace(" (Inactive Student)", "")}
+                          {record.schedule.teacherName.replace(
+                            " (Inactive Teacher)",
+                            ""
+                          )}
                           <div
                             style={{
                               color: "#dc2626",
@@ -1328,109 +1845,80 @@ const StudentAttendance = () => {
                               marginTop: "2px",
                             }}
                           >
-                            (Inactive Student)
+                            (Inactive Teacher)
+                          </div>
+                        </>
+                      ) : record.schedule.teacherName &&
+                        record.schedule.teacherName.includes(
+                          "(Deleted Teacher)"
+                        ) ? (
+                        <>
+                          {record.schedule.teacherName.replace(
+                            " (Deleted Teacher)",
+                            ""
+                          )}
+                          <div
+                            style={{
+                              color: "#dc2626",
+                              fontSize: "0.75rem",
+                              fontWeight: "500",
+                              marginTop: "2px",
+                            }}
+                          >
+                            (Deleted Teacher)
                           </div>
                         </>
                       ) : (
-                        record.user.name
+                        <div style={{ fontWeight: "500" }}>
+                          {record.schedule.teacherName}
+                        </div>
                       )}
-                    </div>
-                    <span style={{ color: "#64748b", fontSize: "0.8125rem" }}>
-                      ID: {record.studentId}
-                    </span>
-                  </td>
-                  <td>{record.subjectName}</td>
-                  <td>
-                    {record.schedule.teacherName &&
-                    record.schedule.teacherName.includes(
-                      "(Inactive Teacher)"
-                    ) ? (
+                    </td>
+                    <td>{record.date}</td>
+                    <td>
                       <>
-                        {record.schedule.teacherName.replace(
-                          " (Inactive Teacher)",
-                          ""
-                        )}
-                        <div
-                          style={{
-                            color: "#dc2626",
-                            fontSize: "0.75rem",
-                            fontWeight: "500",
-                            marginTop: "2px",
-                          }}
-                        >
-                          (Inactive Teacher)
-                        </div>
+                        {convertTo12Hour(record.schedule.startTime)}
+                        <br />
+                        {convertTo12Hour(record.schedule.endTime)}
                       </>
-                    ) : record.schedule.teacherName &&
-                      record.schedule.teacherName.includes(
-                        "(Deleted Teacher)"
-                      ) ? (
-                      <>
-                        {record.schedule.teacherName.replace(
-                          " (Deleted Teacher)",
-                          ""
-                        )}
-                        <div
-                          style={{
-                            color: "#dc2626",
-                            fontSize: "0.75rem",
-                            fontWeight: "500",
-                            marginTop: "2px",
-                          }}
-                        >
-                          (Deleted Teacher)
-                        </div>
-                      </>
-                    ) : (
-                      <div style={{ fontWeight: "500" }}>
-                        {record.schedule.teacherName}
-                      </div>
-                    )}
-                  </td>
-                  <td>{record.date}</td>
-                  <td>
-                    <>
-                      {convertTo12Hour(record.schedule.startTime)}
-                      <br />
-                      {convertTo12Hour(record.schedule.endTime)}
-                    </>
-                  </td>
-                  <td>
-                    <span
-                      style={{
-                        display: "inline-block",
-                        padding: "4px 10px",
-                        fontSize: "0.75rem",
-                        fontWeight: 500,
-                        borderRadius: "5px",
-                        textTransform: "capitalize",
-                        color:
-                          record.status === "present"
-                            ? "#15803d"
-                            : record.status === "leave"
-                            ? "#b45309"
-                            : record.status === "absent"
-                            ? "#be123c"
-                            : "#991b1b",
-                        backgroundColor:
-                          record.status === "present"
-                            ? "#dcfce7"
-                            : record.status === "leave"
-                            ? "#fef3c7"
-                            : record.status === "absent"
-                            ? "#fce7f3"
-                            : "#fee2e2",
-                      }}
-                    >
-                      {record.status}
-                    </span>
-                  </td>
-                  <td>{record.remarks}</td>
-                  <td>{record.markedByName}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                    </td>
+                    <td>
+                      <span
+                        style={{
+                          display: "inline-block",
+                          padding: "4px 10px",
+                          fontSize: "0.75rem",
+                          fontWeight: 500,
+                          borderRadius: "5px",
+                          textTransform: "capitalize",
+                          color:
+                            record.status === "present"
+                              ? "#15803d"
+                              : record.status === "leave"
+                              ? "#b45309"
+                              : record.status === "absent"
+                              ? "#be123c"
+                              : "#991b1b",
+                          backgroundColor:
+                            record.status === "present"
+                              ? "#dcfce7"
+                              : record.status === "leave"
+                              ? "#fef3c7"
+                              : record.status === "absent"
+                              ? "#fce7f3"
+                              : "#fee2e2",
+                        }}
+                      >
+                        {record.status}
+                      </span>
+                    </td>
+                    <td>{record.remarks}</td>
+                    <td>{record.markedByName}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <div className="no-data">
             <p>No attendance records found</p>

@@ -67,13 +67,52 @@ const ModalContent = ({
   };
 
   return (
-    <Box sx={getModalStyles()}>
+    <Box
+      sx={{
+        ...getModalStyles(),
+        width: {
+          xs: "95vw",
+          sm: "90vw",
+          md: "600px",
+          lg: "650px",
+          xl: "700px",
+        },
+        maxWidth: {
+          xs: "400px",
+          sm: "500px",
+          md: "600px",
+          lg: "650px",
+          xl: "700px",
+        },
+        maxHeight: {
+          xs: "95vh",
+          sm: "90vh",
+          md: "85vh",
+        },
+        margin: {
+          xs: "8px",
+          sm: "16px",
+          md: "24px",
+        },
+        padding: {
+          xs: "16px",
+          sm: "20px",
+          md: "24px",
+          lg: "32px",
+        },
+      }}
+    >
       <Box
         sx={{
+          position: "relative",
           display: "flex",
-          justifyContent: "space-between",
+          justifyContent: "center",
           alignItems: "center",
-          mb: 3,
+          mb: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
         }}
       >
         <Typography
@@ -81,8 +120,16 @@ const ModalContent = ({
           component="h2"
           sx={{
             color: "#1e293b",
-            fontSize: "1.25rem",
+            fontSize: {
+              xs: "1.1rem",
+              sm: "1.2rem",
+              md: "1.25rem",
+              lg: "1.3rem",
+            },
             fontWeight: 500,
+            textAlign: "center",
+            lineHeight: 1.2,
+            flex: 1,
           }}
         >
           {currentAnnouncement ? "Edit Announcement" : "Add New Announcement"}
@@ -90,9 +137,21 @@ const ModalContent = ({
         <Button
           onClick={() => setShowModal(false)}
           sx={{
+            position: "absolute",
+            right: 0,
+            top: "50%",
+            transform: "translateY(-50%)",
             minWidth: "auto",
-            p: 1,
+            p: {
+              xs: 1,
+              sm: 1,
+            },
             color: "#64748b",
+            fontSize: {
+              xs: "1.5rem",
+              sm: "1.5rem",
+              md: "1.8rem",
+            },
             "&:hover": {
               bgcolor: "#f1f5f9",
               color: "#3949ab",
@@ -115,6 +174,27 @@ const ModalContent = ({
           size="small"
           error={!!errors.title}
           helperText={errors.title}
+          sx={{
+            mb: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+            "& .MuiInputBase-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
         />
 
         <TextField
@@ -130,6 +210,32 @@ const ModalContent = ({
           rows={4}
           error={!!errors.content}
           helperText={errors.content}
+          sx={{
+            mb: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+            "& .MuiInputBase-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+              minHeight: {
+                xs: "80px",
+                sm: "100px",
+                md: "120px",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
         />
 
         <FormControl
@@ -137,6 +243,27 @@ const ModalContent = ({
           margin="normal"
           size="small"
           error={!!errors.recipients}
+          sx={{
+            mb: {
+              xs: 2,
+              sm: 2.5,
+              md: 3,
+            },
+            "& .MuiInputBase-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
         >
           <InputLabel>Recipients</InputLabel>
           <Select
@@ -145,7 +272,16 @@ const ModalContent = ({
             onChange={handleRecipientChange}
             input={<OutlinedInput label="Recipients" />}
             renderValue={(selected) => (
-              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  flexWrap: "wrap",
+                  gap: {
+                    xs: 0.25,
+                    sm: 0.5,
+                  },
+                }}
+              >
                 {selected.map((value) => (
                   <Chip
                     key={value}
@@ -154,10 +290,45 @@ const ModalContent = ({
                         ?.label
                     }
                     size="small"
+                    sx={{
+                      fontSize: {
+                        xs: "0.75rem",
+                        sm: "0.8rem",
+                        md: "0.875rem",
+                      },
+                      height: {
+                        xs: "20px",
+                        sm: "24px",
+                        md: "28px",
+                      },
+                    }}
                   />
                 ))}
               </Box>
             )}
+            MenuProps={{
+              PaperProps: {
+                sx: {
+                  maxHeight: {
+                    xs: 200,
+                    sm: 250,
+                    md: 300,
+                  },
+                  "& .MuiMenuItem-root": {
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "0.9rem",
+                      md: "1rem",
+                    },
+                    minHeight: {
+                      xs: "36px",
+                      sm: "40px",
+                      md: "44px",
+                    },
+                  },
+                },
+              },
+            }}
           >
             {RECIPIENT_OPTIONS.map((option) => (
               <MenuItem
@@ -175,12 +346,55 @@ const ModalContent = ({
 
         <Box
           sx={{
-            mt: 4,
-            pt: 2,
+            mt: {
+              xs: 3,
+              sm: 3.5,
+              md: 4,
+            },
+            pt: {
+              xs: 1.5,
+              sm: 2,
+              md: 2,
+            },
             display: "flex",
-            justifyContent: "flex-end",
-            gap: 2,
+            justifyContent: {
+              xs: "center",
+              sm: "flex-end",
+            },
+            gap: {
+              xs: 1.5,
+              sm: 2,
+            },
             borderTop: "1px solid #e2e8f0",
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+            "& button": {
+              minHeight: {
+                xs: "44px",
+                sm: "40px",
+                md: "44px",
+              },
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+              padding: {
+                xs: "12px 20px",
+                sm: "10px 16px",
+                md: "10px 20px",
+              },
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              textAlign: "center !important",
+              justifyContent: "center !important",
+              display: "flex !important",
+              alignItems: "center !important",
+            },
           }}
         >
           <button
@@ -204,7 +418,6 @@ const ModalContent = ({
     </Box>
   );
 };
-
 const getAvatarColor = (name) => {
   const colors = [
     "#1e3a5c",
@@ -499,8 +712,13 @@ const AnnouncementManagement = () => {
             onClick={() => fetchAnnouncements(true)}
           />
 
-          <button className="add-btn" onClick={handleAdd}>
-            <FaPlus /> Add Announcement
+          <button
+            className="add-btn responsive-add-btn"
+            onClick={handleAdd}
+            title="Add Announcement"
+          >
+            <FaPlus />
+            <span className="add-btn-text">Add Announcement</span>
           </button>
         </div>
       </div>

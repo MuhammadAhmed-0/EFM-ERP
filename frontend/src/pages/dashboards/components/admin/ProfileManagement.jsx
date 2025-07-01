@@ -720,7 +720,16 @@ const ProfileManagement = () => {
               borderTop: "1px solid #e2e8f0",
             }}
           >
-            <button type="submit" className="add-btn">
+            <button
+              type="submit"
+              className="add-btn"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textAlign: "center",
+              }}
+            >
               Update Profile
             </button>
           </Box>

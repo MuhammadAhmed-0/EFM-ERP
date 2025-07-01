@@ -202,17 +202,26 @@ const AdminViewLessons = () => {
           </label>
         </div>
 
-        <div className="filter-box">
+        <div
+          className="filter-box"
+          style={{
+            width: window.innerWidth < 768 ? "100%" : "auto",
+          }}
+        >
           <FaFilter className="filter-icon" />
           <Select
             className="subject-select"
             value={selectedSubjectFilter}
             onChange={(e) => setSelectedSubjectFilter(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "200px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 35px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
                 border: "1px solid #e2e8f0",
                 borderRadius: "6px",
@@ -230,17 +239,26 @@ const AdminViewLessons = () => {
           </Select>
         </div>
 
-        <div className="filter-box">
+        <div
+          className="filter-box"
+          style={{
+            width: window.innerWidth < 768 ? "100%" : "auto",
+          }}
+        >
           <FaFilter className="filter-icon" />
           <Select
             className="subject-select"
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "200px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 35px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
                 border: "1px solid #e2e8f0",
                 borderRadius: "6px",

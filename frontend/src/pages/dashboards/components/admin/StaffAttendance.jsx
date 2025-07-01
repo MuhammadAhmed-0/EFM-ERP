@@ -37,6 +37,34 @@ import NotificationSnackbar from "../../../../components/common/NotificationSnac
 import SyncButton from "../../../../components/common/SyncButton";
 import jsPDF from "jspdf";
 import autoTable from "jspdf-autotable";
+
+const useResponsive = () => {
+  const [screenSize, setScreenSize] = useState({
+    isMobile: false,
+    isTablet: false,
+    isDesktop: false,
+    width: 0,
+  });
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setScreenSize({
+        isMobile: width < 768,
+        isTablet: width >= 768 && width < 1024,
+        isDesktop: width >= 1024,
+        width,
+      });
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  return screenSize;
+};
+
 const DeleteAttendanceModal = ({
   showModal,
   setShowModal,
@@ -46,6 +74,7 @@ const DeleteAttendanceModal = ({
   formatRole,
   attendance,
 }) => {
+  const { isMobile, isTablet } = useResponsive();
   const [selectedStaff, setSelectedStaff] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -152,61 +181,130 @@ const DeleteAttendanceModal = ({
       .join(", ");
   };
 
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 700,
-    maxHeight: "90vh",
-    bgcolor: "background.paper",
-    borderRadius: "12px",
-    boxShadow:
-      "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-    p: 4,
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    fontFamily:
-      "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-    "&:focus-visible": {
-      outline: "none",
-    },
-    "& *": {
-      fontFamily:
-        "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important",
-    },
-  };
-
   return (
     <Modal
       open={showModal}
       onClose={handleModalClose}
       aria-labelledby="delete-attendance-modal"
     >
-      <Box sx={modalStyle}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: {
+            xs: "95vw",
+            sm: "90vw",
+            md: "700px",
+            lg: "800px",
+            xl: "900px",
+          },
+          maxWidth: {
+            xs: "400px",
+            sm: "600px",
+            md: "700px",
+            lg: "800px",
+            xl: "900px",
+          },
+          maxHeight: {
+            xs: "95vh",
+            sm: "90vh",
+            md: "85vh",
+          },
+          bgcolor: "background.paper",
+          borderRadius: "12px",
+          boxShadow:
+            "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+          p: {
+            xs: 2,
+            sm: 3,
+            md: 4,
+          },
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          fontFamily:
+            "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+          "&:focus-visible": {
+            outline: "none",
+          },
+          "& *": {
+            fontFamily:
+              "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important",
+          },
+        }}
+      >
         {!showPasswordConfirm ? (
           <>
-            <Box sx={{ borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
+            <Box
+              sx={{
+                borderBottom: "1px solid #e2e8f0",
+                pb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+                mb: {
+                  xs: 2,
+                  sm: 3,
+                },
+              }}
+            >
               <Typography
                 variant="h6"
                 component="h2"
-                sx={{ color: "#dc2626", fontWeight: 600 }}
+                sx={{
+                  color: "#dc2626",
+                  fontWeight: 600,
+                  fontSize: {
+                    xs: "1.1rem",
+                    sm: "1.25rem",
+                    md: "1.5rem",
+                  },
+                }}
               >
                 Delete Staff Attendance
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  mt: 1,
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
+              >
                 Select staff members to delete all their attendance records
                 permanently
               </Typography>
               {staffWithAttendance.length === 0 && (
-                <Typography variant="body2" sx={{ mt: 1, color: "#f59e0b" }}>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    mt: 1,
+                    color: "#f59e0b",
+                    fontSize: {
+                      xs: "0.8rem",
+                      sm: "0.875rem",
+                    },
+                  }}
+                >
                   ⚠️ No staff members with attendance records found
                 </Typography>
               )}
             </Box>
+
             {staffWithAttendance.length > 0 && (
-              <Box sx={{ mb: 2 }}>
+              <Box
+                sx={{
+                  mb: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
+                }}
+              >
                 <Autocomplete
                   options={staffWithAttendance}
                   getOptionLabel={(option) =>
@@ -227,6 +325,10 @@ const DeleteAttendanceModal = ({
                         "& .MuiOutlinedInput-root": {
                           backgroundColor: "#fafafa",
                           fontFamily: "'Poppins', sans-serif",
+                          fontSize: {
+                            xs: "0.875rem",
+                            sm: "1rem",
+                          },
                           "&:hover": {
                             backgroundColor: "#f5f5f5",
                           },
@@ -236,6 +338,10 @@ const DeleteAttendanceModal = ({
                         },
                         "& .MuiInputLabel-root": {
                           fontFamily: "'Poppins', sans-serif",
+                          fontSize: {
+                            xs: "0.875rem",
+                            sm: "1rem",
+                          },
                         },
                         "& .MuiAutocomplete-input": {
                           fontFamily: "'Poppins', sans-serif",
@@ -256,12 +362,27 @@ const DeleteAttendanceModal = ({
                           }}
                         >
                           <Box>
-                            <Typography variant="body2" fontWeight="500">
+                            <Typography
+                              variant="body2"
+                              fontWeight="500"
+                              sx={{
+                                fontSize: {
+                                  xs: "0.8rem",
+                                  sm: "0.875rem",
+                                },
+                              }}
+                            >
                               {option.name}
                             </Typography>
                             <Typography
                               variant="caption"
                               color="text.secondary"
+                              sx={{
+                                fontSize: {
+                                  xs: "0.7rem",
+                                  sm: "0.75rem",
+                                },
+                              }}
                             >
                               ID: {option.staffId} | {formatRole(option.role)}
                             </Typography>
@@ -302,7 +423,10 @@ const DeleteAttendanceModal = ({
                             <Typography
                               variant="caption"
                               sx={{
-                                fontSize: "0.6rem",
+                                fontSize: {
+                                  xs: "0.55rem",
+                                  sm: "0.6rem",
+                                },
                                 color: "#dc2626",
                                 mt: 0.5,
                               }}
@@ -335,7 +459,7 @@ const DeleteAttendanceModal = ({
                 />
               </Box>
             )}
-            {/* Staff List */}
+
             <Box
               sx={{
                 border: "1px solid #e2e8f0",
@@ -348,24 +472,63 @@ const DeleteAttendanceModal = ({
               <Box
                 sx={{
                   bgcolor: "#fef2f2",
-                  p: 2,
+                  p: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
                   borderBottom: "1px solid #e2e8f0",
                   display: "flex",
                   justifyContent: "space-between",
                   alignItems: "center",
+                  flexDirection: {
+                    xs: "column",
+                    sm: "row",
+                  },
+                  gap: {
+                    xs: 1,
+                    sm: 0,
+                  },
                 }}
               >
                 <Typography
                   variant="subtitle2"
                   fontWeight="600"
-                  sx={{ color: "#dc2626" }}
+                  sx={{
+                    color: "#dc2626",
+                    fontSize: {
+                      xs: "0.9rem",
+                      sm: "1rem",
+                    },
+                  }}
                 >
                   Staff Members with Attendance ({staffWithAttendance.length}{" "}
                   total)
                 </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: {
+                      xs: 1,
+                      sm: 2,
+                    },
+                    flexDirection: {
+                      xs: "column",
+                      sm: "row",
+                    },
+                  }}
+                >
                   {selectedStaff.length > 0 && (
-                    <Typography variant="caption" sx={{ color: "#dc2626" }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "#dc2626",
+                        fontSize: {
+                          xs: "0.75rem",
+                          sm: "0.8rem",
+                        },
+                      }}
+                    >
                       {selectedStaff.length} selected for deletion
                     </Typography>
                   )}
@@ -376,6 +539,14 @@ const DeleteAttendanceModal = ({
                       sx={{
                         textTransform: "none",
                         color: "#dc2626",
+                        fontSize: {
+                          xs: "0.75rem",
+                          sm: "0.875rem",
+                        },
+                        padding: {
+                          xs: "4px 8px",
+                          sm: "6px 12px",
+                        },
                         "&:hover": { bgcolor: "rgba(220, 38, 38, 0.1)" },
                       }}
                     >
@@ -389,9 +560,16 @@ const DeleteAttendanceModal = ({
 
               <Box
                 sx={{
-                  maxHeight: "350px",
+                  maxHeight: {
+                    xs: "250px",
+                    sm: "300px",
+                    md: "350px",
+                  },
                   overflowY: "auto",
-                  p: 1,
+                  p: {
+                    xs: 0.5,
+                    sm: 1,
+                  },
                 }}
               >
                 {staffWithAttendance.length === 0 ? (
@@ -401,23 +579,50 @@ const DeleteAttendanceModal = ({
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
-                      p: 4,
+                      p: {
+                        xs: 2,
+                        sm: 3,
+                        md: 4,
+                      },
                       color: "#64748b",
                     }}
                   >
-                    <Typography variant="h6" sx={{ mb: 1, color: "#f59e0b" }}>
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 1,
+                        color: "#f59e0b",
+                        fontSize: {
+                          xs: "1rem",
+                          sm: "1.25rem",
+                        },
+                      }}
+                    >
                       📊 No Records Found
                     </Typography>
                     <Typography
                       variant="body2"
-                      sx={{ mb: 1, textAlign: "center" }}
+                      sx={{
+                        mb: 1,
+                        textAlign: "center",
+                        fontSize: {
+                          xs: "0.8rem",
+                          sm: "0.875rem",
+                        },
+                      }}
                     >
                       No staff members with attendance records found
                     </Typography>
                     <Typography
                       variant="caption"
                       color="text.secondary"
-                      sx={{ textAlign: "center" }}
+                      sx={{
+                        textAlign: "center",
+                        fontSize: {
+                          xs: "0.7rem",
+                          sm: "0.75rem",
+                        },
+                      }}
                     >
                       Only staff members with existing attendance records can be
                       deleted
@@ -430,7 +635,11 @@ const DeleteAttendanceModal = ({
                       sx={{
                         display: "flex",
                         alignItems: "center",
-                        p: 2,
+                        p: {
+                          xs: 1,
+                          sm: 1.5,
+                          md: 2,
+                        },
                         borderRadius: "6px",
                         cursor: "pointer",
                         mb: 1,
@@ -450,13 +659,35 @@ const DeleteAttendanceModal = ({
                         type="checkbox"
                         checked={selectedStaff.includes(staff._id)}
                         onChange={() => handleStaffSelect(staff._id)}
-                        style={{ marginRight: "12px", accentColor: "#dc2626" }}
+                        style={{
+                          marginRight: "12px",
+                          accentColor: "#dc2626",
+                          transform: isMobile ? "scale(0.9)" : "scale(1)",
+                        }}
                       />
                       <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" fontWeight="500">
+                        <Typography
+                          variant="body2"
+                          fontWeight="500"
+                          sx={{
+                            fontSize: {
+                              xs: "0.8rem",
+                              sm: "0.875rem",
+                            },
+                          }}
+                        >
                           {staff.name}
                         </Typography>
-                        <Typography variant="caption" color="text.secondary">
+                        <Typography
+                          variant="caption"
+                          color="text.secondary"
+                          sx={{
+                            fontSize: {
+                              xs: "0.7rem",
+                              sm: "0.75rem",
+                            },
+                          }}
+                        >
                           Staff ID: {staff.staffId} | {formatRole(staff.role)}
                         </Typography>
                         <Typography
@@ -466,6 +697,10 @@ const DeleteAttendanceModal = ({
                             display: "block",
                             fontWeight: 500,
                             mt: 0.5,
+                            fontSize: {
+                              xs: "0.7rem",
+                              sm: "0.75rem",
+                            },
                           }}
                         >
                           📋 {staff.attendanceCount} attendance record
@@ -480,7 +715,10 @@ const DeleteAttendanceModal = ({
                               padding: "2px 6px",
                               borderRadius: "4px",
                               marginLeft: "8px",
-                              fontSize: "0.7rem",
+                              fontSize: {
+                                xs: "0.6rem",
+                                sm: "0.7rem",
+                              },
                               display: "inline-block",
                               mt: 0.5,
                             }}
@@ -519,13 +757,20 @@ const DeleteAttendanceModal = ({
                                 : staff.role.includes("teacher")
                                 ? "#1e40af"
                                 : "#7c3aed",
+                            fontSize: {
+                              xs: "0.65rem",
+                              sm: "0.75rem",
+                            },
                           }}
                         />
                         <Typography
                           variant="caption"
                           sx={{
                             color: "#64748b",
-                            fontSize: "0.7rem",
+                            fontSize: {
+                              xs: "0.65rem",
+                              sm: "0.7rem",
+                            },
                             backgroundColor: "#f1f5f9",
                             padding: "2px 6px",
                             borderRadius: "4px",
@@ -540,12 +785,17 @@ const DeleteAttendanceModal = ({
               </Box>
             </Box>
 
-            {/* Warning Message */}
             {selectedStaff.length > 0 && (
               <Box
                 sx={{
-                  mt: 2,
-                  p: 2,
+                  mt: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
+                  p: {
+                    xs: 1.5,
+                    sm: 2,
+                  },
                   bgcolor: "#fef2f2",
                   border: "1px solid #fecaca",
                   borderRadius: "6px",
@@ -553,7 +803,14 @@ const DeleteAttendanceModal = ({
               >
                 <Typography
                   variant="body2"
-                  sx={{ color: "#dc2626", fontWeight: 500 }}
+                  sx={{
+                    color: "#dc2626",
+                    fontWeight: 500,
+                    fontSize: {
+                      xs: "0.8rem",
+                      sm: "0.875rem",
+                    },
+                  }}
                 >
                   ⚠️ Warning: This will permanently delete all attendance
                   records for{" "}
@@ -567,15 +824,41 @@ const DeleteAttendanceModal = ({
               </Box>
             )}
 
-            {/* Action Buttons */}
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: 2,
-                mt: 3,
-                pt: 2,
+                gap: {
+                  xs: 1,
+                  sm: 2,
+                },
+                mt: {
+                  xs: 2,
+                  sm: 3,
+                },
+                pt: {
+                  xs: 1.5,
+                  sm: 2,
+                },
                 borderTop: "1px solid #e2e8f0",
+                flexDirection: {
+                  xs: "column",
+                  sm: "row",
+                },
+                "& button": {
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                  padding: {
+                    xs: "10px 16px",
+                    sm: "12px 20px",
+                  },
+                  width: {
+                    xs: "100%",
+                    sm: "auto",
+                  },
+                },
               }}
             >
               <button
@@ -600,17 +883,45 @@ const DeleteAttendanceModal = ({
             </Box>
           </>
         ) : (
-          /* Password Confirmation Screen */
           <>
-            <Box sx={{ borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
+            <Box
+              sx={{
+                borderBottom: "1px solid #e2e8f0",
+                pb: {
+                  xs: 1.5,
+                  sm: 2,
+                },
+                mb: {
+                  xs: 2,
+                  sm: 3,
+                },
+              }}
+            >
               <Typography
                 variant="h6"
                 component="h2"
-                sx={{ color: "#dc2626", fontWeight: 600 }}
+                sx={{
+                  color: "#dc2626",
+                  fontWeight: 600,
+                  fontSize: {
+                    xs: "1.1rem",
+                    sm: "1.25rem",
+                  },
+                }}
               >
                 🔒 Confirm Multiple Deletion
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+              <Typography
+                variant="body2"
+                color="text.secondary"
+                sx={{
+                  mt: 1,
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
+              >
                 Enter admin password to confirm deletion of all attendance
                 records for{" "}
                 <strong>
@@ -620,7 +931,14 @@ const DeleteAttendanceModal = ({
               </Typography>
             </Box>
 
-            <Box sx={{ my: 3 }}>
+            <Box
+              sx={{
+                my: {
+                  xs: 2,
+                  sm: 3,
+                },
+              }}
+            >
               <TextField
                 fullWidth
                 type="password"
@@ -643,6 +961,10 @@ const DeleteAttendanceModal = ({
                   fontFamily: "'Poppins', sans-serif",
                   "& .MuiOutlinedInput-root": {
                     fontFamily: "'Poppins', sans-serif",
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "1rem",
+                    },
                     "&.Mui-error": {
                       "& fieldset": {
                         borderColor: "#dc2626",
@@ -651,9 +973,17 @@ const DeleteAttendanceModal = ({
                   },
                   "& .MuiInputLabel-root": {
                     fontFamily: "'Poppins', sans-serif",
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "1rem",
+                    },
                   },
                   "& .MuiFormHelperText-root": {
                     fontFamily: "'Poppins', sans-serif",
+                    fontSize: {
+                      xs: "0.75rem",
+                      sm: "0.875rem",
+                    },
                   },
                 }}
               />
@@ -661,16 +991,29 @@ const DeleteAttendanceModal = ({
 
             <Box
               sx={{
-                p: 2,
+                p: {
+                  xs: 1.5,
+                  sm: 2,
+                },
                 bgcolor: "#fef2f2",
                 border: "1px solid #fecaca",
                 borderRadius: "6px",
-                mb: 3,
+                mb: {
+                  xs: 2,
+                  sm: 3,
+                },
               }}
             >
               <Typography
                 variant="body2"
-                sx={{ color: "#dc2626", fontWeight: 500 }}
+                sx={{
+                  color: "#dc2626",
+                  fontWeight: 500,
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                }}
               >
                 ⚠️ Final Warning: You are about to permanently delete all
                 attendance records for{" "}
@@ -683,14 +1026,37 @@ const DeleteAttendanceModal = ({
               </Typography>
             </Box>
 
-            {/* Password Confirmation Buttons */}
             <Box
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: 2,
-                pt: 2,
+                gap: {
+                  xs: 1,
+                  sm: 2,
+                },
+                pt: {
+                  xs: 1.5,
+                  sm: 2,
+                },
                 borderTop: "1px solid #e2e8f0",
+                flexDirection: {
+                  xs: "column",
+                  sm: "row",
+                },
+                "& button": {
+                  fontSize: {
+                    xs: "0.8rem",
+                    sm: "0.875rem",
+                  },
+                  padding: {
+                    xs: "8px 16px",
+                    sm: "10px 20px",
+                  },
+                  width: {
+                    xs: "100%",
+                    sm: "auto",
+                  },
+                },
               }}
             >
               <button
@@ -731,25 +1097,7 @@ const AttendanceModal = ({
   handleTimeChange,
   isEditMode,
 }) => {
-  const modalStyle = {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%)",
-    width: 600,
-    bgcolor: "background.paper",
-    borderRadius: "12px",
-    boxShadow:
-      "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-    p: 4,
-    maxHeight: "90vh",
-    overflowY: "auto",
-    "&:focus-visible": {
-      outline: "none",
-    },
-    fontFamily:
-      "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-  };
+  const { isMobile, isTablet } = useResponsive();
 
   return (
     <Modal
@@ -758,13 +1106,59 @@ const AttendanceModal = ({
       disableEnforceFocus
       disableAutoFocus
     >
-      <Box sx={modalStyle}>
+      <Box
+        sx={{
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: "translate(-50%, -50%)",
+          width: {
+            xs: "95vw",
+            sm: "90vw",
+            md: "600px",
+            lg: "650px",
+            xl: "700px",
+          },
+          maxWidth: {
+            xs: "400px",
+            sm: "500px",
+            md: "600px",
+            lg: "650px",
+            xl: "700px",
+          },
+          maxHeight: {
+            xs: "95vh",
+            sm: "90vh",
+            md: "85vh",
+          },
+          bgcolor: "background.paper",
+          borderRadius: "12px",
+          boxShadow:
+            "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+          p: {
+            xs: 2,
+            sm: 3,
+            md: 4,
+          },
+          overflowY: "auto",
+          "&:focus-visible": {
+            outline: "none",
+          },
+          fontFamily:
+            "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+        }}
+      >
         <Box
           sx={{
+            position: "relative",
             display: "flex",
-            justifyContent: "space-between",
+            justifyContent: "center",
             alignItems: "center",
-            mb: 3,
+            mb: {
+              xs: 2,
+              sm: 2.5,
+              md: 3,
+            },
           }}
         >
           <Typography
@@ -772,8 +1166,16 @@ const AttendanceModal = ({
             component="h2"
             sx={{
               color: "#1e293b",
-              fontSize: "1.25rem",
+              fontSize: {
+                xs: "1.1rem",
+                sm: "1.2rem",
+                md: "1.25rem",
+                lg: "1.3rem",
+              },
               fontWeight: 500,
+              textAlign: "center",
+              lineHeight: 1.2,
+              flex: 1,
             }}
           >
             {isEditMode ? "Update Staff Attendance" : "Mark Staff Attendance"}
@@ -781,9 +1183,21 @@ const AttendanceModal = ({
           <Button
             onClick={onClose}
             sx={{
+              position: "absolute",
+              right: 0,
+              top: "50%",
+              transform: "translateY(-50%)",
               minWidth: "auto",
-              p: 1,
+              p: {
+                xs: 1,
+                sm: 1,
+              },
               color: "#64748b",
+              fontSize: {
+                xs: "1.5rem",
+                sm: "1.5rem",
+                md: "1.8rem",
+              },
               "&:hover": {
                 bgcolor: "#f1f5f9",
                 color: "#3949ab",
@@ -796,7 +1210,19 @@ const AttendanceModal = ({
         </Box>
 
         <form onSubmit={handleSubmit}>
-          <FormControl fullWidth margin="normal" size="small" required>
+          <FormControl
+            fullWidth
+            margin="normal"
+            size="small"
+            required
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+            }}
+          >
             <Autocomplete
               fullWidth
               options={staffMembers.filter((staff) => staff.isActive !== false)}
@@ -830,10 +1256,27 @@ const AttendanceModal = ({
                   error={!!errors.staffUserId}
                   helperText={errors.staffUserId}
                   disabled={isEditMode}
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                  }}
                 />
               )}
             />
           </FormControl>
+
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Date"
@@ -847,6 +1290,27 @@ const AttendanceModal = ({
                   required: true,
                   error: !!errors.date,
                   helperText: errors.date,
+                  sx: {
+                    mb: {
+                      xs: 1.5,
+                      sm: 2,
+                      md: 2.5,
+                    },
+                    "& .MuiInputBase-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                  },
                 },
               }}
               maxDate={new Date()}
@@ -854,7 +1318,19 @@ const AttendanceModal = ({
             />
           </LocalizationProvider>
 
-          <FormControl fullWidth margin="normal" size="small" required>
+          <FormControl
+            fullWidth
+            margin="normal"
+            size="small"
+            required
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+            }}
+          >
             <InputLabel>Status</InputLabel>
             <Select
               name="status"
@@ -862,61 +1338,118 @@ const AttendanceModal = ({
               label="Status"
               onChange={handleChange}
               error={!!errors.status}
+              sx={{
+                "& .MuiSelect-select": {
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                },
+              }}
             >
               <MenuItem value="present">Present</MenuItem>
               <MenuItem value="absent">Absent</MenuItem>
               <MenuItem value="leave">Leave</MenuItem>
             </Select>
             {errors.status && (
-              <Typography color="error" variant="caption">
+              <Typography
+                color="error"
+                variant="caption"
+                sx={{
+                  fontSize: {
+                    xs: "0.75rem",
+                    sm: "0.8rem",
+                  },
+                }}
+              >
                 {errors.status}
               </Typography>
             )}
           </FormControl>
 
           {formData.status === "present" && (
-            <>
-              <LocalizationProvider dateAdapter={AdapterDateFns}>
-                <Box sx={{ display: "flex", gap: 2 }}>
-                  <TimePicker
-                    label="In Time"
-                    value={
-                      formData.inTime
-                        ? new Date(`2022-01-01T${formData.inTime}`)
-                        : null
-                    }
-                    onChange={(time) => handleTimeChange(time, "inTime")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        margin: "normal",
-                        size: "small",
-                        error: !!errors.inTime,
-                        helperText: errors.inTime,
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: 2,
+                  flexDirection: {
+                    xs: "column",
+                    sm: "row",
+                  },
+                }}
+              >
+                <TimePicker
+                  label="In Time"
+                  value={
+                    formData.inTime
+                      ? new Date(`2022-01-01T${formData.inTime}`)
+                      : null
+                  }
+                  onChange={(time) => handleTimeChange(time, "inTime")}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      margin: "normal",
+                      size: "small",
+                      error: !!errors.inTime,
+                      helperText: errors.inTime,
+                      sx: {
+                        "& .MuiInputBase-root": {
+                          fontSize: {
+                            xs: "0.875rem",
+                            sm: "0.9rem",
+                            md: "1rem",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          fontSize: {
+                            xs: "0.875rem",
+                            sm: "0.9rem",
+                            md: "1rem",
+                          },
+                        },
                       },
-                    }}
-                  />
-                  <TimePicker
-                    label="Out Time"
-                    value={
-                      formData.outTime
-                        ? new Date(`2022-01-01T${formData.outTime}`)
-                        : null
-                    }
-                    onChange={(time) => handleTimeChange(time, "outTime")}
-                    slotProps={{
-                      textField: {
-                        fullWidth: true,
-                        margin: "normal",
-                        size: "small",
-                        error: !!errors.outTime,
-                        helperText: errors.outTime,
+                    },
+                  }}
+                />
+                <TimePicker
+                  label="Out Time"
+                  value={
+                    formData.outTime
+                      ? new Date(`2022-01-01T${formData.outTime}`)
+                      : null
+                  }
+                  onChange={(time) => handleTimeChange(time, "outTime")}
+                  slotProps={{
+                    textField: {
+                      fullWidth: true,
+                      margin: "normal",
+                      size: "small",
+                      error: !!errors.outTime,
+                      helperText: errors.outTime,
+                      sx: {
+                        "& .MuiInputBase-root": {
+                          fontSize: {
+                            xs: "0.875rem",
+                            sm: "0.9rem",
+                            md: "1rem",
+                          },
+                        },
+                        "& .MuiInputLabel-root": {
+                          fontSize: {
+                            xs: "0.875rem",
+                            sm: "0.9rem",
+                            md: "1rem",
+                          },
+                        },
                       },
-                    }}
-                  />
-                </Box>
-              </LocalizationProvider>
-            </>
+                    },
+                  }}
+                />
+              </Box>
+            </LocalizationProvider>
           )}
 
           <TextField
@@ -929,16 +1462,84 @@ const AttendanceModal = ({
             size="small"
             multiline
             rows={3}
+            sx={{
+              mb: {
+                xs: 2,
+                sm: 2.5,
+                md: 3,
+              },
+              "& .MuiInputBase-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+                minHeight: {
+                  xs: "80px",
+                  sm: "100px",
+                  md: "120px",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+            }}
           />
 
           <Box
             sx={{
-              mt: 4,
-              pt: 2,
+              mt: {
+                xs: 3,
+                sm: 3.5,
+                md: 4,
+              },
+              pt: {
+                xs: 1.5,
+                sm: 2,
+              },
               display: "flex",
-              justifyContent: "flex-end",
-              gap: 2,
+              justifyContent: {
+                xs: "center",
+                sm: "flex-end",
+              },
+              gap: {
+                xs: 1.5,
+                sm: 2,
+              },
               borderTop: "1px solid #e2e8f0",
+              flexDirection: {
+                xs: "column",
+                sm: "row",
+              },
+              "& button": {
+                minHeight: {
+                  xs: "44px",
+                  sm: "40px",
+                  md: "44px",
+                },
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+                padding: {
+                  xs: "12px 20px",
+                  sm: "10px 16px",
+                  md: "10px 20px",
+                },
+                width: {
+                  xs: "100%",
+                  sm: "auto",
+                },
+                textAlign: "center !important",
+                justifyContent: "center !important",
+                display: "flex !important",
+                alignItems: "center !important",
+              },
             }}
           >
             <button
@@ -963,7 +1564,6 @@ const AttendanceModal = ({
     </Modal>
   );
 };
-
 const StaffAttendance = () => {
   const [attendance, setAttendance] = useState([]);
   const [filteredAttendance, setFilteredAttendance] = useState([]);
@@ -990,6 +1590,7 @@ const StaffAttendance = () => {
   const [attendanceErrors, setAttendanceErrors] = useState({});
   const [isSubmittingAttendance, setIsSubmittingAttendance] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const { isMobile, isTablet, isDesktop } = useResponsive();
 
   const [stats, setStats] = useState({
     total: 0,
@@ -1592,22 +2193,29 @@ const StaffAttendance = () => {
             isSyncing={isSyncing}
             onClick={() => fetchAttendance(true)}
           />
+
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={exportToPDF}
             disabled={isLoading || filteredAttendance.length === 0}
+            title="Export PDF"
             style={{ marginRight: "8px" }}
           >
-            <FaFilePdf /> Export PDF
+            <FaFilePdf />
+            <span className="add-btn-text">Export PDF</span>
           </button>
+
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={() => setShowDeleteModal(true)}
             disabled={isLoading}
+            title="Delete Attendance"
             style={{ marginRight: "8px" }}
           >
-            <FaTrash /> Delete Attendance
+            <FaTrash />
+            <span className="add-btn-text">Delete Attendance</span>
           </button>
+
           <input
             type="file"
             id="csv-upload"
@@ -1615,19 +2223,25 @@ const StaffAttendance = () => {
             style={{ display: "none" }}
             onChange={handleFileUpload}
           />
+
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={() => document.getElementById("csv-upload").click()}
             disabled={isLoading}
+            title="Upload CSV"
           >
-            <FaUpload /> Upload CSV
+            <FaUpload />
+            <span className="add-btn-text">Upload CSV</span>
           </button>
+
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={() => setShowAttendanceModal(true)}
+            title="Mark Attendance"
             style={{ marginRight: "8px" }}
           >
-            <FaPlus /> Mark Attendance
+            <FaPlus />
+            <span className="add-btn-text">Mark Attendance</span>
           </button>
         </div>
       </div>
@@ -1688,15 +2302,24 @@ const StaffAttendance = () => {
             value={selectedStaff}
             onChange={(e) => setSelectedStaff(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -1754,8 +2377,26 @@ const StaffAttendance = () => {
             dateFormat="dd/MM/yyyy"
             timeZone="Asia/Karachi"
             customInput={
-              <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+              <div
+                className="date-input-wrapper"
+                style={{
+                  position: "relative",
+                }}
+              >
+                {window.innerWidth >= 768 && (
+                  <FaFilter
+                    className="filter-icon"
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      zIndex: 1,
+                    }}
+                  />
+                )}
                 <input
                   className="date-range-input"
                   placeholder="Select custom date range"
@@ -1769,6 +2410,21 @@ const StaffAttendance = () => {
                       : ""
                   }
                   readOnly
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    padding:
+                      window.innerWidth >= 768
+                        ? "8px 12px 8px 36px"
+                        : "8px 12px",
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    color: "#475569",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
             }

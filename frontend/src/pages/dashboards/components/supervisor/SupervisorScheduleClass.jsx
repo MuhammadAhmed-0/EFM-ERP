@@ -300,7 +300,11 @@ const ScheduleFormModal = ({
             <Autocomplete
               multiple
               id="students-autocomplete"
-              options={students}
+              options={students.filter(
+                (student) =>
+                  !student.name.includes("(Inactive Student)") &&
+                  !["freeze", "drop"].includes(student.profile?.status)
+              )}
               getOptionLabel={(option) => {
                 const studentId =
                   option.profile?.studentId || option.studentId || "";
@@ -317,8 +321,11 @@ const ScheduleFormModal = ({
 
                 return `${studentId} - ${studentName}`;
               }}
-              value={students.filter((student) =>
-                formData.students.includes(student._id)
+              value={students.filter(
+                (student) =>
+                  formData.students.includes(student._id) &&
+                  !student.name.includes("(Inactive Student)") &&
+                  !["freeze", "drop"].includes(student.profile?.status)
               )}
               onChange={(event, newValue) => {
                 handleChange({
@@ -331,7 +338,7 @@ const ScheduleFormModal = ({
               renderInput={(params) => (
                 <TextField
                   {...params}
-                  label="Students"
+                  label="Students (Active Only)"
                   required={false}
                   size="small"
                 />
@@ -1247,7 +1254,6 @@ const SupervisorScheduleClass = () => {
             studentId: student.profile?.studentId,
           })
         );
-
         setStudents(studentsWithAssignedTeachers);
       }
     } catch (error) {

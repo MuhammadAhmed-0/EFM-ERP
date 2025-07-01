@@ -415,8 +415,13 @@ const InfoModal = ({
 
               {!isInfoVisible && (
                 <button
-                className="add-btn"
+                  className="add-btn"
                   onClick={handleAdminPasswordSubmit}
+                  style={{
+                    display: "flex",
+                    justifyContent: "center",
+                    alignItems: "center",
+                  }}
                 >
                   <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
                     <FaEye size={isMobile ? 16 : 14} />

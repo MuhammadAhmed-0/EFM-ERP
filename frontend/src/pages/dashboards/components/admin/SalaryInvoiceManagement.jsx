@@ -48,6 +48,33 @@ const MONTHS = [
   "December",
 ];
 
+const useResponsive = () => {
+  const [screenSize, setScreenSize] = useState({
+    isMobile: false,
+    isTablet: false,
+    isDesktop: false,
+    width: 0,
+  });
+
+  useEffect(() => {
+    const checkScreenSize = () => {
+      const width = window.innerWidth;
+      setScreenSize({
+        isMobile: width < 768,
+        isTablet: width >= 768 && width < 1024,
+        isDesktop: width >= 1024,
+        width,
+      });
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
+
+  return screenSize;
+};
+
 const ModalContent = ({
   formData,
   handleChange,
@@ -59,261 +86,697 @@ const ModalContent = ({
   handleDateChange,
   staff,
   formatRoleDisplay,
-}) => (
-  <Box sx={getModalStyles()}>
-    <Typography variant="h6" sx={{ mb: 2 }}>
-      {currentInvoice ? "Edit Salary Invoice" : "Generate Salary Invoice"}
-    </Typography>
+}) => {
+  const { isMobile, isTablet } = useResponsive();
 
-    <form onSubmit={handleSubmit}>
-      {currentInvoice ? (
-        <TextField
-          fullWidth
-          label="Staff Member"
-          value={
-            staff.find((m) => m._id === formData.userId)
-              ? `${
-                  staff.find((m) => m._id === formData.userId).staffId || ""
-                } - ${
-                  staff.find((m) => m._id === formData.userId).name
-                } (${formatRoleDisplay(
-                  staff.find((m) => m._id === formData.userId).role
-                )})`
-              : ""
-          }
-          margin="normal"
-          size="small"
-          disabled
-        />
-      ) : (
-        <FormControl fullWidth margin="normal" size="small" required>
-          <Autocomplete
-            id="staff-select-autocomplete"
-            options={staff}
-            getOptionLabel={(option) =>
-              `${option.staffId || ""} - ${option.name} (${formatRoleDisplay(
-                option.role
-              )}) ${option.isActive === false ? "- Inactive" : ""}`
-            }
+  return (
+    <Box
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: {
+          xs: "95vw",
+          sm: "90vw",
+          md: "600px",
+          lg: "700px",
+          xl: "750px",
+        },
+        maxWidth: {
+          xs: "400px",
+          sm: "500px",
+          md: "600px",
+          lg: "700px",
+          xl: "750px",
+        },
+        maxHeight: {
+          xs: "95vh",
+          sm: "90vh",
+          md: "85vh",
+        },
+        bgcolor: "background.paper",
+        borderRadius: "12px",
+        boxShadow:
+          "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        p: {
+          xs: 2,
+          sm: 3,
+          md: 4,
+        },
+        overflowY: "auto",
+        "&:focus-visible": {
+          outline: "none",
+        },
+        fontFamily:
+          "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          mb: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
+          textAlign: "center",
+          fontSize: {
+            xs: "1.1rem",
+            sm: "1.2rem",
+            md: "1.25rem",
+            lg: "1.3rem",
+          },
+          fontWeight: 500,
+          color: "#1e293b",
+        }}
+      >
+        {currentInvoice ? "Edit Salary Invoice" : "Generate Salary Invoice"}
+      </Typography>
+
+      <form onSubmit={handleSubmit}>
+        {currentInvoice ? (
+          <TextField
+            fullWidth
+            label="Staff Member"
             value={
-              formData.userId
-                ? staff.find((member) => member._id === formData.userId) || null
-                : null
+              staff.find((m) => m._id === formData.userId)
+                ? `${
+                    staff.find((m) => m._id === formData.userId).staffId || ""
+                  } - ${
+                    staff.find((m) => m._id === formData.userId).name
+                  } (${formatRoleDisplay(
+                    staff.find((m) => m._id === formData.userId).role
+                  )})`
+                : ""
             }
-            onChange={(event, newValue) => {
-              handleChange({
-                target: {
-                  name: "userId",
-                  value: newValue ? newValue._id : "",
+            margin="normal"
+            size="small"
+            disabled
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+              "& .MuiInputBase-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
                 },
-              });
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
             }}
-            renderInput={(params) => (
-              <TextField
-                {...params}
-                label="Staff Member"
-                size="small"
-                error={!!errors.userId}
-                required
-              />
-            )}
-            renderOption={(props, option) => {
-              const { key, ...restProps } = props;
-              return (
-                <li key={key} {...restProps}>
-                  <div
-                    style={{
-                      width: "100%",
-                      display: "flex",
-                      justifyContent: "space-between",
-                      alignItems: "center",
-                    }}
-                  >
-                    <span>
-                      {`${option.staffId || ""} - ${
-                        option.name
-                      } (${formatRoleDisplay(option.role)})`}
-                    </span>
-                    {option.isActive === false && (
-                      <span
-                        style={{
-                          marginLeft: "8px",
-                          color: "#dc2626",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          backgroundColor: "#fee2e2",
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                        }}
-                      >
-                        Inactive
-                      </span>
-                    )}
-                    {option.isActive !== false && (
-                      <span
-                        style={{
-                          marginLeft: "8px",
-                          color: "#15803d",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
-                          backgroundColor: "#dcfce7",
-                          padding: "2px 6px",
-                          borderRadius: "4px",
-                        }}
-                      >
-                        Active
-                      </span>
-                    )}
-                  </div>
-                </li>
-              );
-            }}
-            groupBy={(option) =>
-              option.isActive === false ? "Inactive Staff" : "Active Staff"
-            }
           />
-        </FormControl>
-      )}
-      {currentInvoice ? (
+        ) : (
+          <FormControl
+            fullWidth
+            margin="normal"
+            size="small"
+            required
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+            }}
+          >
+            <Autocomplete
+              id="staff-select-autocomplete"
+              options={staff}
+              getOptionLabel={(option) =>
+                `${option.staffId || ""} - ${option.name} (${formatRoleDisplay(
+                  option.role
+                )}) ${option.isActive === false ? "- Inactive" : ""}`
+              }
+              value={
+                formData.userId
+                  ? staff.find((member) => member._id === formData.userId) ||
+                    null
+                  : null
+              }
+              onChange={(event, newValue) => {
+                handleChange({
+                  target: {
+                    name: "userId",
+                    value: newValue ? newValue._id : "",
+                  },
+                });
+              }}
+              renderInput={(params) => (
+                <TextField
+                  {...params}
+                  label="Staff Member"
+                  size="small"
+                  error={!!errors.userId}
+                  required
+                  sx={{
+                    "& .MuiInputBase-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: {
+                        xs: "0.875rem",
+                        sm: "0.9rem",
+                        md: "1rem",
+                      },
+                    },
+                  }}
+                />
+              )}
+              renderOption={(props, option) => {
+                const { key, ...restProps } = props;
+                return (
+                  <li key={key} {...restProps}>
+                    <div
+                      style={{
+                        width: "100%",
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        fontSize: isMobile ? "0.875rem" : "1rem",
+                        padding: isMobile ? "4px 0" : "8px 0",
+                      }}
+                    >
+                      <span>
+                        {`${option.staffId || ""} - ${
+                          option.name
+                        } (${formatRoleDisplay(option.role)})`}
+                      </span>
+                      {option.isActive === false && (
+                        <span
+                          style={{
+                            marginLeft: "8px",
+                            color: "#dc2626",
+                            fontSize: isMobile ? "0.7rem" : "0.75rem",
+                            fontWeight: "500",
+                            backgroundColor: "#fee2e2",
+                            padding: isMobile ? "1px 4px" : "2px 6px",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          Inactive
+                        </span>
+                      )}
+                      {option.isActive !== false && (
+                        <span
+                          style={{
+                            marginLeft: "8px",
+                            color: "#15803d",
+                            fontSize: isMobile ? "0.7rem" : "0.75rem",
+                            fontWeight: "500",
+                            backgroundColor: "#dcfce7",
+                            padding: isMobile ? "1px 4px" : "2px 6px",
+                            borderRadius: "4px",
+                          }}
+                        >
+                          Active
+                        </span>
+                      )}
+                    </div>
+                  </li>
+                );
+              }}
+              groupBy={(option) =>
+                option.isActive === false ? "Inactive Staff" : "Active Staff"
+              }
+              sx={{
+                "& .MuiAutocomplete-listbox": {
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                },
+              }}
+            />
+          </FormControl>
+        )}
+
+        {currentInvoice ? (
+          <TextField
+            fullWidth
+            label="Month"
+            value={formData.month}
+            margin="normal"
+            size="small"
+            disabled
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+              "& .MuiInputBase-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+            }}
+          />
+        ) : (
+          <FormControl
+            fullWidth
+            margin="normal"
+            size="small"
+            required
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+            }}
+          >
+            <InputLabel
+              sx={{
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              }}
+            >
+              Month
+            </InputLabel>
+            <Select
+              name="month"
+              value={formData.month || ""}
+              label="Month"
+              onChange={handleChange}
+              error={!!errors.month}
+              sx={{
+                "& .MuiSelect-select": {
+                  fontSize: {
+                    xs: "0.875rem",
+                    sm: "0.9rem",
+                    md: "1rem",
+                  },
+                },
+              }}
+            >
+              <MenuItem value="">Select Month</MenuItem>
+              {getNextTwelveMonths().map((monthYear) => (
+                <MenuItem key={monthYear} value={monthYear}>
+                  {monthYear}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
+
+        {/* Two-column layout for amount fields on larger screens */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: {
+              xs: 0,
+              sm: 2,
+            },
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+          }}
+        >
+          <TextField
+            fullWidth
+            label="Base Salary Amount"
+            name="amount"
+            type="number"
+            value={formData.amount}
+            onChange={handleChange}
+            margin="normal"
+            size="small"
+            disabled={false}
+            helperText="Default is staff's base salary, can be modified"
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+              "& .MuiInputBase-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="Bonus Amount"
+            name="bonusAmount"
+            type="number"
+            value={formData.bonusAmount}
+            onChange={handleChange}
+            margin="normal"
+            size="small"
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+              "& .MuiInputBase-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+            }}
+          />
+        </Box>
+
         <TextField
           fullWidth
-          label="Month"
-          value={formData.month}
+          label="Bonus Reason"
+          name="bonusReason"
+          value={formData.bonusReason}
+          onChange={handleChange}
           margin="normal"
           size="small"
-          disabled
+          sx={{
+            mb: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+            "& .MuiInputBase-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
         />
-      ) : (
-        <FormControl fullWidth margin="normal" size="small" required>
-          <InputLabel>Month</InputLabel>
-          <Select
-            name="month"
-            value={formData.month || ""}
-            label="Month"
-            onChange={handleChange}
-            error={!!errors.month}
-          >
-            <MenuItem value="">Select Month</MenuItem>
-            {getNextTwelveMonths().map((monthYear) => (
-              <MenuItem key={monthYear} value={monthYear}>
-                {monthYear}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      )}
 
-      <TextField
-        fullWidth
-        label="Base Salary Amount"
-        name="amount"
-        type="number"
-        value={formData.amount}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-        disabled={false}
-        helperText="Default is staff's base salary, can be modified"
-      />
-
-      <TextField
-        fullWidth
-        label="Bonus Amount"
-        name="bonusAmount"
-        type="number"
-        value={formData.bonusAmount}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-      />
-
-      <TextField
-        fullWidth
-        label="Bonus Reason"
-        name="bonusReason"
-        value={formData.bonusReason}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-      />
-
-      <TextField
-        fullWidth
-        label="Total Leaves"
-        name="totalLeaves"
-        type="number"
-        value={formData.totalLeaves}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-      />
-
-      <TextField
-        fullWidth
-        label="Referral Bonus"
-        name="refBonus"
-        type="number"
-        value={formData.refBonus}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-      />
-
-      <TextField
-        fullWidth
-        label="Advanced Salary"
-        name="advancedSalary"
-        type="number"
-        value={formData.advancedSalary}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-      />
-
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePicker
-          label="Payment Date"
-          value={formData.paymentDate ? new Date(formData.paymentDate) : null}
-          onChange={(date) => handleDateChange(date, "paymentDate")}
-          renderInput={(params) => (
-            <TextField {...params} fullWidth margin="normal" size="small" />
-          )}
-        />
-      </LocalizationProvider>
-
-      <TextField
-        fullWidth
-        label="Remarks"
-        name="remarks"
-        value={formData.remarks}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-        multiline
-        rows={2}
-      />
-
-      <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-        <button
-          className="clear-filters-btn"
-          onClick={() => setShowModal(false)}
-          disabled={isLoading}
+        {/* Two-column layout for remaining fields */}
+        <Box
+          sx={{
+            display: "flex",
+            gap: {
+              xs: 0,
+              sm: 2,
+            },
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+          }}
         >
-          Cancel
-        </button>
-        <button className="add-btn" type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <div className="loading-spinner"></div>
-          ) : currentInvoice ? (
-            "Update"
-          ) : (
-            "Generate"
-          )}
-        </button>
-      </Box>
-    </form>
-  </Box>
-);
+          <TextField
+            fullWidth
+            label="Total Leaves"
+            name="totalLeaves"
+            type="number"
+            value={formData.totalLeaves}
+            onChange={handleChange}
+            margin="normal"
+            size="small"
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+              "& .MuiInputBase-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+            }}
+          />
+
+          <TextField
+            fullWidth
+            label="Referral Bonus"
+            name="refBonus"
+            type="number"
+            value={formData.refBonus}
+            onChange={handleChange}
+            margin="normal"
+            size="small"
+            sx={{
+              mb: {
+                xs: 1.5,
+                sm: 2,
+                md: 2.5,
+              },
+              "& .MuiInputBase-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: {
+                  xs: "0.875rem",
+                  sm: "0.9rem",
+                  md: "1rem",
+                },
+              },
+            }}
+          />
+        </Box>
+
+        <TextField
+          fullWidth
+          label="Advanced Salary"
+          name="advancedSalary"
+          type="number"
+          value={formData.advancedSalary}
+          onChange={handleChange}
+          margin="normal"
+          size="small"
+          sx={{
+            mb: {
+              xs: 1.5,
+              sm: 2,
+              md: 2.5,
+            },
+            "& .MuiInputBase-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
+        />
+
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Payment Date"
+            value={formData.paymentDate ? new Date(formData.paymentDate) : null}
+            onChange={(date) => handleDateChange(date, "paymentDate")}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                margin: "normal",
+                size: "small",
+                sx: {
+                  mb: {
+                    xs: 1.5,
+                    sm: 2,
+                    md: 2.5,
+                  },
+                  "& .MuiInputBase-root": {
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "0.9rem",
+                      md: "1rem",
+                    },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: {
+                      xs: "0.875rem",
+                      sm: "0.9rem",
+                      md: "1rem",
+                    },
+                  },
+                },
+              },
+            }}
+          />
+        </LocalizationProvider>
+
+        <TextField
+          fullWidth
+          label="Remarks"
+          name="remarks"
+          value={formData.remarks}
+          onChange={handleChange}
+          margin="normal"
+          size="small"
+          multiline
+          rows={isMobile ? 2 : 3}
+          sx={{
+            mb: {
+              xs: 2,
+              sm: 2.5,
+              md: 3,
+            },
+            "& .MuiInputBase-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+              minHeight: {
+                xs: "80px",
+                sm: "100px",
+                md: "120px",
+              },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
+        />
+
+        <Box
+          sx={{
+            mt: {
+              xs: 3,
+              sm: 3.5,
+              md: 4,
+            },
+            pt: {
+              xs: 1.5,
+              sm: 2,
+            },
+            display: "flex",
+            justifyContent: {
+              xs: "center",
+              sm: "flex-end",
+            },
+            gap: {
+              xs: 1.5,
+              sm: 2,
+            },
+            borderTop: "1px solid #e2e8f0",
+            flexDirection: {
+              xs: "column",
+              sm: "row",
+            },
+            "& button": {
+              minHeight: {
+                xs: "44px",
+                sm: "40px",
+                md: "44px",
+              },
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+              padding: {
+                xs: "12px 20px",
+                sm: "10px 16px",
+                md: "10px 20px",
+              },
+              width: {
+                xs: "100%",
+                sm: "auto",
+              },
+              textAlign: "center",
+              justifyContent: "center",
+              display: "flex",
+              alignItems: "center",
+            },
+          }}
+        >
+          <button
+            className="clear-filters-btn"
+            onClick={() => setShowModal(false)}
+            disabled={isLoading}
+          >
+            Cancel
+          </button>
+          <button className="add-btn" type="submit" disabled={isLoading}>
+            {isLoading ? (
+              <div className="loading-spinner"></div>
+            ) : currentInvoice ? (
+              "Update"
+            ) : (
+              "Generate"
+            )}
+          </button>
+        </Box>
+      </form>
+    </Box>
+  );
+};
+
 const PaidAllModal = ({
   paidAllMonth,
   setPaidAllMonth,
@@ -321,70 +784,269 @@ const PaidAllModal = ({
   isPaidAllLoading,
   setShowPaidAllModal,
   getPendingInvoicesCount,
-}) => (
-  <Box sx={getModalStyles()}>
-    <Typography variant="h6" sx={{ mb: 2 }}>
-      Mark All Invoices as Paid
-    </Typography>
+}) => {
+  const { isMobile, isTablet } = useResponsive();
 
-    <Typography variant="body2" sx={{ mb: 3, color: "#64748b" }}>
-      This will mark all pending salary invoices as paid. You can optionally
-      filter by month.
-    </Typography>
-
-    <FormControl fullWidth margin="normal" size="small">
-      <InputLabel>Filter by Month (Optional)</InputLabel>
-      <Select
-        value={paidAllMonth}
-        label="Filter by Month (Optional)"
-        onChange={(e) => setPaidAllMonth(e.target.value)}
-      >
-        <MenuItem value="">All Months</MenuItem>
-        {getNextTwelveMonths().map((monthYear) => (
-          <MenuItem key={monthYear} value={monthYear}>
-            {format(new Date(monthYear + "-01"), "MMMM yyyy")}
-          </MenuItem>
-        ))}
-      </Select>
-    </FormControl>
-
-    <Typography variant="body2" sx={{ mt: 2, mb: 3, fontWeight: 500 }}>
-      {paidAllMonth
-        ? `${getPendingInvoicesCount()} pending invoice(s) for ${format(
-            new Date(paidAllMonth + "-01"),
-            "MMMM yyyy"
-          )} will be marked as paid.`
-        : `${getPendingInvoicesCount()} pending invoice(s) will be marked as paid.`}
-    </Typography>
-
-    <Box sx={{ mt: 3, display: "flex", justifyContent: "flex-end", gap: 2 }}>
-      <button
-        className="clear-filters-btn"
-        onClick={() => {
-          setShowPaidAllModal(false);
-          setPaidAllMonth("");
+  return (
+    <Box
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: {
+          xs: "95vw",
+          sm: "90vw",
+          md: "500px",
+          lg: "550px",
+          xl: "600px",
+        },
+        maxWidth: {
+          xs: "400px",
+          sm: "450px",
+          md: "500px",
+          lg: "550px",
+          xl: "600px",
+        },
+        maxHeight: {
+          xs: "95vh",
+          sm: "90vh",
+          md: "85vh",
+        },
+        bgcolor: "background.paper",
+        borderRadius: "12px",
+        boxShadow:
+          "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
+        p: {
+          xs: 2,
+          sm: 3,
+          md: 4,
+        },
+        overflowY: "auto",
+        "&:focus-visible": {
+          outline: "none",
+        },
+        fontFamily:
+          "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      }}
+    >
+      <Typography
+        variant="h6"
+        sx={{
+          mb: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
+          textAlign: "center",
+          fontSize: {
+            xs: "1.1rem",
+            sm: "1.2rem",
+            md: "1.25rem",
+            lg: "1.3rem",
+          },
+          fontWeight: 500,
+          color: "#1e293b",
         }}
-        disabled={isPaidAllLoading}
       >
-        Cancel
-      </button>
-      <button
-        className="add-btn"
-        onClick={handlePaidAll}
-        disabled={isPaidAllLoading || getPendingInvoicesCount() === 0}
+        Mark All Invoices as Paid
+      </Typography>
+
+      <Typography
+        variant="body2"
+        sx={{
+          mb: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
+          color: "#64748b",
+          fontSize: {
+            xs: "0.875rem",
+            sm: "0.9rem",
+            md: "1rem",
+          },
+          textAlign: "center",
+          lineHeight: 1.5,
+        }}
       >
-        {isPaidAllLoading ? (
-          <div className="loading-spinner"></div>
-        ) : (
-          `Mark ${getPendingInvoicesCount()} Invoice(s) as Paid`
-        )}
-      </button>
+        This will mark all pending salary invoices as paid. You can optionally
+        filter by month.
+      </Typography>
+
+      <FormControl
+        fullWidth
+        margin="normal"
+        size="small"
+        sx={{
+          mb: {
+            xs: 1.5,
+            sm: 2,
+            md: 2.5,
+          },
+        }}
+      >
+        <InputLabel
+          sx={{
+            fontSize: {
+              xs: "0.875rem",
+              sm: "0.9rem",
+              md: "1rem",
+            },
+          }}
+        >
+          Filter by Month (Optional)
+        </InputLabel>
+        <Select
+          value={paidAllMonth}
+          label="Filter by Month (Optional)"
+          onChange={(e) => setPaidAllMonth(e.target.value)}
+          sx={{
+            "& .MuiSelect-select": {
+              fontSize: {
+                xs: "0.875rem",
+                sm: "0.9rem",
+                md: "1rem",
+              },
+            },
+          }}
+        >
+          <MenuItem value="">All Months</MenuItem>
+          {getNextTwelveMonths().map((monthYear) => (
+            <MenuItem key={monthYear} value={monthYear}>
+              {format(new Date(monthYear + "-01"), "MMMM yyyy")}
+            </MenuItem>
+          ))}
+        </Select>
+      </FormControl>
+
+      <Typography
+        variant="body2"
+        sx={{
+          mt: {
+            xs: 1.5,
+            sm: 2,
+          },
+          mb: {
+            xs: 2,
+            sm: 2.5,
+            md: 3,
+          },
+          fontWeight: 500,
+          fontSize: {
+            xs: "0.875rem",
+            sm: "0.9rem",
+            md: "1rem",
+          },
+          textAlign: "center",
+          color: "#374151",
+          padding: {
+            xs: 1.5,
+            sm: 2,
+          },
+          backgroundColor: "#f8fafc",
+          borderRadius: "8px",
+          border: "1px solid #e2e8f0",
+        }}
+      >
+        {paidAllMonth
+          ? `${getPendingInvoicesCount()} pending invoice(s) for ${format(
+              new Date(paidAllMonth + "-01"),
+              "MMMM yyyy"
+            )} will be marked as paid.`
+          : `${getPendingInvoicesCount()} pending invoice(s) will be marked as paid.`}
+      </Typography>
+
+      <Box
+        sx={{
+          mt: {
+            xs: 3,
+            sm: 3.5,
+            md: 4,
+          },
+          pt: {
+            xs: 1.5,
+            sm: 2,
+          },
+          display: "flex",
+          justifyContent: {
+            xs: "center",
+            sm: "flex-end",
+          },
+          gap: {
+            xs: 1.5,
+            sm: 2,
+          },
+          borderTop: "1px solid #e2e8f0",
+          flexDirection: {
+            xs: "column",
+            sm: "row",
+          },
+          "& button": {
+            minHeight: {
+              xs: "44px",
+              sm: "40px",
+              md: "44px",
+            },
+            fontSize: {
+              xs: "0.875rem",
+              sm: "0.9rem",
+              md: "1rem",
+            },
+            padding: {
+              xs: "12px 20px",
+              sm: "10px 16px",
+              md: "10px 20px",
+            },
+            width: {
+              xs: "100%",
+              sm: "auto",
+            },
+            textAlign: "center",
+            justifyContent: "center",
+            display: "flex",
+            alignItems: "center",
+          },
+        }}
+      >
+        <button
+          className="clear-filters-btn"
+          onClick={() => {
+            setShowPaidAllModal(false);
+            setPaidAllMonth("");
+          }}
+          disabled={isPaidAllLoading}
+        >
+          Cancel
+        </button>
+        <button
+          className="add-btn"
+          onClick={handlePaidAll}
+          disabled={isPaidAllLoading || getPendingInvoicesCount() === 0}
+        >
+          {isPaidAllLoading ? (
+            <div className="loading-spinner"></div>
+          ) : (
+            `Mark ${getPendingInvoicesCount()} Invoice(s) as Paid`
+          )}
+        </button>
+      </Box>
     </Box>
-  </Box>
-);
+  );
+};
 const getNextTwelveMonths = () => {
   const months = [];
   const currentDate = new Date();
+
+  for (let i = -2; i < 0; i++) {
+    const date = new Date(
+      currentDate.getFullYear(),
+      currentDate.getMonth() + i,
+      1
+    );
+    const monthYear = format(date, "yyyy-MM");
+    months.push(monthYear);
+  }
 
   for (let i = 0; i < 12; i++) {
     const date = new Date(
@@ -438,6 +1100,10 @@ const SalaryInvoiceManagement = () => {
   const [isLoadingInvoices, setIsLoadingInvoices] = useState(true);
   const { notification, showNotification, closeNotification } =
     useNotification();
+  const { isMobile, isTablet } = useResponsive();
+  const pendingCount = invoices.filter(
+    (inv) => inv.status === "pending"
+  ).length;
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
@@ -830,35 +1496,70 @@ const SalaryInvoiceManagement = () => {
             {filteredInvoices.length} Total Invoices
           </p>
         </div>
-        <div className="header-buttons">
+        <div
+          className="header-buttons"
+          style={{
+            display: "flex",
+            gap: isMobile ? "8px" : "12px",
+            alignItems: "center",
+            flexWrap: isMobile ? "wrap" : "nowrap",
+            justifyContent: isMobile ? "center" : "flex-end",
+            width: "100%",
+          }}
+        >
           <SyncButton
             isSyncing={isSyncing}
             onClick={() => fetchInvoices(true)}
+            style={{
+              order: isMobile ? 1 : 0,
+              width: isMobile ? "100%" : "auto",
+              minHeight: isMobile ? "44px" : "auto",
+            }}
           />
+
           <button
-            className="add-btn paid-all-btn"
+            className="add-btn paid-all-btn responsive-add-btn"
             onClick={() => setShowPaidAllModal(true)}
-            disabled={
-              invoices.filter((inv) => inv.status === "pending").length === 0
-            }
+            disabled={pendingCount === 0}
+            title={`Mark ${pendingCount} pending invoice(s) as paid`}
             style={{
               backgroundColor: "#15803d",
-              marginRight: "8px",
+              marginRight: isMobile ? "0" : "8px",
+              order: isMobile ? 3 : 0,
+              width: isMobile ? "50%" : "auto",
+              minHeight: isMobile ? "44px" : "40px",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              padding: isMobile ? "12px 16px" : "8px 16px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "8px",
+              whiteSpace: isMobile ? "nowrap" : "normal",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
             }}
           >
-            Mark All Paid (
-            {invoices.filter((inv) => inv.status === "pending").length})
+            <span className="paid-btn-text">
+              {isMobile
+                ? `Mark All (${pendingCount})`
+                : `Mark All Paid (${pendingCount})`}
+            </span>
           </button>
+
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={() => {
               setCurrentInvoice(null);
               setFormData(initialFormState);
               setIsViewMode(false);
               setShowModal(true);
             }}
+            title="Generate Invoice"
           >
-            <FaPlus /> Generate Invoice
+            <FaPlus style={{ fontSize: isMobile ? "0.8rem" : "0.875rem" }} />
+            <span className="add-btn-text">
+              {isMobile ? "Generate" : "Generate Invoice"}
+            </span>
           </button>
         </div>
       </div>
@@ -919,15 +1620,24 @@ const SalaryInvoiceManagement = () => {
             value={selectedStaff}
             onChange={(e) => setSelectedStaff(e.target.value)}
             sx={{
-              width: "250px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -975,15 +1685,24 @@ const SalaryInvoiceManagement = () => {
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -1005,7 +1724,11 @@ const SalaryInvoiceManagement = () => {
             value={selectedYear}
             onChange={(e) => setSelectedYear(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",

@@ -1206,7 +1206,9 @@ const ScheduleFormModal = ({
               multiple
               id="students-autocomplete"
               options={students.filter(
-                (student) => !student.name.includes("(Inactive Student)")
+                (student) =>
+                  !student.name.includes("(Inactive Student)") &&
+                  !["freeze", "drop"].includes(student.profile?.status)
               )}
               getOptionLabel={(option) =>
                 `${option?.profile?.studentId || ""} - ${option.name}`
@@ -1214,7 +1216,8 @@ const ScheduleFormModal = ({
               value={students.filter(
                 (student) =>
                   formData.students.includes(student._id) &&
-                  !student.name.includes("(Inactive Student)")
+                  !student.name.includes("(Inactive Student)") &&
+                  !["freeze", "drop"].includes(student.profile?.status)
               )}
               onChange={(event, newValue) => {
                 handleChange({
@@ -2504,6 +2507,7 @@ const AdminScheduleView = () => {
           studentId: student.profile?.studentId,
         },
       }));
+      console.log(studentsWithDetails);
       setStudents(studentsWithDetails);
     } catch (error) {
       showNotification(
@@ -3021,36 +3025,38 @@ const AdminScheduleView = () => {
             isSyncing={isSyncing}
             onClick={() => fetchSchedules(true)}
           />
+
           <button
-            className="summary-btn"
+            className="add-btn responsive-add-btn"
             onClick={calculateSummary}
             title="View Today's Summary"
           >
             <FaChartBar />
+            <span className="add-btn-text">Summary</span>
           </button>
+
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={() => setShowDeleteSchedulesModal(true)}
             disabled={isLoading}
-            style={{ marginRight: "8px", backgroundColor: "#dc2626" }}
           >
-            <FaTrash /> Delete Schedules
+            <FaTrash />
+            <span className="add-btn-text">Delete Schedules</span>
           </button>
+
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={generateSchedulePDF}
             disabled={isGeneratingPDF || filteredSchedules.length === 0}
             title="Download Schedule Report with Lessons"
           >
-            {isGeneratingPDF ? (
-              <CircularProgress size={16} color="inherit" />
-            ) : (
-              <FaFilePdf />
-            )}
-            {isGeneratingPDF ? "Generating..." : "Download PDF"}
+            <FaFilePdf />
+
+            <span className="add-btn-text">Download PDF</span>
           </button>
+
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={() => {
               setCurrentSchedule(null);
               setFormData({
@@ -3067,7 +3073,8 @@ const AdminScheduleView = () => {
               setShowModal(true);
             }}
           >
-            <FaPlus /> Add Schedule
+            <FaPlus />
+            <span className="add-btn-text"> Add Schedule</span>
           </button>
         </div>
       </div>
@@ -3172,7 +3179,11 @@ const AdminScheduleView = () => {
             value={selectedSubjectFilter}
             onChange={(e) => setSelectedSubjectFilter(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -3192,6 +3203,7 @@ const AdminScheduleView = () => {
             <MenuItem value="subjects">Subjects</MenuItem>
           </Select>
         </div>
+
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
@@ -3199,7 +3211,11 @@ const AdminScheduleView = () => {
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -3222,6 +3238,7 @@ const AdminScheduleView = () => {
             ))}
           </Select>
         </div>
+
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
@@ -3229,7 +3246,11 @@ const AdminScheduleView = () => {
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -3253,7 +3274,6 @@ const AdminScheduleView = () => {
             <MenuItem value={SESSION_STATUS.LEAVE}>Leave</MenuItem>
           </Select>
         </div>
-
         <div className="filter-box">
           <ReactDatePicker
             selectsRange={true}
@@ -3266,7 +3286,9 @@ const AdminScheduleView = () => {
             dateFormat="dd/MM/yyyy"
             customInput={
               <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+                {window.innerWidth >= 768 && (
+                  <FaFilter className="filter-icon" />
+                )}
                 <input
                   className="date-range-input"
                   placeholder="Select date range"
@@ -3278,6 +3300,9 @@ const AdminScheduleView = () => {
                         )}`
                       : ""
                   }
+                  style={{
+                    paddingLeft: window.innerWidth >= 768 ? "36px" : "12px",
+                  }}
                   readOnly
                 />
               </div>
@@ -3285,7 +3310,14 @@ const AdminScheduleView = () => {
           />
         </div>
         <div className="filter-box">
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
             <input
               type="time"
               value={timeRange.start}
@@ -3298,10 +3330,17 @@ const AdminScheduleView = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
-            <span style={{ color: "#64748b" }}>to</span>
+            <span
+              style={{
+                color: "#64748b",
+                textAlign: window.innerWidth < 768 ? "center" : "left",
+              }}
+            >
+              to
+            </span>
             <input
               type="time"
               value={timeRange.end}
@@ -3314,7 +3353,7 @@ const AdminScheduleView = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
           </div>

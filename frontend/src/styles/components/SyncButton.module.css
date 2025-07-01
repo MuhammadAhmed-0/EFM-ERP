@@ -130,26 +130,28 @@
   }
 }
 
-@media (max-width: 640px) {
+/* Mobile Styles - Consistent sizing with timetable button */
+@media (max-width: 767px) {
   .syncBtn {
-    height: 40px;
-    min-width: 40px;
-    padding: 10px;
+    height: 44px;
+    min-width: 44px;
+    padding: 10px 16px;
     gap: 0;
     justify-content: center;
+    border-radius: 8px;
   }
 
   .syncBtn svg {
-    font-size: 15px;
+    font-size: 16px;
   }
 }
 
 @media (max-width: 479px) {
   .syncBtn {
-    height: 36px;
-    min-width: 36px;
-    padding: 8px;
-    border-radius: 6px;
+    height: 40px;
+    min-width: 40px;
+    padding: 8px 10px;
+    border-radius: 8px;
   }
 
   .syncBtn svg {

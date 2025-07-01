@@ -84,9 +84,9 @@ const ModalContent = ({
   isInfoVisible,
   handleAdminPasswordSubmit,
 }) => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
-  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  // Responsive breakpoints
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
   const [freezeStartDate, setFreezeStartDate] = React.useState(
     formData.freezeStartDate ? new Date(formData.freezeStartDate) : new Date()
@@ -115,27 +115,65 @@ const ModalContent = ({
     });
   };
 
+  // Responsive modal styles
+  const getResponsiveModalStyles = () => ({
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: {
+      xs: "95vw",
+      sm: "85vw",
+      md: "600px",
+      lg: "700px",
+      xl: "800px",
+    },
+    maxWidth: {
+      xs: "400px",
+      sm: "500px",
+      md: "600px",
+      lg: "700px",
+      xl: "800px",
+    },
+    maxHeight: {
+      xs: "95vh",
+      sm: "90vh",
+      md: "85vh",
+    },
+    bgcolor: "background.paper",
+    borderRadius: {
+      xs: "8px",
+      sm: "12px",
+    },
+    boxShadow: 24,
+    p: {
+      xs: 2,
+      sm: 3,
+      md: 4,
+    },
+    overflow: "auto",
+    "&:focus-visible": {
+      outline: "none",
+    },
+  });
+
   return (
-    <Box
-      sx={{
-        ...getModalStyles(),
-        width: isMobile ? "95vw" : "90vw",
-        maxWidth: isMobile ? "none" : "600px",
-        p: isMobile ? 2 : 4,
-      }}
-    >
+    <Box sx={getResponsiveModalStyles()}>
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          mb: isMobile ? 2 : 3,
-          alignItems: "center",
+          mb: { xs: 2, sm: 3 },
+          alignItems: { xs: "flex-start", sm: "center" },
+          flexDirection: { xs: "column", sm: "row" },
+          gap: { xs: 1, sm: 0 },
         }}
       >
         <Typography
           variant="h6"
           sx={{
-            fontSize: isMobile ? "1.125rem" : "1.25rem",
+            fontSize: { xs: "1.1rem", sm: "1.25rem" },
             fontWeight: 600,
           }}
         >
@@ -144,10 +182,17 @@ const ModalContent = ({
         <Button
           onClick={() => !isLoading && setShowModal(false)}
           sx={{
-            minWidth: "auto",
-            width: isMobile ? "32px" : "40px",
-            height: isMobile ? "32px" : "40px",
+            minWidth: { xs: "28px", sm: "auto" },
+            width: { xs: "28px", sm: "40px" },
+            height: { xs: "28px", sm: "40px" },
             p: 0,
+            fontSize: { xs: "18px", sm: "20px" },
+            alignSelf: { xs: "flex-end", sm: "center" },
+            color: "#64748b",
+            "&:hover": {
+              bgcolor: "#f1f5f9",
+              color: "#3949ab",
+            },
           }}
         >
           ×
@@ -167,7 +212,10 @@ const ModalContent = ({
             }}
             sx={{
               "& .MuiInputBase-input": {
-                fontSize: isMobile ? "0.875rem" : "1rem",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
               },
             }}
           />
@@ -186,10 +234,13 @@ const ModalContent = ({
           helperText={errors.name}
           sx={{
             "& .MuiInputBase-input": {
-              fontSize: isMobile ? "0.875rem" : "1rem",
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
             },
             "& .MuiFormHelperText-root": {
-              fontSize: isMobile ? "0.75rem" : "0.875rem",
+              fontSize: { xs: "0.75rem", sm: "0.875rem" },
             },
           }}
         />
@@ -210,10 +261,13 @@ const ModalContent = ({
               helperText={errors.email}
               sx={{
                 "& .MuiInputBase-input": {
-                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
                 },
                 "& .MuiFormHelperText-root": {
-                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
                 },
               }}
             />
@@ -236,10 +290,13 @@ const ModalContent = ({
               }
               sx={{
                 "& .MuiInputBase-input": {
-                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
                 },
                 "& .MuiFormHelperText-root": {
-                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontSize: { xs: "0.75rem", sm: "0.875rem" },
                 },
               }}
             />
@@ -254,7 +311,10 @@ const ModalContent = ({
               size="small"
               sx={{
                 "& .MuiInputBase-input": {
-                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
                 },
               }}
             />
@@ -262,13 +322,15 @@ const ModalContent = ({
         ) : (
           <>
             {currentClient ? (
-              <Box sx={{ mt: 2, mb: 2 }}>
+              <Box
+                sx={{ mt: 2, mb: 2, p: { xs: 1.5, sm: 2 }, bgcolor: "#fff" }}
+              >
                 <Typography
                   variant="subtitle2"
                   sx={{
                     mb: 2,
                     fontWeight: "bold",
-                    fontSize: isMobile ? "0.875rem" : "1rem",
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
                   }}
                 >
                   Enter Admin Password to Edit Sensitive Information
@@ -285,10 +347,10 @@ const ModalContent = ({
                   sx={{
                     mb: 2,
                     "& .MuiInputBase-input": {
-                      fontSize: isMobile ? "0.875rem" : "1rem",
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
                     },
                     "& .MuiFormHelperText-root": {
-                      fontSize: isMobile ? "0.75rem" : "0.875rem",
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
                     },
                   }}
                 />
@@ -296,11 +358,11 @@ const ModalContent = ({
                   fullWidth
                   variant="contained"
                   onClick={handleAdminPasswordSubmit}
-                  size={isMobile ? "medium" : "large"}
                   sx={{
                     bgcolor: "#1f3d61",
-                    fontSize: isMobile ? "0.875rem" : "1rem",
-                    py: isMobile ? 1.25 : 1.5,
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                    py: { xs: 1.25, sm: 1.5 },
+                    minHeight: { xs: "44px", sm: "auto" },
                     "&:hover": {
                       bgcolor: "#1f3d70",
                     },
@@ -325,10 +387,13 @@ const ModalContent = ({
                   helperText={errors.email}
                   sx={{
                     "& .MuiInputBase-input": {
-                      fontSize: isMobile ? "0.875rem" : "1rem",
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
                     },
                     "& .MuiFormHelperText-root": {
-                      fontSize: isMobile ? "0.75rem" : "0.875rem",
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
                     },
                   }}
                 />
@@ -349,10 +414,13 @@ const ModalContent = ({
                   }
                   sx={{
                     "& .MuiInputBase-input": {
-                      fontSize: isMobile ? "0.875rem" : "1rem",
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
                     },
                     "& .MuiFormHelperText-root": {
-                      fontSize: isMobile ? "0.75rem" : "0.875rem",
+                      fontSize: { xs: "0.75rem", sm: "0.875rem" },
                     },
                   }}
                 />
@@ -367,7 +435,10 @@ const ModalContent = ({
                   size="small"
                   sx={{
                     "& .MuiInputBase-input": {
-                      fontSize: isMobile ? "0.875rem" : "1rem",
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
                     },
                   }}
                 />
@@ -379,15 +450,15 @@ const ModalContent = ({
         <Box
           sx={{
             display: "flex",
-            gap: isMobile ? 1 : 1,
+            gap: { xs: 1, sm: 1 },
             mb: 1,
-            flexDirection: isMobile ? "column" : "row",
+            flexDirection: { xs: "column", sm: "row" },
           }}
         >
           <FormControl fullWidth margin="normal" size="small">
             <InputLabel
               sx={{
-                fontSize: isMobile ? "0.875rem" : "1rem",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
               }}
             >
               Gender
@@ -400,7 +471,7 @@ const ModalContent = ({
               required
               sx={{
                 "& .MuiSelect-select": {
-                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
                 },
               }}
             >
@@ -415,7 +486,7 @@ const ModalContent = ({
           <FormControl fullWidth margin="normal" size="small">
             <InputLabel
               sx={{
-                fontSize: isMobile ? "0.875rem" : "1rem",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
               }}
             >
               Shift
@@ -428,7 +499,7 @@ const ModalContent = ({
               required
               sx={{
                 "& .MuiSelect-select": {
-                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
                 },
               }}
             >
@@ -444,9 +515,9 @@ const ModalContent = ({
         <Box
           sx={{
             display: "flex",
-            gap: isMobile ? 1 : 1,
+            gap: { xs: 1, sm: 1 },
             mb: 1,
-            flexDirection: isMobile ? "column" : "row",
+            flexDirection: { xs: "column", sm: "row" },
           }}
         >
           <TextField
@@ -459,7 +530,10 @@ const ModalContent = ({
             size="small"
             sx={{
               "& .MuiInputBase-input": {
-                fontSize: isMobile ? "0.875rem" : "1rem",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
               },
             }}
           />
@@ -474,7 +548,10 @@ const ModalContent = ({
             size="small"
             sx={{
               "& .MuiInputBase-input": {
-                fontSize: isMobile ? "0.875rem" : "1rem",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
               },
             }}
           />
@@ -483,7 +560,7 @@ const ModalContent = ({
         <FormControl fullWidth margin="normal" size="small">
           <InputLabel
             sx={{
-              fontSize: isMobile ? "0.875rem" : "1rem",
+              fontSize: { xs: "0.875rem", sm: "1rem" },
             }}
           >
             Status
@@ -495,7 +572,7 @@ const ModalContent = ({
             onChange={handleChange}
             sx={{
               "& .MuiSelect-select": {
-                fontSize: isMobile ? "0.875rem" : "1rem",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
               },
             }}
           >
@@ -513,7 +590,7 @@ const ModalContent = ({
                 sx={{
                   mt: 0.5,
                   color: "#a855f7",
-                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
                 }}
               >
                 {currentClient && currentClient.status === "freeze"
@@ -526,7 +603,7 @@ const ModalContent = ({
                   mt: 2,
                   border: "1px solid #e2e8f0",
                   borderRadius: "8px",
-                  p: isMobile ? 1.5 : 2,
+                  p: { xs: 1.5, sm: 2 },
                   bgcolor: "#f8fafc",
                 }}
               >
@@ -536,7 +613,7 @@ const ModalContent = ({
                     mb: 1,
                     color: "#a855f7",
                     fontWeight: 600,
-                    fontSize: isMobile ? "0.875rem" : "1rem",
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
                   }}
                 >
                   Freeze Period
@@ -551,16 +628,19 @@ const ModalContent = ({
                       slotProps={{
                         textField: {
                           fullWidth: true,
-                          size: isMobile ? "small" : "medium",
+                          size: "small",
                           margin: "dense",
                           error: !!errors.freezeStartDate,
                           helperText: errors.freezeStartDate,
                           sx: {
                             "& .MuiInputBase-input": {
-                              fontSize: isMobile ? "0.875rem" : "1rem",
+                              fontSize: { xs: "0.875rem", sm: "1rem" },
+                            },
+                            "& .MuiInputLabel-root": {
+                              fontSize: { xs: "0.875rem", sm: "1rem" },
                             },
                             "& .MuiFormHelperText-root": {
-                              fontSize: isMobile ? "0.75rem" : "0.875rem",
+                              fontSize: { xs: "0.75rem", sm: "0.875rem" },
                             },
                           },
                         },
@@ -577,7 +657,7 @@ const ModalContent = ({
                       slotProps={{
                         textField: {
                           fullWidth: true,
-                          size: isMobile ? "small" : "medium",
+                          size: "small",
                           margin: "dense",
                           error: !!errors.freezeEndDate,
                           helperText:
@@ -585,10 +665,13 @@ const ModalContent = ({
                             "Leave empty for indefinite freeze",
                           sx: {
                             "& .MuiInputBase-input": {
-                              fontSize: isMobile ? "0.875rem" : "1rem",
+                              fontSize: { xs: "0.875rem", sm: "1rem" },
+                            },
+                            "& .MuiInputLabel-root": {
+                              fontSize: { xs: "0.875rem", sm: "1rem" },
                             },
                             "& .MuiFormHelperText-root": {
-                              fontSize: isMobile ? "0.75rem" : "0.875rem",
+                              fontSize: { xs: "0.75rem", sm: "0.875rem" },
                             },
                           },
                         },
@@ -603,7 +686,7 @@ const ModalContent = ({
                     display: "block",
                     mt: 1,
                     color: "#64748b",
-                    fontSize: isMobile ? "0.75rem" : "0.875rem",
+                    fontSize: { xs: "0.7rem", sm: "0.75rem" },
                   }}
                 >
                   {freezeEndDate
@@ -622,7 +705,7 @@ const ModalContent = ({
                 sx={{
                   mt: 0.5,
                   color: "#10b981",
-                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
                 }}
               >
                 Changing from freeze to {formData.status} will end the current
@@ -636,7 +719,7 @@ const ModalContent = ({
             display: "flex",
             gap: 2,
             mb: 1,
-            flexDirection: "column",
+            flexDirection: { xs: "column", sm: "row" },
           }}
         >
           <TextField
@@ -650,7 +733,10 @@ const ModalContent = ({
             size="small"
             sx={{
               "& .MuiInputBase-input": {
-                fontSize: isMobile ? "0.875rem" : "1rem",
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
               },
             }}
           />
@@ -676,7 +762,10 @@ const ModalContent = ({
                   size="small"
                   sx={{
                     "& .MuiInputBase-input": {
-                      fontSize: isMobile ? "0.875rem" : "1rem",
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
                     },
                   }}
                 />
@@ -697,7 +786,10 @@ const ModalContent = ({
           size="small"
           sx={{
             "& .MuiInputBase-input": {
-              fontSize: isMobile ? "0.875rem" : "1rem",
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
             },
           }}
         />
@@ -742,8 +834,11 @@ const ModalContent = ({
                         backgroundColor: "#f8fafc",
                         color: "#374151",
                         fontWeight: 600,
-                        fontSize: "0.875rem",
-                        padding: "12px 16px 8px 16px",
+                        fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                        padding: {
+                          xs: "10px 14px 6px 14px",
+                          sm: "12px 16px 8px 16px",
+                        },
                         borderBottom: "1px solid #e5e7eb",
                         zIndex: 1,
                         textTransform: "uppercase",
@@ -762,15 +857,20 @@ const ModalContent = ({
                         display: "flex",
                         alignItems: "center",
                         width: "100%",
-                        padding: "8px 16px",
+                        padding: { xs: "6px 12px", sm: "8px 16px" },
+                        flexDirection: { xs: "column", sm: "row" },
+                        gap: { xs: 1, sm: 2 },
+                        alignItems: { xs: "flex-start", sm: "center" },
                       }}
                     >
                       <Box
                         sx={{
                           flexGrow: 1,
                           display: "flex",
-                          alignItems: "center",
-                          gap: 2,
+                          alignItems: { xs: "flex-start", sm: "center" },
+                          gap: { xs: 1, sm: 2 },
+                          width: "100%",
+                          flexDirection: { xs: "column", sm: "row" },
                         }}
                       >
                         <Typography
@@ -778,7 +878,7 @@ const ModalContent = ({
                           sx={{
                             fontWeight: 500,
                             color: "#374151",
-                            fontSize: "0.875rem",
+                            fontSize: { xs: "0.8rem", sm: "0.875rem" },
                           }}
                         >
                           {option.clientId} - {option.clientName}
@@ -791,7 +891,7 @@ const ModalContent = ({
                             color: option.user?.isActive
                               ? "#22c55e"
                               : "#dc2626",
-                            fontSize: "0.75rem",
+                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
                             fontWeight: 600,
                             padding: "2px 8px",
                             borderRadius: "12px",
@@ -799,6 +899,7 @@ const ModalContent = ({
                             letterSpacing: "0.025em",
                             minWidth: "60px",
                             textAlign: "center",
+                            alignSelf: { xs: "flex-start", sm: "center" },
                           }}
                         >
                           {option.user?.isActive ? "Active" : "Inactive"}
@@ -814,7 +915,10 @@ const ModalContent = ({
                     size="small"
                     sx={{
                       "& .MuiInputBase-input": {
-                        fontSize: isMobile ? "0.875rem" : "1rem",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
                       },
                     }}
                   />
@@ -854,16 +958,19 @@ const ModalContent = ({
                   textField: {
                     fullWidth: true,
                     margin: "normal",
-                    size: isMobile ? "small" : "medium",
+                    size: "small",
                     error: !!errors.referredOnDate,
                     helperText: errors.referredOnDate,
                     required: !!formData.referredByClientUserId,
                     sx: {
                       "& .MuiInputBase-input": {
-                        fontSize: isMobile ? "0.875rem" : "1rem",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
                       },
                       "& .MuiFormHelperText-root": {
-                        fontSize: isMobile ? "0.75rem" : "0.875rem",
+                        fontSize: { xs: "0.75rem", sm: "0.875rem" },
                       },
                     },
                   },
@@ -908,11 +1015,48 @@ const ModalContent = ({
                     size="small"
                     sx={{
                       "& .MuiInputBase-input": {
-                        fontSize: isMobile ? "0.875rem" : "1rem",
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
                       },
                     }}
                   />
                 )}
+                renderOption={(props, option) => {
+                  const { key, ...restProps } = props;
+                  return (
+                    <li key={key} {...restProps}>
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: { xs: "column", sm: "row" },
+                          alignItems: { xs: "flex-start", sm: "center" },
+                          gap: { xs: 0.5, sm: 1 },
+                          width: "100%",
+                          p: { xs: 1, sm: 0.5 },
+                        }}
+                      >
+                        <Typography
+                          sx={{
+                            fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                            fontWeight: 500,
+                          }}
+                        >
+                          {option.staffId} - {option.name}
+                        </Typography>
+                        <Typography
+                          sx={{
+                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                            color: "text.secondary",
+                          }}
+                        >
+                          ({formatRole(option.role)})
+                        </Typography>
+                      </Box>
+                    </li>
+                  );
+                }}
                 disabled={!formData.referredByClientUserId}
               />
             </FormControl>
@@ -921,12 +1065,12 @@ const ModalContent = ({
 
         <Box
           sx={{
-            mt: isMobile ? 3 : 4,
-            pt: isMobile ? 1.5 : 2,
+            mt: { xs: 3, sm: 4 },
+            pt: { xs: 1.5, sm: 2 },
             display: "flex",
-            flexDirection: isMobile ? "column" : "row",
+            flexDirection: { xs: "column", sm: "row" },
             justifyContent: "flex-end",
-            gap: isMobile ? 1.5 : 2,
+            gap: { xs: 1.5, sm: 2 },
             borderTop: "1px solid #e2e8f0",
           }}
         >
@@ -934,12 +1078,39 @@ const ModalContent = ({
             className="clear-filters-btn"
             onClick={() => setShowModal(false)}
             disabled={isLoading}
+            style={{
+              order: isMobile ? 2 : 1,
+              minHeight: isMobile ? "44px" : "auto",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
           >
             Cancel
           </button>
-          <button className="add-btn" type="submit" disabled={isLoading}>
+          <button
+            className="add-btn"
+            type="submit"
+            disabled={isLoading}
+            style={{
+              order: isMobile ? 1 : 2,
+              minHeight: isMobile ? "44px" : "auto",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
             {isLoading ? (
-              <div className="loading-spinner"></div>
+              <div
+                className="loading-spinner"
+                style={{
+                  margin: "0 auto",
+                }}
+              ></div>
             ) : currentClient ? (
               "Update Client"
             ) : (
@@ -1596,47 +1767,20 @@ const ClientsManagement = () => {
             isSyncing={isSyncing}
             onClick={() => fetchClients(true)}
           />
-          <button className="add-btn" onClick={handleAdd}>
+          <button className="add-btn responsive-add-btn" onClick={handleAdd}>
             <FaPlus />
             <span className="add-btn-text">Add Client</span>
           </button>
         </div>
       </div>
 
-      {/* Mobile Filter Toggle Button */}
-      {isMobile && (
-        <div className="mobile-filter-toggle">
-          <button
-            className="filter-toggle-btn"
-            onClick={() => setShowMobileFilters(!showMobileFilters)}
-          >
-            <FaFilter />
-            Filters
-            {(searchTerm ||
-              selectedStatus !== "all" ||
-              selectedActiveStatus !== "all" ||
-              (dateRange[0] && dateRange[1])) && (
-              <span className="filter-active-indicator"></span>
-            )}
-          </button>
-        </div>
-      )}
-
       {/* Filter Section */}
-      <div
-        className={`filter-section ${
-          isMobile
-            ? showMobileFilters
-              ? "mobile-filters-open"
-              : "mobile-filters-closed"
-            : ""
-        }`}
-      >
+      <div className={"filter-section"}>
         <div className="search-box">
           <FaSearch className="search-icon" />
           <input
             type="text"
-            placeholder={isSmallMobile ? "Search..." : "Search by Name or ID"}
+            placeholder="Search by Name or ID"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
@@ -1648,17 +1792,23 @@ const ClientsManagement = () => {
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
             displayEmpty
-            size="small"
             sx={{
-              width: "100%",
-              minWidth: isMobile ? "auto" : "200px",
-              height: isMobile ? "36px" : "40px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
+              height: "40px",
               ".MuiSelect-select": {
-                padding: isMobile ? "6px 10px 6px 32px" : "8px 12px 8px 36px",
+                padding: "8px 12px 8px 36px",
                 backgroundColor: "white",
                 border: "1px solid #e2e8f0",
                 borderRadius: "6px",
-                fontSize: isMobile ? "0.75rem" : "0.875rem",
+                fontSize: "0.875rem",
                 color: "#475569",
               },
               ".MuiOutlinedInput-notchedOutline": {
@@ -1681,17 +1831,23 @@ const ClientsManagement = () => {
             value={selectedActiveStatus}
             onChange={(e) => setSelectedActiveStatus(e.target.value)}
             displayEmpty
-            size="small"
             sx={{
-              width: "100%",
-              minWidth: isMobile ? "auto" : "200px",
-              height: isMobile ? "36px" : "40px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
+              height: "40px",
               ".MuiSelect-select": {
-                padding: isMobile ? "6px 10px 6px 32px" : "8px 12px 8px 36px",
+                padding: "8px 12px 8px 36px",
                 backgroundColor: "white",
                 border: "1px solid #e2e8f0",
                 borderRadius: "6px",
-                fontSize: isMobile ? "0.75rem" : "0.875rem",
+                fontSize: "0.875rem",
                 color: "#475569",
               },
               ".MuiOutlinedInput-notchedOutline": {
@@ -1716,13 +1872,30 @@ const ClientsManagement = () => {
             isClearable={true}
             dateFormat="dd/MM/yyyy"
             customInput={
-              <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+              <div
+                className="date-input-wrapper"
+                style={{
+                  width: window.innerWidth < 768 ? "100%" : "200px",
+                  position: "relative",
+                }}
+              >
+                {window.innerWidth >= 768 && (
+                  <FaFilter
+                    className="filter-icon"
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      zIndex: 1,
+                    }}
+                  />
+                )}{" "}
                 <input
                   className="date-range-input"
-                  placeholder={
-                    isSmallMobile ? "Date range" : "Select date range"
-                  }
+                  placeholder="Select date range"
                   value={
                     dateRange[0] && dateRange[1]
                       ? `${format(dateRange[0], "dd/MM/yyyy")} - ${format(
@@ -1733,11 +1906,19 @@ const ClientsManagement = () => {
                   }
                   readOnly
                   style={{
-                    fontSize: isMobile ? "0.75rem" : "0.875rem",
-                    height: isMobile ? "36px" : "40px",
-                    padding: isMobile
-                      ? "6px 8px 6px 28px"
-                      : "8px 12px 8px 36px",
+                    width: "100%",
+                    height: "44px",
+                    padding:
+                      window.innerWidth < 768
+                        ? "8px 12px"
+                        : "8px 12px 8px 36px",
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    color: "#475569",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
                   }}
                 />
               </div>

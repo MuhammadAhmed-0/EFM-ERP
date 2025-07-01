@@ -1016,6 +1016,8 @@
   font-family: "Poppins", -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
   letter-spacing: 0.025em;
+  height: 40px; /* Match sync button height */
+  min-width: 40px; /* Match sync button min-width */
 }
 
 .timetableButton::before {
@@ -1083,25 +1085,56 @@
     display: none;
   }
 }
+
 /* Show both icon and text by default */
 .timetableButtonText {
   display: inline;
 }
-/* Hide text on small screens - show only icon */
+
+/* Updated header button styles for better alignment */
+.headerButtons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  height: 44px; /* Consistent height container */
+}
+
+/* Mobile responsive styles - Match sync button dimensions */
 @media (max-width: 767px) {
   .timetableButtonText {
     display: none;
   }
 
   .timetableButton {
-    padding: 14px 16px;
-    min-width: none;
+    height: 44px;
+    min-width: 44px;
+    padding: 10px 16px;
+    gap: 0;
+    justify-content: center;
+  }
+
+  .headerButtons {
+    gap: 8px;
   }
 }
-/* For very small screens */
+
+/* For very small screens - Match sync button dimensions */
 @media (max-width: 479px) {
   .timetableButton {
-    padding: 8px 10px;
+    height: 40px;
     min-width: 40px;
+    padding: 8px 10px;
+  }
+
+  .headerButtons {
+    gap: 6px;
+  }
+}
+
+/* Touch device optimization */
+@media (hover: none) and (pointer: coarse) {
+  .timetableButton {
+    min-height: 44px;
+    min-width: 44px;
   }
 }

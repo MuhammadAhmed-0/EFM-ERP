@@ -1218,6 +1218,13 @@ exports.updateUser = async (req, res) => {
           roleSpecificFields.status !== currentStudent.status
         ) {
           const currentDate = new Date();
+          if (roleSpecificFields.status === "drop") {
+            user.isActive = false;
+            user.lastDeactivatedAt = currentDate;
+            user.deactivatedBy = req.user.id;
+            user.deactivationReason = "Student status changed to drop";
+            await user.save();
+          }
           statusUpdate = {
             status: roleSpecificFields.status,
             [`statusDates.${roleSpecificFields.status}`]: {

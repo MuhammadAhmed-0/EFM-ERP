@@ -68,7 +68,7 @@ app.use("/api/subjects", require("./routes/subjectRoutes"));
 app.use("/api/teachers", require("./routes/teacherRoutes"));
 app.use("/api/student-attendance", require("./routes/studentAttendanceRoutes"));
 app.use("/api/staff-attendance", require("./routes/staffAttendanceRoute"));
-app.use("/api/pdf", require("./routes/staffAttendanceRoute"));
+// app.use("/api/pdf", require("./routes/staffAttendanceRoute"));
 
 app.get("/", (req, res) => {
   res.send("ERP API is running");

@@ -60,6 +60,52 @@ const ModalContent = ({
   subjectTeacherPairs,
   clients,
 }) => {
+  // Responsive breakpoints
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
+  // Responsive modal styles
+  const getResponsiveModalStyles = () => ({
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: {
+      xs: "95vw",
+      sm: "85vw",
+      md: "600px",
+      lg: "700px",
+      xl: "800px",
+    },
+    maxWidth: {
+      xs: "400px",
+      sm: "500px",
+      md: "600px",
+      lg: "700px",
+      xl: "800px",
+    },
+    maxHeight: {
+      xs: "95vh",
+      sm: "90vh",
+      md: "85vh",
+    },
+    bgcolor: "background.paper",
+    borderRadius: {
+      xs: "8px",
+      sm: "12px",
+    },
+    boxShadow: 24,
+    p: {
+      xs: 2,
+      sm: 3,
+      md: 4,
+    },
+    overflow: "auto",
+    "&:focus-visible": {
+      outline: "none",
+    },
+  });
+
   const getFilteredTeachers = (subjectId) => {
     const activeTeachers = teachers.filter(
       (teacher) => teacher.isActive === true
@@ -104,12 +150,44 @@ const ModalContent = ({
   };
 
   return (
-    <Box sx={getModalStyles()}>
-      <Box sx={{ display: "flex", justifyContent: "space-between", mb: 3 }}>
-        <Typography variant="h6">
+    <Box sx={getResponsiveModalStyles()}>
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          mb: { xs: 2, sm: 3 },
+          flexDirection: { xs: "column", sm: "row" },
+          alignItems: { xs: "flex-start", sm: "center" },
+          gap: { xs: 1, sm: 0 },
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontSize: { xs: "1.1rem", sm: "1.25rem" },
+            fontWeight: 600,
+          }}
+        >
           {currentStudent ? "Edit Student" : "Add New Student"}
         </Typography>
-        <Button onClick={() => !isLoading && setShowModal(false)}>×</Button>
+        <Button
+          onClick={() => !isLoading && setShowModal(false)}
+          sx={{
+            minWidth: { xs: "28px", sm: "auto" },
+            height: { xs: "28px", sm: "auto" },
+            p: { xs: 0.5, sm: 1 },
+            color: "#64748b",
+            fontSize: { xs: "18px", sm: "20px" },
+            alignSelf: { xs: "flex-end", sm: "center" },
+            "&:hover": {
+              bgcolor: "#f1f5f9",
+              color: "#3949ab",
+            },
+          }}
+        >
+          ×
+        </Button>
       </Box>
 
       <form onSubmit={currentStudent ? handleEditSubmit : handleAddSubmit}>
@@ -124,6 +202,14 @@ const ModalContent = ({
           size="small"
           error={!!errors.name}
           helperText={errors.name}
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
         />
 
         <FormControl fullWidth margin="normal" size="small" required>
@@ -143,18 +229,63 @@ const ModalContent = ({
               });
             }}
             renderInput={(params) => (
-              <TextField {...params} label="Client" size="small" required />
+              <TextField
+                {...params}
+                label="Client"
+                size="small"
+                required
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                }}
+              />
             )}
+            renderOption={(props, option) => {
+              const { key, ...restProps } = props;
+              return (
+                <li key={key} {...restProps}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
+                      alignItems: { xs: "flex-start", sm: "center" },
+                      gap: { xs: 0.5, sm: 1 },
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                        fontWeight: 500,
+                      }}
+                    >
+                      {option.clientId} - {option.name}
+                    </Typography>
+                  </Box>
+                </li>
+              );
+            }}
           />
         </FormControl>
 
         <FormControl fullWidth margin="normal" size="small">
-          <InputLabel>Status</InputLabel>
+          <InputLabel sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+            Status
+          </InputLabel>
           <Select
             name="status"
             value={formData.status || "trial"}
             label="Status"
             onChange={handleChange}
+            sx={{
+              "& .MuiSelect-select": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
           >
             {STATUS_OPTIONS.map((status) => (
               <MenuItem key={status} value={status}>
@@ -165,7 +296,14 @@ const ModalContent = ({
 
           {formData.status === "freeze" && (
             <>
-              <Typography variant="caption" sx={{ mt: 0.5, color: "#a855f7" }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  mt: 0.5,
+                  color: "#a855f7",
+                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                }}
+              >
                 {currentStudent && currentStudent.profile.status === "freeze"
                   ? "Student is already in freeze status."
                   : "Setting status to freeze will start tracking the freeze period. The freeze will remain active until changed to another status."}
@@ -176,13 +314,18 @@ const ModalContent = ({
                   mt: 2,
                   border: "1px solid #e2e8f0",
                   borderRadius: "8px",
-                  p: 2,
+                  p: { xs: 1.5, sm: 2 },
                   bgcolor: "#f8fafc",
                 }}
               >
                 <Typography
                   variant="subtitle2"
-                  sx={{ mb: 1, color: "#a855f7", fontWeight: 600 }}
+                  sx={{
+                    mb: 1,
+                    color: "#a855f7",
+                    fontWeight: 600,
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  }}
                 >
                   Freeze Period
                 </Typography>
@@ -200,6 +343,14 @@ const ModalContent = ({
                           margin: "dense",
                           error: !!errors.freezeStartDate,
                           helperText: errors.freezeStartDate,
+                          sx: {
+                            "& .MuiInputBase-input": {
+                              fontSize: { xs: "0.875rem", sm: "1rem" },
+                            },
+                            "& .MuiInputLabel-root": {
+                              fontSize: { xs: "0.875rem", sm: "1rem" },
+                            },
+                          },
                         },
                       }}
                     />
@@ -220,6 +371,14 @@ const ModalContent = ({
                           helperText:
                             errors.freezeEndDate ||
                             "Leave empty for indefinite freeze",
+                          sx: {
+                            "& .MuiInputBase-input": {
+                              fontSize: { xs: "0.875rem", sm: "1rem" },
+                            },
+                            "& .MuiInputLabel-root": {
+                              fontSize: { xs: "0.875rem", sm: "1rem" },
+                            },
+                          },
                         },
                       }}
                     />
@@ -228,7 +387,12 @@ const ModalContent = ({
 
                 <Typography
                   variant="caption"
-                  sx={{ display: "block", mt: 1, color: "#64748b" }}
+                  sx={{
+                    display: "block",
+                    mt: 1,
+                    color: "#64748b",
+                    fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                  }}
                 >
                   {freezeEndDate
                     ? "The freeze will automatically end on the specified date."
@@ -241,7 +405,14 @@ const ModalContent = ({
           {currentStudent &&
             currentStudent.profile.status === "freeze" &&
             formData.status !== "freeze" && (
-              <Typography variant="caption" sx={{ mt: 0.5, color: "#10b981" }}>
+              <Typography
+                variant="caption"
+                sx={{
+                  mt: 0.5,
+                  color: "#10b981",
+                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                }}
+              >
                 Changing from freeze to {formData.status} will end the current
                 freeze period and record the end date.
               </Typography>
@@ -249,13 +420,20 @@ const ModalContent = ({
         </FormControl>
 
         <FormControl fullWidth margin="normal" size="small">
-          <InputLabel>Gender</InputLabel>
+          <InputLabel sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+            Gender
+          </InputLabel>
           <Select
             name="gender"
             value={formData.gender}
             label="Gender"
             onChange={handleChange}
             required
+            sx={{
+              "& .MuiSelect-select": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
           >
             {GENDERS.map((gender) => (
               <MenuItem key={gender} value={gender}>
@@ -276,6 +454,14 @@ const ModalContent = ({
           size="small"
           error={!!errors.grade}
           helperText={errors.grade}
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
         />
 
         <LocalizationProvider dateAdapter={AdapterDateFns}>
@@ -289,21 +475,46 @@ const ModalContent = ({
                 margin: "normal",
                 size: "small",
                 required: true,
+                sx: {
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                },
               },
             }}
           />
         </LocalizationProvider>
 
-        <Typography variant="subtitle1" sx={{ mt: 2, mb: 1 }}>
+        <Typography
+          variant="subtitle1"
+          sx={{
+            mt: { xs: 2, sm: 2 },
+            mb: 1,
+            fontSize: { xs: "1rem", sm: "1.125rem" },
+            fontWeight: 600,
+          }}
+        >
           Subjects and Teachers
         </Typography>
 
         {subjectTeacherPairs.map((pair, index) => (
           <Box
             key={index}
-            sx={{ display: "flex", gap: 1, mb: 2, alignItems: "flex-start" }}
+            sx={{
+              display: "flex",
+              gap: { xs: 1, sm: 1 },
+              mb: 2,
+              alignItems: "flex-start",
+              flexDirection: { xs: "column", sm: "row" },
+            }}
           >
-            <FormControl sx={{ flex: 1 }} size="small">
+            <FormControl
+              sx={{ flex: 1, width: { xs: "100%", sm: "auto" } }}
+              size="small"
+            >
               <Autocomplete
                 id={`subject-autocomplete-${index}`}
                 options={subjects}
@@ -324,11 +535,27 @@ const ModalContent = ({
                   );
                 }}
                 renderInput={(params) => (
-                  <TextField {...params} label="Subject" size="small" />
+                  <TextField
+                    {...params}
+                    label="Subject"
+                    size="small"
+                    sx={{
+                      "& .MuiInputBase-input": {
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
+                    }}
+                  />
                 )}
               />
             </FormControl>
-            <FormControl sx={{ flex: 1 }} size="small">
+
+            <FormControl
+              sx={{ flex: 1, width: { xs: "100%", sm: "auto" } }}
+              size="small"
+            >
               <Autocomplete
                 id={`teacher-autocomplete-${index}`}
                 options={getFilteredTeachers(pair.subjectId)}
@@ -356,24 +583,48 @@ const ModalContent = ({
                     {...params}
                     label="Active Teachers Only"
                     size="small"
+                    sx={{
+                      "& .MuiInputBase-input": {
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
+                      "& .MuiInputLabel-root": {
+                        fontSize: { xs: "0.875rem", sm: "1rem" },
+                      },
+                    }}
                   />
                 )}
                 renderOption={(props, option) => {
                   const { key, ...restProps } = props;
                   return (
                     <li key={key} {...restProps}>
-                      {getTeacherDisplayName(option, pair.subjectId)}
-                      {/* Optional: Show active status indicator */}
-                      <span
-                        style={{
-                          marginLeft: "8px",
-                          color: "#22c55e",
-                          fontSize: "0.75rem",
-                          fontWeight: "500",
+                      <Box
+                        sx={{
+                          display: "flex",
+                          flexDirection: { xs: "column", sm: "row" },
+                          alignItems: { xs: "flex-start", sm: "center" },
+                          gap: { xs: 0.5, sm: 1 },
+                          width: "100%",
                         }}
                       >
-                        ✓ Active
-                      </span>
+                        <Typography
+                          sx={{
+                            fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                            fontWeight: 500,
+                          }}
+                        >
+                          {getTeacherDisplayName(option, pair.subjectId)}
+                        </Typography>
+                        <span
+                          style={{
+                            marginLeft: isMobile ? "0" : "8px",
+                            color: "#22c55e",
+                            fontSize: isMobile ? "0.7rem" : "0.75rem",
+                            fontWeight: "500",
+                          }}
+                        >
+                          ✓ Active
+                        </span>
+                      </Box>
                     </li>
                   );
                 }}
@@ -385,33 +636,93 @@ const ModalContent = ({
                 }
               />
             </FormControl>
-            <IconButton onClick={() => handleRemoveSubjectTeacher(index)}>
-              <FaTrash />
+
+            <IconButton
+              onClick={() => handleRemoveSubjectTeacher(index)}
+              sx={{
+                width: { xs: "100%", sm: "auto" },
+                height: { xs: "44px", sm: "auto" },
+                mt: { xs: 1, sm: 0 },
+                border: { xs: "1px solid #fecaca", sm: "none" },
+                borderRadius: { xs: "6px", sm: "50%" },
+          
+              }}
+            >
+              <FaTrash size={isMobile ? 14 : 16} />
+              {isMobile && (
+                <Typography sx={{ ml: 1, fontSize: "0.875rem" }}>
+                  Remove
+                </Typography>
+              )}
             </IconButton>
           </Box>
         ))}
-        <button className="glass-add-btn" onClick={handleAddSubjectTeacher}>
+
+        <button
+          className="glass-add-btn"
+          onClick={handleAddSubjectTeacher}
+          style={{
+            width: isMobile ? "100%" : "auto",
+            minHeight: isMobile ? "44px" : "auto",
+            fontSize: isMobile ? "0.875rem" : "0.9rem",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "6px",
+            marginBottom: isMobile ? "16px" : "0",
+          }}
+        >
           Add Subject & Teacher
         </button>
+
         <Box
           sx={{
-            mt: 4,
+            mt: { xs: 3, sm: 4 },
             pt: 2,
             display: "flex",
             justifyContent: "flex-end",
-            gap: 2,
+            gap: { xs: 1.5, sm: 2 },
+            borderTop: "1px solid #e2e8f0",
+            flexDirection: { xs: "column", sm: "row" },
           }}
         >
           <button
             className="clear-filters-btn"
             onClick={() => setShowModal(false)}
             disabled={isLoading}
+            style={{
+              order: isMobile ? 2 : 1,
+              minHeight: isMobile ? "44px" : "auto",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
           >
             Cancel
           </button>
-          <button className="add-btn" type="submit" disabled={isLoading}>
+          <button
+            className="add-btn"
+            type="submit"
+            disabled={isLoading}
+            style={{
+              order: isMobile ? 1 : 2,
+              minHeight: isMobile ? "44px" : "auto",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
             {isLoading ? (
-              <div className="loading-spinner"></div>
+              <div
+                className="loading-spinner"
+                style={{
+                  margin: "0 auto",
+                }}
+              ></div>
             ) : currentStudent ? (
               "Update Student"
             ) : (
@@ -1243,12 +1554,12 @@ const StudentsManagement = () => {
             isSyncing={isSyncing}
             onClick={() => fetchStudents(true)}
           />
-          <button className="add-btn" onClick={handleAdd}>
-            <FaPlus /> Add Student
+          <button className="add-btn responsive-add-btn" onClick={handleAdd}>
+            <FaPlus />
+            <span className="add-btn-text">Add Student</span>
           </button>
         </div>
       </div>
-
       <div className="filter-section">
         <div className="search-box">
           <FaSearch className="search-icon" />
@@ -1266,7 +1577,15 @@ const StudentsManagement = () => {
             onChange={(e) => setSelectedStatus(e.target.value)}
             displayEmpty
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -1296,7 +1615,15 @@ const StudentsManagement = () => {
             onChange={(e) => setSelectedStudentActiveStatus(e.target.value)}
             displayEmpty
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -1324,7 +1651,15 @@ const StudentsManagement = () => {
             onChange={(e) => setSelectedSubjectType(e.target.value)}
             displayEmpty
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -1356,8 +1691,27 @@ const StudentsManagement = () => {
             isClearable={true}
             dateFormat="dd/MM/yyyy"
             customInput={
-              <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+              <div
+                className="date-input-wrapper"
+                style={{
+                  width: window.innerWidth < 768 ? "100%" : "200px",
+                  position: "relative",
+                }}
+              >
+                {window.innerWidth >= 768 && (
+                  <FaFilter
+                    className="filter-icon"
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      zIndex: 1,
+                    }}
+                  />
+                )}{" "}
                 <input
                   className="date-range-input"
                   placeholder="Select date range"
@@ -1370,6 +1724,21 @@ const StudentsManagement = () => {
                       : ""
                   }
                   readOnly
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    padding:
+                      window.innerWidth < 768
+                        ? "8px 12px"
+                        : "8px 12px 8px 36px",
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    color: "#475569",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
             }

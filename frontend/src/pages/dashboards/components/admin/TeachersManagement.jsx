@@ -87,6 +87,10 @@ const AssignManagerModal = ({
   const [selectedManager, setSelectedManager] = useState("");
   const [isAssigning, setIsAssigning] = useState(false);
 
+  // Responsive breakpoints
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
   const handleTeacherSelect = (teacherId) => {
     setSelectedTeachers((prev) =>
       prev.includes(teacherId)
@@ -125,33 +129,89 @@ const AssignManagerModal = ({
 
   const selectedManagerData = managers.find((m) => m._id === selectedManager);
 
+  // Responsive modal styles
+  const getResponsiveModalStyles = () => ({
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: {
+      xs: "95vw",
+      sm: "85vw",
+      md: "600px",
+      lg: "700px",
+      xl: "800px",
+    },
+    maxWidth: {
+      xs: "400px",
+      sm: "500px",
+      md: "600px",
+      lg: "700px",
+      xl: "800px",
+    },
+    maxHeight: {
+      xs: "95vh",
+      sm: "90vh",
+      md: "85vh",
+    },
+    bgcolor: "background.paper",
+    borderRadius: {
+      xs: "8px",
+      sm: "12px",
+    },
+    boxShadow: 24,
+    p: {
+      xs: 2,
+      sm: 3,
+      md: 4,
+    },
+    overflow: "hidden",
+    display: "flex",
+    flexDirection: "column",
+    "&:focus-visible": {
+      outline: "none",
+    },
+  });
+
   return (
     <Modal
       open={showModal}
       onClose={() => !isAssigning && setShowModal(false)}
       aria-labelledby="assign-manager-modal"
     >
-      <Box
-        sx={{
-          ...getModalStyles(),
-          width: 700,
-          maxHeight: "90vh",
-          overflow: "hidden",
-          display: "flex",
-          flexDirection: "column",
-        }}
-      >
-        <Box sx={{ borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
-          <Typography variant="h6" component="h2">
+      <Box sx={getResponsiveModalStyles()}>
+        {/* Header */}
+        <Box
+          sx={{
+            borderBottom: "1px solid #e2e8f0",
+            pb: { xs: 1.5, sm: 2 },
+            mb: { xs: 2, sm: 3 },
+          }}
+        >
+          <Typography
+            variant="h6"
+            component="h2"
+            sx={{
+              fontSize: { xs: "1.1rem", sm: "1.25rem" },
+              fontWeight: 600,
+            }}
+          >
             Assign Manager to Teachers
           </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            sx={{
+              mt: 1,
+              fontSize: { xs: "0.8rem", sm: "0.875rem" },
+            }}
+          >
             {teachersWithoutManagers.length} teachers without managers found
           </Typography>
         </Box>
 
         {/* Manager Selection */}
-        <Box sx={{ mb: 3 }}>
+        <Box sx={{ mb: { xs: 2, sm: 3 } }}>
           <FormControl fullWidth size="small" required>
             <Autocomplete
               id="manager-select"
@@ -177,21 +237,54 @@ const AssignManagerModal = ({
                   label="Select Manager"
                   size="small"
                   required
+                  sx={{
+                    "& .MuiInputBase-input": {
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: { xs: "0.875rem", sm: "1rem" },
+                    },
+                  }}
                 />
               )}
               renderOption={(props, option) => {
                 const { key, ...restProps } = props;
                 return (
                   <li key={key} {...restProps}>
-                    {`${option.staffId} - ${option.name} (${
-                      option.role === "admin"
-                        ? "Admin"
-                        : option.role === "supervisor_quran"
-                        ? "Quran Supervisor"
-                        : option.role === "supervisor_subjects"
-                        ? "Subjects Supervisor"
-                        : "N/A"
-                    })`}
+                    <Box
+                      sx={{
+                        display: "flex",
+                        flexDirection: { xs: "column", sm: "row" },
+                        alignItems: { xs: "flex-start", sm: "center" },
+                        gap: { xs: 0.5, sm: 1 },
+                        width: "100%",
+                      }}
+                    >
+                      <Typography
+                        sx={{
+                          fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                          fontWeight: 500,
+                        }}
+                      >
+                        {option.staffId} - {option.name}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                          color: "text.secondary",
+                        }}
+                      >
+                        (
+                        {option.role === "admin"
+                          ? "Admin"
+                          : option.role === "supervisor_quran"
+                          ? "Quran Supervisor"
+                          : option.role === "supervisor_subjects"
+                          ? "Subjects Supervisor"
+                          : "N/A"}
+                        )
+                      </Typography>
+                    </Box>
                   </li>
                 );
               }}
@@ -212,20 +305,32 @@ const AssignManagerModal = ({
           <Box
             sx={{
               bgcolor: "#f8fafc",
-              p: 2,
+              p: { xs: 1.5, sm: 2 },
               borderBottom: "1px solid #e2e8f0",
               display: "flex",
               justifyContent: "space-between",
               alignItems: "center",
+              flexDirection: { xs: "column", sm: "row" },
+              gap: { xs: 1, sm: 0 },
             }}
           >
-            <Typography variant="subtitle2" fontWeight="600">
+            <Typography
+              variant="subtitle2"
+              fontWeight="600"
+              sx={{
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              }}
+            >
               Teachers Without Managers ({selectedTeachers.length} selected)
             </Typography>
             <Button
               size="small"
               onClick={handleSelectAll}
-              sx={{ textTransform: "none" }}
+              sx={{
+                textTransform: "none",
+                fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                padding: { xs: "4px 8px", sm: "6px 12px" },
+              }}
             >
               {selectedTeachers.length === teachersWithoutManagers.length
                 ? "Deselect All"
@@ -235,65 +340,142 @@ const AssignManagerModal = ({
 
           <Box
             sx={{
-              maxHeight: "300px",
+              maxHeight: { xs: "250px", sm: "300px" },
               overflowY: "auto",
-              p: 1,
+              p: { xs: 0.5, sm: 1 },
             }}
           >
-            {teachersWithoutManagers.map((teacher) => (
+            {teachersWithoutManagers.length === 0 ? (
               <Box
-                key={teacher._id}
                 sx={{
                   display: "flex",
+                  flexDirection: "column",
                   alignItems: "center",
-                  p: 2,
-                  borderRadius: "6px",
-                  cursor: "pointer",
-                  "&:hover": {
-                    bgcolor: "#f8fafc",
-                  },
-                  bgcolor: selectedTeachers.includes(teacher._id)
-                    ? "#e0f2fe"
-                    : "transparent",
+                  justifyContent: "center",
+                  p: { xs: 3, sm: 4 },
+                  color: "#64748b",
                 }}
-                onClick={() => handleTeacherSelect(teacher._id)}
               >
-                <input
-                  type="checkbox"
-                  checked={selectedTeachers.includes(teacher._id)}
-                  onChange={() => handleTeacherSelect(teacher._id)}
-                  style={{ marginRight: "12px" }}
-                />
-                <Box sx={{ flex: 1 }}>
-                  <Typography variant="body2" fontWeight="500">
-                    {teacher.name}
-                  </Typography>
-                  <Typography variant="caption" color="text.secondary">
-                    Staff ID: {teacher.staffId} |{" "}
-                    {teacher.role === "teacher_quran"
-                      ? "Quran Teacher"
-                      : "Subjects Teacher"}
-                  </Typography>
-                  {teacher.currentManagerName && (
-                    <Typography
-                      variant="caption"
-                      color="error.main"
-                      display="block"
-                    >
-                      Current Manager: {teacher.currentManagerName} (Invalid)
-                    </Typography>
-                  )}
-                </Box>
-                <Chip
-                  label={teacher.department}
-                  size="small"
-                  color={
-                    teacher.department === "quran" ? "primary" : "secondary"
-                  }
-                  sx={{ textTransform: "capitalize" }}
-                />
+                <Typography
+                  variant="h6"
+                  sx={{
+                    mb: 1,
+                    fontSize: { xs: "1rem", sm: "1.25rem" },
+                  }}
+                >
+                  👥 All Teachers Have Managers
+                </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    textAlign: "center",
+                    fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                  }}
+                >
+                  No teachers without managers found
+                </Typography>
               </Box>
-            ))}
+            ) : (
+              teachersWithoutManagers.map((teacher) => (
+                <Box
+                  key={teacher._id}
+                  sx={{
+                    display: "flex",
+                    alignItems: { xs: "flex-start", sm: "center" },
+                    p: { xs: 1.5, sm: 2 },
+                    borderRadius: "6px",
+                    cursor: "pointer",
+                    "&:hover": {
+                      bgcolor: "#f8fafc",
+                    },
+                    bgcolor: selectedTeachers.includes(teacher._id)
+                      ? "#e0f2fe"
+                      : "transparent",
+                    flexDirection: { xs: "column", sm: "row" },
+                    gap: { xs: 1, sm: 0 },
+                  }}
+                  onClick={() => handleTeacherSelect(teacher._id)}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      width: { xs: "100%", sm: "auto" },
+                      gap: { xs: 1, sm: 1.5 },
+                    }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={selectedTeachers.includes(teacher._id)}
+                      onChange={() => handleTeacherSelect(teacher._id)}
+                      style={{
+                        marginRight: isMobile ? "8px" : "12px",
+                        transform: isMobile ? "scale(0.9)" : "scale(1)",
+                      }}
+                    />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography
+                        variant="body2"
+                        fontWeight="500"
+                        sx={{
+                          fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                        }}
+                      >
+                        {teacher.name}
+                      </Typography>
+                      <Typography
+                        variant="caption"
+                        color="text.secondary"
+                        sx={{
+                          display: "block",
+                          fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                        }}
+                      >
+                        Staff ID: {teacher.staffId} |{" "}
+                        {teacher.role === "teacher_quran"
+                          ? "Quran Teacher"
+                          : "Subjects Teacher"}
+                      </Typography>
+                      {teacher.currentManagerName && (
+                        <Typography
+                          variant="caption"
+                          color="error.main"
+                          display="block"
+                          sx={{
+                            fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                          }}
+                        >
+                          Current Manager: {teacher.currentManagerName}{" "}
+                          (Invalid)
+                        </Typography>
+                      )}
+                    </Box>
+                  </Box>
+
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: { xs: "flex-start", sm: "flex-end" },
+                      width: { xs: "100%", sm: "auto" },
+                      mt: { xs: 1, sm: 0 },
+                    }}
+                  >
+                    <Chip
+                      label={teacher.department}
+                      size="small"
+                      color={
+                        teacher.department === "quran" ? "primary" : "secondary"
+                      }
+                      sx={{
+                        textTransform: "capitalize",
+                        fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                        height: { xs: "24px", sm: "28px" },
+                      }}
+                    />
+                  </Box>
+                </Box>
+              ))
+            )}
           </Box>
         </Box>
 
@@ -302,16 +484,26 @@ const AssignManagerModal = ({
           sx={{
             display: "flex",
             justifyContent: "flex-end",
-            gap: 2,
-            mt: 3,
+            gap: { xs: 1.5, sm: 2 },
+            mt: { xs: 2, sm: 3 },
             pt: 2,
             borderTop: "1px solid #e2e8f0",
+            flexDirection: { xs: "column", sm: "row" },
           }}
         >
           <button
             className="clear-filters-btn"
             onClick={() => setShowModal(false)}
             disabled={isAssigning}
+            style={{
+              order: isMobile ? 2 : 1,
+              minHeight: isMobile ? "44px" : "auto",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
           >
             Cancel
           </button>
@@ -321,9 +513,23 @@ const AssignManagerModal = ({
             disabled={
               selectedTeachers.length === 0 || !selectedManager || isAssigning
             }
+            style={{
+              order: isMobile ? 1 : 2,
+              minHeight: isMobile ? "44px" : "auto",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
           >
             {isAssigning ? (
-              <div className="loading-spinner"></div>
+              <div
+                className="loading-spinner"
+                style={{
+                  margin: "0 auto",
+                }}
+              ></div>
             ) : (
               `Assign Manager to ${selectedTeachers.length} Teacher${
                 selectedTeachers.length !== 1 ? "s" : ""
@@ -355,494 +561,872 @@ const ModalContent = ({
   handleImageUpload,
   imagePreview,
   isUploading,
-}) => (
-  <Box sx={getModalStyles()}>
-    <Box sx={{ borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
+}) => {
+  // Responsive breakpoints
+  const isMobile = window.innerWidth < 768;
+  const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
+  // Responsive modal styles
+  const getResponsiveModalStyles = () => ({
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: {
+      xs: "95vw",
+      sm: "85vw",
+      md: "600px",
+      lg: "700px",
+      xl: "800px",
+    },
+    maxWidth: {
+      xs: "400px",
+      sm: "500px",
+      md: "600px",
+      lg: "700px",
+      xl: "800px",
+    },
+    maxHeight: {
+      xs: "95vh",
+      sm: "90vh",
+      md: "85vh",
+    },
+    bgcolor: "background.paper",
+    borderRadius: {
+      xs: "8px",
+      sm: "12px",
+    },
+    boxShadow: 24,
+    p: {
+      xs: 2,
+      sm: 3,
+      md: 4,
+    },
+    overflow: "auto",
+    "&:focus-visible": {
+      outline: "none",
+    },
+  });
+
+  return (
+    <Box sx={getResponsiveModalStyles()}>
       <Box
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          mb: 2,
+          borderBottom: "1px solid #e2e8f0",
+          pb: { xs: 1.5, sm: 2 },
+          mb: { xs: 2, sm: 3 },
         }}
       >
-        <Typography variant="h6" component="h2">
-          {currentTeacher ? "Edit Teacher" : "Add New Teacher"}
-        </Typography>
-        <Button
-          onClick={() => !isLoading && setShowModal(false)}
+        <Box
           sx={{
-            minWidth: "auto",
-            p: 1,
-            color: "#64748b",
-            "&:hover": {
-              bgcolor: "#f1f5f9",
-              color: "#3949ab",
-            },
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: { xs: "flex-start", sm: "center" },
+            mb: { xs: 1, sm: 2 },
+            flexDirection: { xs: "column", sm: "row" },
+            gap: { xs: 1, sm: 0 },
           }}
         >
-          ×
-        </Button>
+          <Typography
+            variant="h6"
+            component="h2"
+            sx={{
+              fontSize: { xs: "1.1rem", sm: "1.25rem" },
+              fontWeight: 600,
+            }}
+          >
+            {currentTeacher ? "Edit Teacher" : "Add New Teacher"}
+          </Typography>
+          <Button
+            onClick={() => !isLoading && setShowModal(false)}
+            sx={{
+              minWidth: { xs: "28px", sm: "auto" },
+              height: { xs: "28px", sm: "auto" },
+              p: { xs: 0.5, sm: 1 },
+              color: "#64748b",
+              fontSize: { xs: "18px", sm: "20px" },
+              alignSelf: { xs: "flex-end", sm: "center" },
+              "&:hover": {
+                bgcolor: "#f1f5f9",
+                color: "#3949ab",
+              },
+            }}
+          >
+            ×
+          </Button>
+        </Box>
       </Box>
-    </Box>
 
-    <form onSubmit={handleSubmit}>
-      <input
-        type="file"
-        id="profile-image"
-        accept="image/*"
-        style={{ display: "none" }}
-        onChange={handleImageUpload}
-      />
-      <UploadBox
-        onClick={() => document.getElementById("profile-image").click()}
-      >
-        {imagePreview ? (
-          <Box>
-            <ImagePreview src={imagePreview} alt="Profile preview" />
-            <Typography variant="caption" display="block" sx={{ mt: 1 }}>
-              Click to change image
-            </Typography>
-          </Box>
-        ) : (
-          <Box>
-            <Typography variant="body1" color="textSecondary">
-              Click to upload profile picture
-            </Typography>
-            <Typography variant="caption" color="textSecondary">
-              Supported formats: JPG, PNG (Max 5MB)
+      <form onSubmit={handleSubmit}>
+        <input
+          type="file"
+          id="profile-image"
+          accept="image/*"
+          style={{ display: "none" }}
+          onChange={handleImageUpload}
+        />
+
+        <UploadBox
+          onClick={() => document.getElementById("profile-image").click()}
+          sx={{
+            height: { xs: "120px", sm: "150px" },
+            mb: { xs: 2, sm: 3 },
+          }}
+        >
+          {imagePreview ? (
+            <Box>
+              <ImagePreview
+                src={imagePreview}
+                alt="Profile preview"
+                sx={{
+                  width: { xs: "80px", sm: "100px" },
+                  height: { xs: "80px", sm: "100px" },
+                }}
+              />
+              <Typography
+                variant="caption"
+                display="block"
+                sx={{
+                  mt: 1,
+                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                }}
+              >
+                Click to change image
+              </Typography>
+            </Box>
+          ) : (
+            <Box>
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                sx={{
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                }}
+              >
+                Click to upload profile picture
+              </Typography>
+              <Typography
+                variant="caption"
+                color="textSecondary"
+                sx={{
+                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                }}
+              >
+                Supported formats: JPG, PNG (Max 5MB)
+              </Typography>
+            </Box>
+          )}
+        </UploadBox>
+
+        {isUploading && (
+          <Box sx={{ textAlign: "center", mt: 1 }}>
+            <CircularProgress size={isMobile ? 20 : 24} />
+            <Typography
+              variant="caption"
+              display="block"
+              sx={{
+                fontSize: { xs: "0.7rem", sm: "0.75rem" },
+              }}
+            >
+              Uploading image...
             </Typography>
           </Box>
         )}
-      </UploadBox>
-      {isUploading && (
-        <Box sx={{ textAlign: "center", mt: 1 }}>
-          <CircularProgress size={24} />
-          <Typography variant="caption" display="block">
-            Uploading image...
-          </Typography>
-        </Box>
-      )}
-      {currentTeacher && (
+
+        {currentTeacher && (
+          <TextField
+            fullWidth
+            label="Staff ID"
+            value={currentTeacher.staffId}
+            margin="normal"
+            size="small"
+            InputProps={{ readOnly: true }}
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
+          />
+        )}
+
         <TextField
           fullWidth
-          label="Staff ID"
-          value={currentTeacher.staffId}
-          margin="normal"
-          size="small"
-          InputProps={{ readOnly: true }}
-        />
-      )}
-
-      <TextField
-        fullWidth
-        label="Name"
-        name="name"
-        value={formData.name}
-        onChange={handleChange}
-        required
-        margin="normal"
-        size="small"
-        error={!!errors.name}
-        helperText={errors.name}
-      />
-
-      <TextField
-        fullWidth
-        label="Email"
-        name="email"
-        type="email"
-        value={formData.email}
-        onChange={handleChange}
-        required
-        margin="normal"
-        size="small"
-        error={!!errors.email}
-        helperText={errors.email}
-      />
-      <TextField
-        fullWidth
-        label="Phone Number"
-        name="phoneNumber"
-        value={formData.phoneNumber}
-        onChange={handleChange}
-        margin="normal"
-        size="small"
-        placeholder="Enter phone number"
-      />
-      {(!currentTeacher || currentTeacher) && (
-        <TextField
-          fullWidth
-          label="Password"
-          name="password"
-          type="password"
-          value={formData.password}
-          onChange={handleChange}
-          required={!currentTeacher}
-          margin="normal"
-          size="small"
-          error={!!errors.password}
-          helperText={
-            currentTeacher
-              ? "Leave blank to keep current password"
-              : errors.password
-          }
-        />
-      )}
-
-      <FormControl fullWidth margin="normal" size="small">
-        <InputLabel>Gender</InputLabel>
-        <Select
-          name="gender"
-          value={formData.gender}
-          label="Gender"
+          label="Name"
+          name="name"
+          value={formData.name}
           onChange={handleChange}
           required
-        >
-          {GENDERS.map((gender) => (
-            <MenuItem key={gender} value={gender}>
-              {gender.charAt(0).toUpperCase() + gender.slice(1)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      {currentTeacher ? (
-        <TextField
-          fullWidth
-          label="Role"
-          value={
-            ROLES.find((r) => r.value === formData.role)?.label || formData.role
-          }
           margin="normal"
           size="small"
-          InputProps={{ readOnly: true }}
-          disabled
+          error={!!errors.name}
+          helperText={errors.name}
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
         />
-      ) : (
+
+        <TextField
+          fullWidth
+          label="Email"
+          name="email"
+          type="email"
+          value={formData.email}
+          onChange={handleChange}
+          required
+          margin="normal"
+          size="small"
+          error={!!errors.email}
+          helperText={errors.email}
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
+        />
+
+        <TextField
+          fullWidth
+          label="Phone Number"
+          name="phoneNumber"
+          value={formData.phoneNumber}
+          onChange={handleChange}
+          margin="normal"
+          size="small"
+          placeholder="Enter phone number"
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
+        />
+
+        {(!currentTeacher || currentTeacher) && (
+          <TextField
+            fullWidth
+            label="Password"
+            name="password"
+            type="password"
+            value={formData.password}
+            onChange={handleChange}
+            required={!currentTeacher}
+            margin="normal"
+            size="small"
+            error={!!errors.password}
+            helperText={
+              currentTeacher
+                ? "Leave blank to keep current password"
+                : errors.password
+            }
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
+          />
+        )}
+
         <FormControl fullWidth margin="normal" size="small">
-          <InputLabel>Role</InputLabel>
+          <InputLabel sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+            Gender
+          </InputLabel>
           <Select
-            name="role"
-            value={formData.role}
-            label="Role"
+            name="gender"
+            value={formData.gender}
+            label="Gender"
             onChange={handleChange}
             required
+            sx={{
+              "& .MuiSelect-select": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
           >
-            {ROLES.map((role) => (
-              <MenuItem key={role.value} value={role.value}>
-                {role.label}
+            {GENDERS.map((gender) => (
+              <MenuItem key={gender} value={gender}>
+                {gender.charAt(0).toUpperCase() + gender.slice(1)}
               </MenuItem>
             ))}
           </Select>
         </FormControl>
-      )}
 
-      <TextField
-        fullWidth
-        label="Father's Name"
-        name="fatherName"
-        value={formData.fatherName}
-        onChange={handleChange}
-        required
-        margin="normal"
-        size="small"
-      />
-      <LocalizationProvider dateAdapter={AdapterDateFns}>
-        <DatePicker
-          label="Date of Birth"
-          value={formData.dateOfBirth}
-          onChange={(date) => handleDateChange(date, "dateOfBirth")}
-          renderInput={(params) => (
-            <TextField
-              {...params}
-              fullWidth
-              margin="normal"
-              size="small"
-              required
-              error={!!errors.dateOfBirth}
-              helperText={errors.dateOfBirth}
-            />
-          )}
-        />
-      </LocalizationProvider>
-      <TextField
-        fullWidth
-        label="Qualification"
-        name="qualification"
-        value={formData.qualification}
-        onChange={handleChange}
-        required
-        margin="normal"
-        size="small"
-      />
-
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          Expertise
-        </Typography>
-        <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+        {currentTeacher ? (
           <TextField
-            size="small"
-            value={expertiseInput}
-            onChange={(e) => setExpertiseInput(e.target.value)}
-            onKeyPress={(e) => {
-              if (e.key === "Enter") {
-                e.preventDefault();
-                handleExpertiseAdd();
-              }
-            }}
-            placeholder="Type and press Enter"
             fullWidth
+            label="Role"
+            value={
+              ROLES.find((r) => r.value === formData.role)?.label ||
+              formData.role
+            }
+            margin="normal"
+            size="small"
+            InputProps={{ readOnly: true }}
+            disabled
+            sx={{
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
           />
-        </Box>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {formData.expertise.map((exp, index) => (
-            <Chip
-              key={index}
-              label={exp}
-              onDelete={() => handleExpertiseDelete(index)}
-              size="small"
-            />
-          ))}
-        </Box>
-      </Box>
+        ) : (
+          <FormControl fullWidth margin="normal" size="small">
+            <InputLabel sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+              Role
+            </InputLabel>
+            <Select
+              name="role"
+              value={formData.role}
+              label="Role"
+              onChange={handleChange}
+              required
+              sx={{
+                "& .MuiSelect-select": {
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                },
+              }}
+            >
+              {ROLES.map((role) => (
+                <MenuItem key={role.value} value={role.value}>
+                  {role.label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        )}
 
-      <FormControl fullWidth margin="normal" size="small" required>
-        <Autocomplete
-          id="subjects-autocomplete"
-          multiple
-          options={subjects}
-          getOptionLabel={(option) => option.name || ""}
-          value={subjects.filter((subject) =>
-            formData.subjects.includes(subject._id)
-          )}
-          onChange={(event, newValue) => {
-            handleChange({
-              target: {
-                name: "subjects",
-                value: newValue.map((subject) => subject._id),
-              },
-            });
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Subjects" size="small" />
-          )}
-          renderOption={(props, option) => {
-            const { key, ...restProps } = props;
-            return (
-              <li key={key} {...restProps}>
-                {option.name}
-              </li>
-            );
-          }}
-        />
-      </FormControl>
-      <FormControl fullWidth margin="normal" size="small" required>
-        <Autocomplete
-          id="manager-autocomplete"
-          options={managers}
-          getOptionLabel={(option) =>
-            `${option.staffId} - ${option.name} (${
-              option.role === "admin"
-                ? "Admin"
-                : option.role === "supervisor_quran"
-                ? "Quran Supervisor"
-                : option.role === "supervisor_subjects"
-                ? "Subjects Supervisor"
-                : "N/A"
-            })`
-          }
-          value={
-            managers.find((manager) => manager._id === formData.manager) || null
-          }
-          onChange={(event, newValue) => {
-            handleChange({
-              target: {
-                name: "manager",
-                value: newValue ? newValue._id : "",
-              },
-            });
-          }}
-          renderInput={(params) => (
-            <TextField {...params} label="Manager" size="small" required />
-          )}
-          renderOption={(props, option) => {
-            const { key, ...restProps } = props;
-            return (
-              <li key={key} {...restProps}>
-                {`${option.staffId} - ${option.name} (${
-                  option.role === "admin"
-                    ? "Admin"
-                    : option.role === "supervisor_quran"
-                    ? "Quran Supervisor"
-                    : option.role === "supervisor_subjects"
-                    ? "Subjects Supervisor"
-                    : "N/A"
-                })`}
-              </li>
-            );
-          }}
-        />
-      </FormControl>
-
-      <TextField
-        fullWidth
-        label="Salary"
-        name="salary"
-        type="number"
-        value={formData.salary}
-        onChange={handleChange}
-        required
-        margin="normal"
-        size="small"
-      />
-
-      <FormControl fullWidth margin="normal" size="small">
-        <InputLabel>Shift</InputLabel>
-        <Select
-          name="shift"
-          value={formData.shift}
-          label="Shift"
+        <TextField
+          fullWidth
+          label="Father's Name"
+          name="fatherName"
+          value={formData.fatherName}
           onChange={handleChange}
           required
-        >
-          {SHIFTS.map((shift) => (
-            <MenuItem key={shift} value={shift}>
-              {shift.charAt(0).toUpperCase() + shift.slice(1)}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
-      <TextField
-        fullWidth
-        label="CNIC Number"
-        name="cnicNumber"
-        type="number"
-        value={formData.cnicNumber}
-        onChange={handleChange}
-        required
-        margin="normal"
-        size="small"
-        error={!!errors.cnicNumber}
-        helperText={errors.cnicNumber}
-      />
-
-      <TextField
-        fullWidth
-        label="Religion"
-        name="religion"
-        value={formData.religion}
-        onChange={handleChange}
-        required
-        margin="normal"
-        size="small"
-      />
-
-      <Box sx={{ mb: 2 }}>
-        <Typography variant="subtitle2" sx={{ mb: 1 }}>
-          Availability
-        </Typography>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {DAYS_OF_WEEK.map((day) => (
-            <Chip
-              key={day}
-              label={day}
-              onClick={() => handleDayToggle(day)}
-              color={
-                formData.availability.days.includes(day) ? "primary" : "default"
-              }
-              sx={{ cursor: "pointer" }}
-            />
-          ))}
-        </Box>
-      </Box>
-
-      <Box sx={{ display: "flex", gap: 2 }}>
-        <TextField
-          label="Start Time"
-          name="startTime"
-          type="time"
-          value={formData.availability.startTime}
-          onChange={(e) =>
-            handleChange({
-              target: {
-                name: "availability",
-                value: { ...formData.availability, startTime: e.target.value },
-              },
-            })
-          }
-          InputLabelProps={{ shrink: true }}
-          inputProps={{ step: 300 }}
+          margin="normal"
           size="small"
-          sx={{ flex: 1 }}
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
         />
-        <TextField
-          label="End Time"
-          name="endTime"
-          type="time"
-          value={formData.availability.endTime}
-          onChange={(e) =>
-            handleChange({
-              target: {
-                name: "availability",
-                value: { ...formData.availability, endTime: e.target.value },
-              },
-            })
-          }
-          InputLabelProps={{ shrink: true }}
-          inputProps={{ step: 300 }}
-          size="small"
-          sx={{ flex: 1 }}
-        />
-      </Box>
 
-      {currentTeacher && (
-        <FormControl fullWidth margin="normal" size="small">
-          <InputLabel>Status</InputLabel>
-          <Select
-            name="isActive"
-            value={formData.isActive}
-            label="Status"
-            onChange={handleChange}
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Date of Birth"
+            value={formData.dateOfBirth}
+            onChange={(date) => handleDateChange(date, "dateOfBirth")}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                fullWidth
+                margin="normal"
+                size="small"
+                required
+                error={!!errors.dateOfBirth}
+                helperText={errors.dateOfBirth}
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                }}
+              />
+            )}
+          />
+        </LocalizationProvider>
+
+        <TextField
+          fullWidth
+          label="Qualification"
+          name="qualification"
+          value={formData.qualification}
+          onChange={handleChange}
+          required
+          margin="normal"
+          size="small"
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
+        />
+
+        <Box sx={{ mb: 2 }}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              mb: 1,
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            }}
           >
-            <MenuItem value={true}>Active</MenuItem>
-            <MenuItem value={false}>Inactive</MenuItem>
+            Expertise
+          </Typography>
+          <Box sx={{ display: "flex", gap: 1, mb: 1 }}>
+            <TextField
+              size="small"
+              value={expertiseInput}
+              onChange={(e) => setExpertiseInput(e.target.value)}
+              onKeyPress={(e) => {
+                if (e.key === "Enter") {
+                  e.preventDefault();
+                  handleExpertiseAdd();
+                }
+              }}
+              placeholder="Type and press Enter"
+              fullWidth
+              sx={{
+                "& .MuiInputBase-input": {
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                },
+              }}
+            />
+          </Box>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: { xs: 0.5, sm: 1 },
+            }}
+          >
+            {formData.expertise.map((exp, index) => (
+              <Chip
+                key={index}
+                label={exp}
+                onDelete={() => handleExpertiseDelete(index)}
+                size="small"
+                sx={{
+                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                  height: { xs: "24px", sm: "28px" },
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
+
+        <FormControl fullWidth margin="normal" size="small" required>
+          <Autocomplete
+            id="subjects-autocomplete"
+            multiple
+            options={subjects}
+            getOptionLabel={(option) => option.name || ""}
+            value={subjects.filter((subject) =>
+              formData.subjects.includes(subject._id)
+            )}
+            onChange={(event, newValue) => {
+              handleChange({
+                target: {
+                  name: "subjects",
+                  value: newValue.map((subject) => subject._id),
+                },
+              });
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Subjects"
+                size="small"
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                }}
+              />
+            )}
+            renderOption={(props, option) => {
+              const { key, ...restProps } = props;
+              return (
+                <li key={key} {...restProps}>
+                  {option.name}
+                </li>
+              );
+            }}
+          />
+        </FormControl>
+
+        <FormControl fullWidth margin="normal" size="small" required>
+          <Autocomplete
+            id="manager-autocomplete"
+            options={managers}
+            getOptionLabel={(option) =>
+              `${option.staffId} - ${option.name} (${
+                option.role === "admin"
+                  ? "Admin"
+                  : option.role === "supervisor_quran"
+                  ? "Quran Supervisor"
+                  : option.role === "supervisor_subjects"
+                  ? "Subjects Supervisor"
+                  : "N/A"
+              })`
+            }
+            value={
+              managers.find((manager) => manager._id === formData.manager) ||
+              null
+            }
+            onChange={(event, newValue) => {
+              handleChange({
+                target: {
+                  name: "manager",
+                  value: newValue ? newValue._id : "",
+                },
+              });
+            }}
+            renderInput={(params) => (
+              <TextField
+                {...params}
+                label="Manager"
+                size="small"
+                required
+                sx={{
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                }}
+              />
+            )}
+            renderOption={(props, option) => {
+              const { key, ...restProps } = props;
+              return (
+                <li key={key} {...restProps}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      flexDirection: { xs: "column", sm: "row" },
+                      alignItems: { xs: "flex-start", sm: "center" },
+                      gap: { xs: 0.5, sm: 1 },
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      sx={{
+                        fontSize: { xs: "0.8rem", sm: "0.875rem" },
+                        fontWeight: 500,
+                      }}
+                    >
+                      {option.staffId} - {option.name}
+                    </Typography>
+                    <Typography
+                      sx={{
+                        fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                        color: "text.secondary",
+                      }}
+                    >
+                      (
+                      {option.role === "admin"
+                        ? "Admin"
+                        : option.role === "supervisor_quran"
+                        ? "Quran Supervisor"
+                        : option.role === "supervisor_subjects"
+                        ? "Subjects Supervisor"
+                        : "N/A"}
+                      )
+                    </Typography>
+                  </Box>
+                </li>
+              );
+            }}
+          />
+        </FormControl>
+
+        <TextField
+          fullWidth
+          label="Salary"
+          name="salary"
+          type="number"
+          value={formData.salary}
+          onChange={handleChange}
+          required
+          margin="normal"
+          size="small"
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
+        />
+
+        <FormControl fullWidth margin="normal" size="small">
+          <InputLabel sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+            Shift
+          </InputLabel>
+          <Select
+            name="shift"
+            value={formData.shift}
+            label="Shift"
+            onChange={handleChange}
+            required
+            sx={{
+              "& .MuiSelect-select": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
+          >
+            {SHIFTS.map((shift) => (
+              <MenuItem key={shift} value={shift}>
+                {shift.charAt(0).toUpperCase() + shift.slice(1)}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
-      )}
 
-      <Box
-        sx={{
-          mt: 4,
-          pt: 2,
-          display: "flex",
-          justifyContent: "flex-end",
-          gap: 2,
-          borderTop: "1px solid #e2e8f0",
-        }}
-      >
-        <button
-          className="clear-filters-btn"
-          onClick={() => setShowModal(false)}
-          disabled={isLoading}
+        <TextField
+          fullWidth
+          label="CNIC Number"
+          name="cnicNumber"
+          type="number"
+          value={formData.cnicNumber}
+          onChange={handleChange}
+          required
+          margin="normal"
+          size="small"
+          error={!!errors.cnicNumber}
+          helperText={errors.cnicNumber}
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
+        />
+
+        <TextField
+          fullWidth
+          label="Religion"
+          name="religion"
+          value={formData.religion}
+          onChange={handleChange}
+          required
+          margin="normal"
+          size="small"
+          sx={{
+            "& .MuiInputBase-input": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+            "& .MuiInputLabel-root": {
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            },
+          }}
+        />
+
+        <Box sx={{ mb: 2 }}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              mb: 1,
+              fontSize: { xs: "0.875rem", sm: "1rem" },
+            }}
+          >
+            Availability
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: { xs: 0.5, sm: 1 },
+            }}
+          >
+            {DAYS_OF_WEEK.map((day) => (
+              <Chip
+                key={day}
+                label={day}
+                onClick={() => handleDayToggle(day)}
+                color={
+                  formData.availability.days.includes(day)
+                    ? "primary"
+                    : "default"
+                }
+                sx={{
+                  cursor: "pointer",
+                  fontSize: { xs: "0.7rem", sm: "0.75rem" },
+                  height: { xs: "24px", sm: "28px" },
+                }}
+              />
+            ))}
+          </Box>
+        </Box>
+
+        <Box
+          sx={{
+            display: "flex",
+            gap: 2,
+            flexDirection: { xs: "column", sm: "row" },
+          }}
         >
-          Cancel
-        </button>
-        <button className="add-btn" type="submit" disabled={isLoading}>
-          {isLoading ? (
-            <div className="loading-spinner"></div>
-          ) : currentTeacher ? (
-            "Update Teacher"
-          ) : (
-            "Add Teacher"
-          )}
-        </button>
-      </Box>
-    </form>
-  </Box>
-);
+          <TextField
+            label="Start Time"
+            name="startTime"
+            type="time"
+            value={formData.availability.startTime}
+            onChange={(e) =>
+              handleChange({
+                target: {
+                  name: "availability",
+                  value: {
+                    ...formData.availability,
+                    startTime: e.target.value,
+                  },
+                },
+              })
+            }
+            InputLabelProps={{ shrink: true }}
+            inputProps={{ step: 300 }}
+            size="small"
+            sx={{
+              flex: 1,
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
+          />
+          <TextField
+            label="End Time"
+            name="endTime"
+            type="time"
+            value={formData.availability.endTime}
+            onChange={(e) =>
+              handleChange({
+                target: {
+                  name: "availability",
+                  value: { ...formData.availability, endTime: e.target.value },
+                },
+              })
+            }
+            InputLabelProps={{ shrink: true }}
+            inputProps={{ step: 300 }}
+            size="small"
+            sx={{
+              flex: 1,
+              "& .MuiInputBase-input": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+              "& .MuiInputLabel-root": {
+                fontSize: { xs: "0.875rem", sm: "1rem" },
+              },
+            }}
+          />
+        </Box>
+
+        {currentTeacher && (
+          <FormControl fullWidth margin="normal" size="small">
+            <InputLabel sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
+              Status
+            </InputLabel>
+            <Select
+              name="isActive"
+              value={formData.isActive}
+              label="Status"
+              onChange={handleChange}
+              sx={{
+                "& .MuiSelect-select": {
+                  fontSize: { xs: "0.875rem", sm: "1rem" },
+                },
+              }}
+            >
+              <MenuItem value={true}>Active</MenuItem>
+              <MenuItem value={false}>Inactive</MenuItem>
+            </Select>
+          </FormControl>
+        )}
+
+        <Box
+          sx={{
+            mt: { xs: 3, sm: 4 },
+            pt: 2,
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: { xs: 1.5, sm: 2 },
+            borderTop: "1px solid #e2e8f0",
+            flexDirection: { xs: "column", sm: "row" },
+          }}
+        >
+          <button
+            className="clear-filters-btn"
+            onClick={() => setShowModal(false)}
+            disabled={isLoading}
+            style={{
+              order: isMobile ? 2 : 1,
+              minHeight: isMobile ? "44px" : "auto",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
+            Cancel
+          </button>
+          <button
+            className="add-btn"
+            type="submit"
+            disabled={isLoading}
+            style={{
+              order: isMobile ? 1 : 2,
+              minHeight: isMobile ? "44px" : "auto",
+              fontSize: isMobile ? "0.875rem" : "0.9rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              textAlign: "center",
+            }}
+          >
+            {isLoading ? (
+              <div
+                className="loading-spinner"
+                style={{
+                  margin: "0 auto",
+                }}
+              ></div>
+            ) : currentTeacher ? (
+              "Update Teacher"
+            ) : (
+              "Add Teacher"
+            )}
+          </button>
+        </Box>
+      </form>
+    </Box>
+  );
+};
 
 const TeachersManagement = () => {
   const {
@@ -1366,8 +1950,9 @@ const TeachersManagement = () => {
             isSyncing={isSyncing}
             onClick={() => fetchTeachers(true)}
           />
-          <button className="add-btn" onClick={handleAdd}>
-            <FaPlus /> Add Teacher
+          <button className="add-btn responsive-add-btn" onClick={handleAdd}>
+            <FaPlus />
+            <span className="add-btn-text">Add Teacher</span>
           </button>
           <button
             type="button"
@@ -1384,13 +1969,42 @@ const TeachersManagement = () => {
               teachersWithoutManagersCount === 0
             }
             title={`${teachersWithoutManagersCount} teachers need manager assignment`}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: window.innerWidth < 768 && "4px",
+              fontSize: window.innerWidth < 768 && "0.8rem",
+              padding: window.innerWidth < 768 &&"8px 12px" ,
+              minHeight: window.innerWidth < 768 && "36px",
+              whiteSpace: "nowrap",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              maxWidth: window.innerWidth < 768 && "200px" ,
+            }}
           >
             {isLoadingTeachersWithoutManagers ? (
-              <CircularProgress size={16} sx={{ color: "white" }} />
+              <CircularProgress
+                size={window.innerWidth < 768 ? 14 : 16}
+                sx={{ color: "white" }}
+              />
             ) : (
               <>
-                <FaFilter />
-                Teachers Without Manager ({teachersWithoutManagersCount})
+                <FaFilter size={window.innerWidth < 768 ? 12 : 14} />
+                <span
+                  style={{
+                    display: window.innerWidth < 480 ? "none" : "inline",
+                  }}
+                >
+                  Teachers Without Manager ({teachersWithoutManagersCount})
+                </span>
+                <span
+                  style={{
+                    display: window.innerWidth < 480 ? "inline" : "none",
+                  }}
+                >
+                  No Manager ({teachersWithoutManagersCount})
+                </span>
               </>
             )}
           </button>
@@ -1415,7 +2029,15 @@ const TeachersManagement = () => {
             onChange={(e) => setSelectedRole(e.target.value)}
             displayEmpty
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
@@ -1445,7 +2067,15 @@ const TeachersManagement = () => {
             onChange={(e) => setSelectedStatus(e.target.value)}
             displayEmpty
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
                 padding: "8px 12px 8px 36px",
