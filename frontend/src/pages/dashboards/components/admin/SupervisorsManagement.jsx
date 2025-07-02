@@ -96,11 +96,9 @@ const ModalContent = ({
   isUploading,
   handleDayToggle,
 }) => {
-  // Responsive breakpoints
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
-  // Responsive modal styles
   const getResponsiveModalStyles = () => ({
     position: "absolute",
     top: "50%",
@@ -1345,7 +1343,11 @@ const SupervisorsManagement = () => {
         return true;
       });
     }
-
+    filtered = filtered.sort((a, b) => {
+      const staffIdA = parseInt(a.staffId) || 0;
+      const staffIdB = parseInt(b.staffId) || 0;
+      return staffIdB - staffIdA; 
+    });
     setFilteredSupervisors(filtered);
   }, [supervisors, searchTerm, selectedRole, selectedStatus]);
 

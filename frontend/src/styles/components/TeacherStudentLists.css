@@ -1,3 +1,4 @@
+/* Base Layout */
 .split-container {
   display: flex;
   gap: 20px;
@@ -5,6 +6,16 @@
   height: calc(100vh - 80px);
 }
 
+.split-container.mobile {
+  flex-direction: column;
+  gap: 15px;
+  padding: 15px 15px calc(env(safe-area-inset-bottom) + 20px) 15px;
+  height: auto;
+  min-height: calc(100vh - 80px - env(safe-area-inset-bottom));
+  /* padding-bottom: calc(env(safe-area-inset-bottom) + 80px); */
+}
+
+/* Sections */
 .students-section,
 .reports-section {
   background: white;
@@ -14,18 +25,48 @@
   display: flex;
   flex-direction: column;
 }
+
 .students-section {
   width: 30%;
 }
+
 .reports-section {
   width: 70%;
 }
+
+.students-section.mobile,
+.reports-section.mobile {
+  width: 100%;
+  padding: 20px 15px;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+.reports-section.mobile {
+  margin-bottom: calc(env(safe-area-inset-bottom) + 30px);
+}
+
+/* Headers */
 .section-header {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
 }
 
+.section-header h2 {
+  margin: 0 0 10px 0;
+  color: #1f3d61;
+  font-weight: 600;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+/* Filters and Controls */
 .filters {
   display: flex;
   gap: 10px;
@@ -36,11 +77,131 @@
   min-width: 150px;
 }
 
+.filter-section {
+  display: flex;
+  gap: 15px;
+}
+
+.filter-section.mobile {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-section.mobile .search-box {
+  margin: 0;
+  width: 100%;
+}
+
+.filter-controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.filter-section.mobile .filter-controls {
+  flex-direction: column;
+  gap: 12px;
+}
+
+.filter-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.filter-box.checkbox-filter {
+  margin: 0.75rem 0;
+  padding: 10px 16px;
+  background-color: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 6px;
+  display: flex;
+  gap: 16px;
+}
+
+.filter-box.checkbox-filter.mobile {
+  flex-direction: column;
+  gap: 12px;
+  padding: 30px;
+  margin: 0.5rem 0;
+}
+
+.filter-box.checkbox-filter.mobile .checkbox-label {
+  margin-left: 0 !important;
+}
+
+.clear-filters-btn {
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  color: #64748b;
+  padding: 8px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.clear-filters-btn:hover {
+  background: #e2e8f0;
+  color: #475569;
+}
+
+.clear-filters-btn.mobile {
+  width: 100%;
+  margin-top: 8px;
+  padding: 12px;
+  font-size: 0.875rem;
+}
+
+/* Search Box */
+.search-box {
+  position: relative;
+  margin-bottom: 15px;
+}
+
+.search-box input {
+  width: 100%;
+  padding: 10px 10px 10px 35px;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.search-box input:focus {
+  outline: none;
+  border-color: #1f3d61;
+  box-shadow: 0 0 0 3px rgba(31, 61, 97, 0.1);
+}
+
+.search-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #64748b;
+  font-size: 0.875rem;
+}
+
+/* Lists */
 .students-list {
   overflow-y: auto;
   flex-grow: 1;
+  max-height: calc(100vh - 300px);
 }
 
+.reports-list {
+  overflow-y: auto;
+  flex-grow: 1;
+  max-height: calc(100vh - 400px);
+}
+
+.students-list.mobile,
+.reports-list.mobile {
+  max-height: none;
+  overflow-y: visible;
+}
+
+/* Student Cards */
 .student-card {
   display: flex;
   justify-content: space-between;
@@ -48,7 +209,38 @@
   padding: 12px;
   border: 1px solid #eee;
   margin-top: 10px;
-  border-radius: 4px;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+  background-color: white;
+}
+
+.student-card.mobile {
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 12px;
+}
+
+.student-card:not(.disabled) {
+  border: 1px solid #e1e5e9;
+}
+
+.student-card:not(.disabled):hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  border-color: #1f3d61;
+}
+
+.student-card.disabled {
+  opacity: 0.5;
+  background-color: #f1f3f4;
+  border: 1px solid #dadce0;
+  cursor: not-allowed;
+}
+
+.student-card.disabled:hover {
+  transform: none;
+  box-shadow: none;
+  opacity: 0.5;
 }
 
 .student-info {
@@ -58,6 +250,11 @@
 .student-name {
   font-weight: 500;
   margin-bottom: 4px;
+  font-size: 1rem;
+}
+
+.student-card.mobile .student-name {
+  font-size: 0.95rem;
 }
 
 .student-details {
@@ -65,53 +262,11 @@
   color: #666;
 }
 
-.reports-list {
-  overflow-y: auto;
-  flex-grow: 1;
+.student-card.mobile .student-details {
+  font-size: 0.85em;
 }
 
-.status-tag {
-  padding: 4px 8px;
-  border-radius: 4px;
-  font-size: 0.9em;
-  font-weight: 500;
-}
-
-.status-tag.draft {
-  background: #fff3cd;
-  color: #856404;
-}
-.status-tag.submitted {
-  background: #cce5ff;
-  color: #004085;
-}
-.status-tag.approved {
-  background: #d4edda;
-  color: #155724;
-}
-.status-tag.rejected {
-  background: #f8d7da;
-  color: #721c24;
-}
-
-.student-card.disabled {
-  opacity: 0.5;
-  background-color: #f1f3f4;
-  border: 1px solid #dadce0;
-  cursor: not-allowed;
-  transition: all 0.2s ease;
-}
-
-.student-card.disabled:hover {
-  transform: none;
-  box-shadow: none;
-  opacity: 0.5;
-}
-
-.student-card.disabled .student-info {
-  color: #5f6368;
-}
-
+.student-card.disabled .student-info,
 .student-card.disabled .student-name {
   color: #5f6368;
 }
@@ -120,57 +275,7 @@
   color: #80868b;
 }
 
-/* .student-card.disabled .generate-report-btn {
-  background-color: #dadce0;
-  border-color: #dadce0;
-  color: #5f6368;
-  cursor: not-allowed;
-  opacity: 1;
-}
-
-.student-card.disabled .generate-report-btn:hover {
-  background-color: #dadce0;
-  border-color: #dadce0;
-  color: #5f6368;
-  transform: none;
-  box-shadow: none;
-}
-
-.student-card.disabled .generate-report-btn:disabled {
-  background-color: #dadce0;
-  border-color: #dadce0;
-  color: #5f6368;
-  cursor: not-allowed;
-} */
-
-.student-card.disabled::before {
-  display: none;
-}
-
-.student-card:not(.disabled) {
-  background-color: white;
-  border: 1px solid #e1e5e9;
-  transition: all 0.2s ease;
-}
-
-.student-card:not(.disabled):hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border-color: #1f3d61;
-}
-
-/* .student-card:not(.disabled) .generate-report-btn {
-  background-color: #1f3d61;
-  border-color: #1f3d61;
-  color: white;
-  transition: all 0.2s ease;
-}
-
-.student-card:not(.disabled) .generate-report-btn:hover {
-  background-color: #152a43;
-  border-color: #152a43;
-  transform: scale(1.05);
-} */
+/* Generate Report Button */
 .generate-report-btn {
   background: rgba(31, 61, 97, 0.15);
   backdrop-filter: blur(15px);
@@ -184,9 +289,7 @@
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   position: relative;
   overflow: hidden;
-  box-shadow: 
-    0 4px 15px rgba(31, 61, 97, 0.1),
-    0 2px 4px rgba(0, 0, 0, 0.05),
+  box-shadow: 0 4px 15px rgba(31, 61, 97, 0.1), 0 2px 4px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.3),
     inset 0 -1px 0 rgba(255, 255, 255, 0.1);
   min-width: 44px;
@@ -194,6 +297,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.student-card.mobile .generate-report-btn {
+  min-width: 40px;
+  height: 40px;
+  padding: 10px;
+  border-radius: 8px;
 }
 
 .generate-report-btn::before {
@@ -229,23 +339,23 @@
   pointer-events: none;
 }
 
-/* Icon styling - Updated for React Icons */
-.generate-report-btn svg,
-.generate-report-btn * {
+.generate-report-btn svg {
   font-size: 1.1rem;
-  color: #333; 
+  color: #333;
   filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.2));
   transition: all 0.3s ease;
   z-index: 1;
   position: relative;
 }
 
+.student-card.mobile .generate-report-btn svg {
+  font-size: 1rem;
+}
+
 .student-card:not(.disabled) .generate-report-btn:hover {
   background: rgba(31, 61, 97, 0.25);
   transform: translateY(-2px) scale(1.05);
-  box-shadow: 
-    0 8px 25px rgba(31, 61, 97, 0.2),
-    0 4px 8px rgba(0, 0, 0, 0.1),
+  box-shadow: 0 8px 25px rgba(31, 61, 97, 0.2), 0 4px 8px rgba(0, 0, 0, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.4),
     inset 0 -1px 0 rgba(255, 255, 255, 0.2);
   border-color: rgba(255, 255, 255, 0.4);
@@ -253,10 +363,8 @@
   -webkit-backdrop-filter: blur(20px);
 }
 
-/* Icon hover effect - Updated */
-.student-card:not(.disabled) .generate-report-btn:hover svg,
-.student-card:not(.disabled) .generate-report-btn:hover * {
-  color: #1f3d61; /* Darker blue on hover */
+.student-card:not(.disabled) .generate-report-btn:hover svg {
+  color: #1f3d61;
   filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
   transform: scale(1.1);
 }
@@ -268,27 +376,21 @@
 .student-card:not(.disabled) .generate-report-btn:active {
   transform: translateY(0) scale(1.02);
   background: rgba(31, 61, 97, 0.3);
-  box-shadow: 
-    0 2px 8px rgba(31, 61, 97, 0.15),
-    inset 0 1px 2px rgba(0, 0, 0, 0.1),
-    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+  box-shadow: 0 2px 8px rgba(31, 61, 97, 0.15),
+    inset 0 1px 2px rgba(0, 0, 0, 0.1), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-.student-card:not(.disabled) .generate-report-btn:active svg,
-.student-card:not(.disabled) .generate-report-btn:active * {
+.student-card:not(.disabled) .generate-report-btn:active svg {
   color: #ffffff !important;
   transform: scale(1.05);
 }
 
 .student-card:not(.disabled) .generate-report-btn:focus {
   outline: none;
-  box-shadow: 
-    0 0 0 3px rgba(31, 61, 97, 0.15),
-    0 4px 15px rgba(31, 61, 97, 0.1),
+  box-shadow: 0 0 0 3px rgba(31, 61, 97, 0.15), 0 4px 15px rgba(31, 61, 97, 0.1),
     inset 0 1px 0 rgba(255, 255, 255, 0.3);
 }
 
-/* Disabled state for inactive students */
 .student-card.disabled .generate-report-btn {
   background: rgba(218, 220, 224, 0.3);
   backdrop-filter: blur(10px);
@@ -297,13 +399,11 @@
   color: #5f6368;
   cursor: not-allowed;
   opacity: 0.8;
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.05),
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-.student-card.disabled .generate-report-btn svg,
-.student-card.disabled .generate-report-btn * {
+.student-card.disabled .generate-report-btn svg {
   color: #5f6368 !important;
   filter: none;
 }
@@ -326,31 +426,245 @@
   border: 1px solid rgba(0, 0, 0, 0.1);
   color: #5f6368;
   transform: none;
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.05),
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05),
     inset 0 1px 0 rgba(255, 255, 255, 0.4);
 }
 
-.student-card.disabled .generate-report-btn:hover svg,
-.student-card.disabled .generate-report-btn:hover * {
+.student-card.disabled .generate-report-btn:hover svg {
   color: #5f6368 !important;
   transform: none;
   filter: none;
 }
 
-.student-card.disabled .generate-report-btn:disabled {
-  background: rgba(218, 220, 224, 0.3);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  color: #5f6368;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: 
-    0 2px 4px rgba(0, 0, 0, 0.05),
-    inset 0 1px 0 rgba(255, 255, 255, 0.4);
+/* Labels */
+.inactive-label {
+  color: #dc2626;
+  font-size: 0.8rem;
+  font-weight: 500;
+  margin-top: 2px;
 }
 
-/* Mobile responsiveness */
+.inactive-label.table {
+  color: #dc2626;
+  font-size: 0.75rem;
+  font-weight: 500;
+  margin-top: 2px;
+}
+
+/* Reports */
+.reports-table-container.mobile {
+  overflow-x: hidden;
+}
+
+.reports-cards {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 20px;
+}
+
+.report-card {
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.report-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border-color: #1f3d61;
+}
+
+.report-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+
+.report-student .student-name {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #1f3d61;
+  margin-bottom: 4px;
+}
+
+.report-student .student-id {
+  color: #64748b;
+  font-size: 0.8125rem;
+}
+
+.report-card-body {
+  margin-bottom: 12px;
+}
+
+.report-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+
+.report-info-item {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.report-info-item .label {
+  font-size: 0.75rem;
+  color: #64748b;
+  font-weight: 500;
+}
+
+.report-info-item .value {
+  font-size: 0.875rem;
+  color: #1e293b;
+  font-weight: 500;
+}
+
+.report-card-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.view-report-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #1f3d61;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 0.875rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.view-report-btn:hover {
+  background: #152a43;
+  transform: translateY(-1px);
+}
+
+/* Status Tags */
+.status-tag {
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  text-transform: capitalize;
+}
+
+.status-tag.draft {
+  background: #fff3cd;
+  color: #856404;
+}
+
+.status-tag.submitted {
+  background: #cce5ff;
+  color: #004085;
+}
+
+.status-tag.approved {
+  background: #d4edda;
+  color: #155724;
+}
+
+.status-tag.rejected {
+  background: #f8d7da;
+  color: #721c24;
+}
+
+/* Utility Classes */
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+}
+
+.no-data {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 40px;
+  color: #64748b;
+  font-style: italic;
+}
+
+/* Table Styles */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+table th,
+table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+table th {
+  background-color: #f8fafc;
+  font-weight: 600;
+  color: #374151;
+}
+
+table tr:hover {
+  background-color: #f8fafc;
+}
+
+.actions button {
+  background: none;
+  border: none;
+  color: #1f3d61;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.actions button:hover {
+  background-color: #f0f4f8;
+  color: #152a43;
+}
+
+/* Responsive Breakpoints */
 @media (max-width: 768px) {
+  .split-container {
+    flex-direction: column;
+    gap: 15px;
+    padding: 15px 15px calc(env(safe-area-inset-bottom) + 80px) 15px;
+    height: auto;
+  }
+
+  .students-section,
+  .reports-section {
+    width: 100%;
+    padding: 20px 15px;
+  }
+
+  .section-header h2 {
+    font-size: 1.25rem;
+  }
+
+  .student-card {
+    padding: 15px;
+    margin-top: 12px;
+  }
+
+  .student-name {
+    font-size: 0.95rem;
+  }
+
+  .student-details {
+    font-size: 0.85rem;
+  }
+
   .generate-report-btn {
     min-width: 40px;
     height: 40px;
@@ -358,24 +672,126 @@
     border-radius: 8px;
   }
 
-  .generate-report-btn svg,
-  .generate-report-btn * {
+  .generate-report-btn svg {
     font-size: 1rem;
+  }
+
+  .filter-section {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .filter-controls {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .filter-box.checkbox-filter {
+    flex-direction: column;
+    gap: 12px;
+    padding: 15px;
+  }
+
+  .filter-box.checkbox-filter .checkbox-label {
+    margin-left: 0 !important;
+  }
+
+  .clear-filters-btn {
+    width: 100%;
+    margin-top: 8px;
+    padding: 12px;
+    font-size: 0.875rem;
+  }
+
+  /* .reports-cards {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 40px);
+  } */
+}
+
+@media (max-width: 480px) {
+  .split-container {
+    padding: 10px 10px calc(env(safe-area-inset-bottom) + 90px) 10px;
+    gap: 12px;
+  }
+
+  .students-section,
+  .reports-section {
+    padding: 15px 12px;
+  }
+
+  .section-header h2 {
+    font-size: 1.125rem;
+  }
+
+  .student-card {
+    padding: 12px;
+  }
+
+  .report-card {
+    padding: 12px;
+  }
+
+  .report-info-grid {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+
+  .generate-report-btn {
+    min-width: 36px;
+    height: 36px;
+    padding: 8px;
+  }
+
+  .generate-report-btn svg {
+    font-size: 0.9rem;
+  }
+
+  /* .reports-cards {
+    padding-bottom: calc(env(safe-area-inset-bottom) + 50px);
+  } */
+}
+
+/* Safe Area Support for iOS/Android */
+@supports (padding: max(0px)) {
+  /* .split-container.mobile {
+    padding-bottom: max(80px, env(safe-area-inset-bottom) + 20px);
+  } */
+
+  .reports-section.mobile {
+    margin-bottom: max(30px, env(safe-area-inset-bottom) + 10px);
+  }
+
+  /* .reports-cards {
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
+  } */
+
+  @media (max-width: 768px) {
+    /* .reports-cards {
+      padding-bottom: max(40px, env(safe-area-inset-bottom) + 20px);
+    } */
+  }
+
+  @media (max-width: 480px) {
+    /* .reports-cards {
+      padding-bottom: max(50px, env(safe-area-inset-bottom) + 30px);
+    } */
   }
 }
 
-/* Reduced motion support */
+/* Reduced Motion */
 @media (prefers-reduced-motion: reduce) {
-  .generate-report-btn {
+  .generate-report-btn,
+  .student-card,
+  .report-card,
+  .view-report-btn {
     transition: none;
   }
-  
+
   .generate-report-btn::before {
     display: none;
   }
-  
-  .generate-report-btn svg,
-  .generate-report-btn * {
+
+  .generate-report-btn svg {
     transition: none;
   }
 }

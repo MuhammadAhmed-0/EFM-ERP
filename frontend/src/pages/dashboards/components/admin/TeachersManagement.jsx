@@ -87,7 +87,6 @@ const AssignManagerModal = ({
   const [selectedManager, setSelectedManager] = useState("");
   const [isAssigning, setIsAssigning] = useState(false);
 
-  // Responsive breakpoints
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
@@ -129,7 +128,6 @@ const AssignManagerModal = ({
 
   const selectedManagerData = managers.find((m) => m._id === selectedManager);
 
-  // Responsive modal styles
   const getResponsiveModalStyles = () => ({
     position: "absolute",
     top: "50%",
@@ -562,11 +560,9 @@ const ModalContent = ({
   imagePreview,
   isUploading,
 }) => {
-  // Responsive breakpoints
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
-  // Responsive modal styles
   const getResponsiveModalStyles = () => ({
     position: "absolute",
     top: "50%",
@@ -1579,7 +1575,7 @@ const TeachersManagement = () => {
         error.response?.data?.message || "Error assigning manager",
         "error"
       );
-      throw error; // Re-throw to handle in modal
+      throw error;
     }
   };
   const handleShowAssignManagerModal = async () => {
@@ -1921,7 +1917,11 @@ const TeachersManagement = () => {
         return true;
       });
     }
-
+    filtered = filtered.sort((a, b) => {
+      const staffIdA = parseInt(a.staffId) || 0;
+      const staffIdB = parseInt(b.staffId) || 0;
+      return staffIdB - staffIdA;
+    });
     setFilteredTeachers(filtered);
   }, [teachers, searchTerm, selectedRole, selectedStatus]);
 
@@ -1975,12 +1975,12 @@ const TeachersManagement = () => {
               justifyContent: "center",
               gap: window.innerWidth < 768 && "4px",
               fontSize: window.innerWidth < 768 && "0.8rem",
-              padding: window.innerWidth < 768 &&"8px 12px" ,
+              padding: window.innerWidth < 768 && "8px 12px",
               minHeight: window.innerWidth < 768 && "36px",
               whiteSpace: "nowrap",
               overflow: "hidden",
               textOverflow: "ellipsis",
-              maxWidth: window.innerWidth < 768 && "200px" ,
+              maxWidth: window.innerWidth < 768 && "200px",
             }}
           >
             {isLoadingTeachersWithoutManagers ? (

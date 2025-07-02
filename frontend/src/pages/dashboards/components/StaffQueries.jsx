@@ -37,10 +37,6 @@ const StaffQueries = () => {
         auth: { token },
       });
 
-      newSocket.on("connect", () => {
-        console.log("Connected to socket server");
-      });
-
       newSocket.on("query_response", (data) => {
         fetchQueries();
       });
@@ -73,8 +69,6 @@ const StaffQueries = () => {
     } catch (error) {
       if (error.response?.status === 401) {
         showNotification("Session expired. Please login again.", "error");
-        // Optionally redirect to login
-        // window.location.href = "/login";
       } else {
         showNotification(
           error.response?.data?.message || "Error fetching queries",
@@ -147,8 +141,6 @@ const StaffQueries = () => {
     } catch (error) {
       if (error.response?.status === 401) {
         showNotification("Session expired. Please login again.", "error");
-        // Optionally redirect to login
-        // window.location.href = "/login";
       } else {
         showNotification(
           error.response?.data?.message || "Error sending query",
@@ -173,6 +165,11 @@ const StaffQueries = () => {
           className="add-btn"
           onClick={() => setShowModal(true)}
           disabled={isLoading}
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
         >
           <FaPlus /> New Query
         </button>

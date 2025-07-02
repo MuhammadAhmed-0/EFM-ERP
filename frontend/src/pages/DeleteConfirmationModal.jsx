@@ -11,7 +11,6 @@ import {
 import { FaTrash, FaLock } from "react-icons/fa";
 import { format } from "date-fns";
 
-// Custom hook for responsive design
 const useResponsive = () => {
   const [screenSize, setScreenSize] = useState({
     isMobile: false,
@@ -46,6 +45,8 @@ const DeleteConfirmationModal = ({
   isLoading,
   type,
   data,
+  formatTableDate,
+  convertTo12Hour,
 }) => {
   const { isMobile, isTablet } = useResponsive();
   const [password, setPassword] = useState("");

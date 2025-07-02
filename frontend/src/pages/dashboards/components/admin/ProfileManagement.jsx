@@ -65,7 +65,6 @@ const UploadBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-// Optimized Avatar component with lazy loading
 const OptimizedAvatar = ({ src, alt, sx, children, ...props }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);
@@ -145,7 +144,6 @@ const ProfileManagement = () => {
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const { updateProfilePicture } = useProfile();
 
-  // Image compression utility
   const compressImage = useCallback(
     (file, quality = 0.7, maxWidth = 800, maxHeight = 800) => {
       return new Promise((resolve) => {
@@ -154,7 +152,6 @@ const ProfileManagement = () => {
         const img = new Image();
 
         img.onload = () => {
-          // Calculate new dimensions
           let { width, height } = img;
 
           if (width > height) {
@@ -172,7 +169,6 @@ const ProfileManagement = () => {
           canvas.width = width;
           canvas.height = height;
 
-          // Draw and compress
           ctx.drawImage(img, 0, 0, width, height);
 
           canvas.toBlob(resolve, "image/jpeg", quality);
@@ -236,17 +232,14 @@ const ProfileManagement = () => {
     try {
       setIsUploading(true);
 
-      // Compress image before upload
       const compressedFile = await compressImage(file, 0.7, 800, 800);
 
-      // Show preview immediately with compressed image
       const reader = new FileReader();
       reader.onloadend = () => {
         setImagePreview(reader.result);
       };
       reader.readAsDataURL(compressedFile);
 
-      // Upload compressed image
       const imageUrl = await uploadToCloudinary(compressedFile);
 
       setFormData((prev) => ({
@@ -258,7 +251,6 @@ const ProfileManagement = () => {
     } catch (error) {
       console.error("Error uploading image:", error);
       showNotification("Error uploading image", "error");
-      // Reset preview on error
       setImagePreview(formData.profilePicture || "");
     } finally {
       setIsUploading(false);

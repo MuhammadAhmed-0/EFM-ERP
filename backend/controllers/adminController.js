@@ -914,37 +914,50 @@ exports.addUser = async (req, res) => {
               });
             }
 
+            const uniqueTeacherIds = [...new Set(rest.assignedTeachers)];
             const teachers = await User.find({
-              _id: { $in: rest.assignedTeachers },
+              _id: { $in: uniqueTeacherIds },
               role: { $in: ["teacher_quran", "teacher_subjects"] },
             });
 
-            if (teachers.length !== rest.assignedTeachers.length) {
+            if (teachers.length !== uniqueTeacherIds.length) {
               await User.findByIdAndDelete(newUser._id);
               return res.status(400).json({
                 msg: "One or more teachers not found or are not teachers",
               });
             }
+            for (let i = 0; i < subjects.length; i++) {
+              const subject = subjects[i];
+              const assignedTeacherId = rest.assignedTeachers[i];
 
-            subjects.forEach((subject) => {
-              const matchingTeacher = teachers.find(
-                (teacher) =>
-                  (subject.type === "quran" &&
-                    teacher.role === "teacher_quran") ||
-                  (subject.type === "subjects" &&
-                    teacher.role === "teacher_subjects")
+              const assignedTeacher = teachers.find(
+                (teacher) => teacher._id.toString() === assignedTeacherId
               );
 
-              if (!matchingTeacher) {
-                throw new Error(
-                  `No matching teacher found for ${subject.name} (${subject.type})`
-                );
+              if (!assignedTeacher) {
+                await User.findByIdAndDelete(newUser._id);
+                return res.status(400).json({
+                  msg: `Teacher with ID ${assignedTeacherId} not found for subject ${subject.name}`,
+                });
+              }
+
+              const canTeachSubject =
+                (subject.type === "quran" &&
+                  assignedTeacher.role === "teacher_quran") ||
+                (subject.type === "subjects" &&
+                  assignedTeacher.role === "teacher_subjects");
+
+              if (!canTeachSubject) {
+                await User.findByIdAndDelete(newUser._id);
+                return res.status(400).json({
+                  msg: `Teacher ${assignedTeacher.name} cannot teach ${subject.name} (type: ${subject.type})`,
+                });
               }
 
               subjectsWithTeachers.push({
                 teacher: {
-                  _id: matchingTeacher._id,
-                  name: matchingTeacher.name,
+                  _id: assignedTeacher._id,
+                  name: assignedTeacher.name,
                 },
                 subject: {
                   _id: subject._id,
@@ -954,7 +967,7 @@ exports.addUser = async (req, res) => {
                 assignedBy: req.user.id,
                 assignedAt: new Date(),
               });
-            });
+            }
           }
         }
 
@@ -1145,37 +1158,50 @@ exports.updateUser = async (req, res) => {
               });
             }
 
+            const uniqueTeacherIds = [
+              ...new Set(roleSpecificFields.assignedTeachers),
+            ];
+
             const teachers = await User.find({
-              _id: { $in: roleSpecificFields.assignedTeachers },
+              _id: { $in: uniqueTeacherIds },
               role: { $in: ["teacher_quran", "teacher_subjects"] },
             });
 
-            if (
-              teachers.length !== roleSpecificFields.assignedTeachers.length
-            ) {
+            if (teachers.length !== uniqueTeacherIds.length) {
               return res.status(400).json({
                 msg: "One or more teachers not found or are not teachers",
               });
             }
-            subjects.forEach((subject) => {
-              const matchingTeacher = teachers.find(
-                (teacher) =>
-                  (subject.type === "quran" &&
-                    teacher.role === "teacher_quran") ||
-                  (subject.type === "subjects" &&
-                    teacher.role === "teacher_subjects")
+            for (let i = 0; i < subjects.length; i++) {
+              const subject = subjects[i];
+              const assignedTeacherId = roleSpecificFields.assignedTeachers[i];
+
+              const assignedTeacher = teachers.find(
+                (teacher) => teacher._id.toString() === assignedTeacherId
               );
 
-              if (!matchingTeacher) {
-                throw new Error(
-                  `No matching teacher found for ${subject.name} (${subject.type})`
-                );
+              if (!assignedTeacher) {
+                return res.status(400).json({
+                  msg: `Teacher with ID ${assignedTeacherId} not found for subject ${subject.name}`,
+                });
+              }
+
+              const canTeachSubject =
+                (subject.type === "quran" &&
+                  assignedTeacher.role === "teacher_quran") ||
+                (subject.type === "subjects" &&
+                  assignedTeacher.role === "teacher_subjects");
+
+              if (!canTeachSubject) {
+                return res.status(400).json({
+                  msg: `Teacher ${assignedTeacher.name} cannot teach ${subject.name} (type: ${subject.type})`,
+                });
               }
 
               subjectsWithTeachers.push({
                 teacher: {
-                  _id: matchingTeacher._id,
-                  name: matchingTeacher.name,
+                  _id: assignedTeacher._id,
+                  name: assignedTeacher.name,
                 },
                 subject: {
                   _id: subject._id,
@@ -1185,7 +1211,7 @@ exports.updateUser = async (req, res) => {
                 assignedBy: req.user.id,
                 assignedAt: new Date(),
               });
-            });
+            }
           }
         }
         if (roleSpecificFields.clientId) {
@@ -3371,11 +3397,11 @@ exports.getAllClientsWithStudents = async (req, res) => {
     }
 
     const students = await Student.find({ user: { $in: studentUserIds } })
-      .populate("user", "name email gender role isActive") 
+      .populate("user", "name email gender role isActive")
       .populate("subjects", "name")
       .populate({
         path: "assignedTeachers.teacher._id",
-        select: "name email gender role isActive", 
+        select: "name email gender role isActive",
         options: { strictPopulate: false },
       })
       .populate({
@@ -3764,7 +3790,7 @@ exports.getDashboardStats = async (req, res) => {
         $project: {
           status: 1,
           subjectStatus: 1,
-          assignedTeachers: 1, 
+          assignedTeachers: 1,
         },
       },
     ]);
@@ -5791,8 +5817,7 @@ exports.toggleClientStatus = async (req, res) => {
               },
             });
             mixedSchedulesUpdated++;
-          }
-          else if (
+          } else if (
             clientStudentsInSchedule.length > 0 &&
             otherStudentsInSchedule.length === 0
           ) {

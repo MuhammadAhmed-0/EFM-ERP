@@ -47,7 +47,6 @@ const DeleteQueriesModal = ({
   const [passwordError, setPasswordError] = useState("");
   const [searchValue, setSearchValue] = useState(null);
 
-  // Responsive breakpoints
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
@@ -141,7 +140,6 @@ const DeleteQueriesModal = ({
       .join(", ");
   };
 
-  // Responsive modal styles
   const getResponsiveModalStyle = () => ({
     position: "absolute",
     top: "50%",
@@ -892,7 +890,6 @@ const AdminQueries = () => {
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-  // Responsive breakpoints
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
@@ -927,11 +924,7 @@ const AdminQueries = () => {
       const newSocket = io(BASE_URL, {
         auth: { token },
       });
-
-      newSocket.on("connect", () => {
-        console.log("Connected to socket server");
-      });
-
+      
       newSocket.on("new_query", (data) => {
         setQueries((prev) => [data.announcement, ...prev]);
         showNotification("New query received");
@@ -1033,7 +1026,6 @@ const AdminQueries = () => {
     }
   };
 
-  // Responsive modal styles for response modal
   const getResponsiveResponseModalStyles = () => ({
     position: "absolute",
     top: "50%",

@@ -15,10 +15,6 @@ const useSocket = (
       auth: { token },
     });
 
-    newSocket.on("connect", () => {
-      console.log("Socket connected");
-    });
-
     for (const [event, handler] of Object.entries(onEventHandlers)) {
       newSocket.on(event, handler);
     }

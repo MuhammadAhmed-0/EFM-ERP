@@ -2381,6 +2381,7 @@ const StaffAttendance = () => {
                 className="date-input-wrapper"
                 style={{
                   position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
                 }}
               >
                 {window.innerWidth >= 768 && (

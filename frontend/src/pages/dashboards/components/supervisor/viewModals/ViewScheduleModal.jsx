@@ -1,4 +1,3 @@
-import React from "react";
 import { Box, Button, Typography, Chip } from "@mui/material";
 import { format } from "date-fns";
 import {
@@ -7,9 +6,7 @@ import {
   FaBook,
   FaCalendarAlt,
   FaChalkboardTeacher,
-  FaTasks,
   FaCheckCircle,
-  FaHourglassHalf,
   FaHistory,
   FaRecycle,
   FaRegClock,
@@ -22,28 +19,12 @@ import {
 const POPPINS_FONT =
   "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
 
-// Responsive breakpoints
 const useResponsive = () => {
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
   return { isMobile, isTablet };
 };
 
-const formatTimeAgo = (date) => {
-  if (!date) return "";
-  const now = new Date("2025-07-01 08:15:20"); // Use current time
-  const diff = now - new Date(date);
-  const minutes = Math.floor(diff / 60000);
-
-  if (minutes < 1) return "just now";
-  if (minutes < 60) return `${minutes} minutes ago`;
-
-  const hours = Math.floor(minutes / 60);
-  if (hours < 24) return `${hours} hours ago`;
-
-  const days = Math.floor(hours / 24);
-  return `${days} days ago`;
-};
 
 const convertTo12Hour = (time) => {
   if (!time) return "";

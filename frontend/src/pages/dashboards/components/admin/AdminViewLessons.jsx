@@ -60,11 +60,6 @@ const AdminViewLessons = () => {
         `${BASE_URL}/api/schedules/admin/student-lessons`
       );
 
-      console.log(
-        `✅ Lessons fetched by hammas-coding at 2025-06-18 06:06:52:`,
-        response.data
-      );
-
       setLessons(response.data.data);
       if (showSuccessMessage) {
         showNotification("Lessons refreshed successfully");

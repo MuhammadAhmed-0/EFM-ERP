@@ -28,7 +28,6 @@ const ClientStudentMonthlyReport = () => {
     try {
       const token = localStorage.getItem("token");
       const user = JSON.parse(localStorage.getItem("userId"));
-      console.log(user);
       const response = await axios.get(
         `${BASE_URL}/api/clients/student-report/${user}`,
         {
@@ -37,14 +36,12 @@ const ClientStudentMonthlyReport = () => {
           },
         }
       );
-      console.log(response.data.reports);
       setReports(response.data.reports);
       setFilteredReports(response.data.reports);
 
       const subjects = [
         ...new Set(response.data.reports.map((report) => report.subjectName)),
       ];
-      console.log(response.data.reports);
       const uniqueStudentsArray = [
         ...new Map(
           response.data.reports.map((report) => [
@@ -174,19 +171,28 @@ const ClientStudentMonthlyReport = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
-            className="student-select"
+            className="month-select"
             value={selectedStudent}
             onChange={(e) => setSelectedStudent(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -205,19 +211,28 @@ const ClientStudentMonthlyReport = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
-            className="subject-select"
+            className="month-select"
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -240,15 +255,24 @@ const ClientStudentMonthlyReport = () => {
             value={selectedMonth}
             onChange={(e) => setSelectedMonth(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",

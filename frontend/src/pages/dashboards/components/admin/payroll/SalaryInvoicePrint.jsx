@@ -25,7 +25,6 @@ const SalaryInvoicePrint = () => {
             },
           }
         );
-        console.log("Fetched Salary Invoice:", response.data);
         setSalaryData(response.data.data);
         setLoading(false);
       } catch (error) {

@@ -60,11 +60,9 @@ const ModalContent = ({
   subjectTeacherPairs,
   clients,
 }) => {
-  // Responsive breakpoints
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
-  // Responsive modal styles
   const getResponsiveModalStyles = () => ({
     position: "absolute",
     top: "50%",
@@ -563,9 +561,11 @@ const ModalContent = ({
                   getTeacherDisplayName(option, pair.subjectId)
                 }
                 value={
-                  getFilteredTeachers(pair.subjectId).find(
-                    (teacher) => teacher._id === pair.teacherId
-                  ) || null
+                  pair.teacherId
+                    ? getFilteredTeachers(pair.subjectId).find(
+                        (teacher) => teacher._id === pair.teacherId
+                      ) || null
+                    : null
                 }
                 onChange={(event, newValue) => {
                   handleChange(
@@ -645,7 +645,6 @@ const ModalContent = ({
                 mt: { xs: 1, sm: 0 },
                 border: { xs: "1px solid #fecaca", sm: "none" },
                 borderRadius: { xs: "6px", sm: "50%" },
-          
               }}
             >
               <FaTrash size={isMobile ? 14 : 16} />
@@ -863,7 +862,6 @@ const StudentsManagement = () => {
           };
         }
       );
-      console.log(studentsWithClientId);
       if (showSuccessMessage) {
         showNotification("Students refreshed successfully");
       }
@@ -984,27 +982,7 @@ const StudentsManagement = () => {
 
   const handleChange = (e, index) => {
     const { name, value } = e.target;
-    if (name === "teacherId" && value) {
-      const selectedTeacher = teachers.find((t) => t._id === value);
-      if (selectedTeacher && selectedTeacher.isActive === false) {
-        showNotification(
-          "This teacher is currently inactive and cannot be assigned to students.",
-          "error"
-        );
-        return;
-      }
-    }
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
 
-    if (errors[name]) {
-      setErrors((prev) => ({
-        ...prev,
-        [name]: "",
-      }));
-    }
     if (index !== undefined) {
       const updatedPairs = [...subjectTeacherPairs];
 
@@ -1015,6 +993,16 @@ const StudentsManagement = () => {
           teacherId: "",
         };
       } else if (name === "teacherId") {
+        if (value) {
+          const selectedTeacher = teachers.find((t) => t._id === value);
+          if (selectedTeacher && selectedTeacher.isActive === false) {
+            showNotification(
+              "This teacher is currently inactive and cannot be assigned to students.",
+              "error"
+            );
+            return;
+          }
+        }
         updatedPairs[index] = {
           ...updatedPairs[index],
           teacherId: value,
@@ -1022,6 +1010,19 @@ const StudentsManagement = () => {
       }
 
       setSubjectTeacherPairs(updatedPairs);
+      return;
+    }
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+
+    if (errors[name]) {
+      setErrors((prev) => ({
+        ...prev,
+        [name]: "",
+      }));
     }
   };
 
@@ -1508,6 +1509,11 @@ const StudentsManagement = () => {
         return enrollmentDate >= dateRange[0] && enrollmentDate <= dateRange[1];
       });
     }
+    filtered.sort((a, b) => {
+      const aId = Number(a.profile.studentId || 0);
+      const bId = Number(b.profile.studentId || 0);
+      return bId - aId;
+    });
 
     setFilteredStudents(filtered);
   }, [
@@ -1694,8 +1700,8 @@ const StudentsManagement = () => {
               <div
                 className="date-input-wrapper"
                 style={{
-                  width: window.innerWidth < 768 ? "100%" : "200px",
                   position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
                 }}
               >
                 {window.innerWidth >= 768 && (

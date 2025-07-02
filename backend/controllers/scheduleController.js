@@ -2542,7 +2542,7 @@ exports.getTodaysTimetableForAdmin = async (req, res) => {
     };
 
     const schedules = await Schedule.find(filter)
-      .populate("teacherId", "name isActive")
+      .populate("teacherId", "name isActive gender")
       .populate("subject", "name type")
       .sort({ startTime: 1, endTime: 1 })
       .lean();
@@ -2641,8 +2641,10 @@ exports.getTodaysTimetableForAdmin = async (req, res) => {
 
     const timetableData = uniqueSchedules.map((schedule) => {
       const teacher = {
+        id: schedule.teacherId?._id,
         name:
           schedule.teacherId?.name || schedule.teacherName || "Unknown Teacher",
+        gender: schedule.teacherId?.gender || "Unknown", 
         isActive: schedule.teacherId?.isActive === true,
         timeSlot: `${schedule.startTime} to ${schedule.endTime}`,
       };
@@ -2988,6 +2990,83 @@ function calculateSummaryWithStatus(timetableData) {
     ).length,
   };
 }
+
+const calculateSummaryWithStatusForSupervisor = (timetableData) => {
+  const summary = {
+    totalSchedules: timetableData.length,
+    totalTeachers: 0,
+    totalStudents: 0,
+    activeSchedules: 0,
+    completedSchedules: 0,
+    pendingSchedules: 0,
+    recurringSchedules: 0,
+    activeStudents: 0,
+    inactiveStudents: 0,
+    activeTeachers: 0,
+    inactiveTeachers: 0,
+    byRegion: {},
+    byStatus: {},
+    byTeacherStatus: {},
+  };
+
+  const uniqueTeachers = new Set();
+  const uniqueStudents = new Set();
+
+  timetableData.forEach((schedule) => {
+    const teacherKey = `${schedule.teacher.name}-${schedule.timeSlot}`;
+    uniqueTeachers.add(teacherKey);
+
+    switch (schedule.sessionStatus) {
+      case "completed":
+        summary.completedSchedules++;
+        break;
+      case "in_progress":
+      case "available":
+        summary.activeSchedules++;
+        break;
+      default:
+        summary.pendingSchedules++;
+    }
+
+    if (schedule.isRecurring) {
+      summary.recurringSchedules++;
+    }
+
+    if (schedule.isTeacherActive) {
+      summary.activeTeachers++;
+    } else {
+      summary.inactiveTeachers++;
+    }
+
+    schedule.studentAttendances.forEach((student) => {
+      const studentKey = `${student.studentId}-${student.studentName}`;
+      uniqueStudents.add(studentKey);
+
+      if (student.studentIsActive && student.clientIsActive) {
+        summary.activeStudents++;
+      } else {
+        summary.inactiveStudents++;
+      }
+
+      const region = student.regionInfo;
+      if (region && region !== "Unknown, Unknown") {
+        summary.byRegion[region] = (summary.byRegion[region] || 0) + 1;
+      }
+
+      const status = student.status || "pending";
+      summary.byStatus[status] = (summary.byStatus[status] || 0) + 1;
+    });
+
+    const teacherStatus = schedule.teacherStatus || "unknown";
+    summary.byTeacherStatus[teacherStatus] =
+      (summary.byTeacherStatus[teacherStatus] || 0) + 1;
+  });
+
+  summary.totalTeachers = uniqueTeachers.size;
+  summary.totalStudents = uniqueStudents.size;
+
+  return summary;
+};
 
 exports.getTodaysTimetableForSupervisor = async (req, res) => {
   try {

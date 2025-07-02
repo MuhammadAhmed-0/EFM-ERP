@@ -1,33 +1,58 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme, useMediaQuery } from "@mui/material";
 import { getModalStyles } from "../../../../styles/modal/commonModalStyles";
 
 const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const getResponsiveModalStyle = () => ({
+    ...getModalStyles(),
+    ...modalStyle,
+    width: isMobile ? "95vw" : isSmallMobile ? "98vw" : "800px",
+    maxWidth: isMobile ? "none" : "800px",
+    maxHeight: isMobile ? "95vh" : "90vh",
+    background: "#f8fafc",
+    borderRadius: isMobile ? "16px" : "12px",
+    padding: isMobile ? "16px" : "24px",
+    overflow: "auto",
+    margin: isMobile ? "10px" : "auto",
+  });
+
   return (
-    <Box
-      sx={[
-        getModalStyles(),
-        {
-          ...modalStyle,
-          width: "800px",
-          background: "#f8fafc",
-        },
-      ]}
-    >
+    <Box sx={getResponsiveModalStyle()}>
+      {/* Header Section */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
+          alignItems: isMobile ? "flex-start" : "center",
+          mb: isMobile ? 2 : 3,
           borderBottom: "1px solid #e2e8f0",
-          pb: 2,
+          pb: isMobile ? 1.5 : 2,
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? 1 : 0,
         }}
       >
-        <Box>
-          <Typography variant="h5" sx={{ color: "#1e293b", fontWeight: 600 }}>
+        <Box sx={{ width: isMobile ? "100%" : "auto" }}>
+          <Typography
+            variant="h5"
+            sx={{
+              color: "#1e293b",
+              fontWeight: 600,
+              fontSize: isMobile ? "1.25rem" : "1.5rem",
+            }}
+          >
             Today's Schedule Summary
           </Typography>
-          <Typography variant="subtitle2" sx={{ color: "#64748b", mt: 0.5 }}>
+          <Typography
+            variant="subtitle2"
+            sx={{
+              color: "#64748b",
+              mt: 0.5,
+              fontSize: isMobile ? "0.8125rem" : "0.875rem",
+            }}
+          >
             {new Date().toLocaleDateString("en-US", {
               weekday: "long",
               year: "numeric",
@@ -41,38 +66,73 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
           style={{
             border: "none",
             background: "none",
-            fontSize: "1.5rem",
+            fontSize: isMobile ? "1.25rem" : "1.5rem",
             cursor: "pointer",
             color: "#64748b",
-            padding: "8px",
+            padding: isMobile ? "4px" : "8px",
+            alignSelf: isMobile ? "flex-end" : "auto",
+            borderRadius: isMobile ? "50%" : "4px",
+            minWidth: isMobile ? "28px" : "auto",
+            height: isMobile ? "28px" : "auto",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+          onMouseEnter={(e) => {
+            e.target.style.backgroundColor = "#f1f5f9";
+            e.target.style.color = "#3949ab";
+          }}
+          onMouseLeave={(e) => {
+            e.target.style.backgroundColor = "transparent";
+            e.target.style.color = "#64748b";
           }}
         >
           ×
         </button>
       </Box>
 
-      <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
+      {/* Main Content Container */}
+      <Box
+        sx={{
+          display: "flex",
+          gap: isMobile ? 1.5 : 2,
+          mb: isMobile ? 2 : 3,
+          flexDirection: isMobile ? "column" : "row",
+        }}
+      >
         {/* Today's Classes Section */}
         <Box
           sx={{
             flex: 1,
             background: "#fff",
-            borderRadius: "12px",
-            p: 3,
+            borderRadius: isMobile ? "16px" : "12px",
+            p: isMobile ? 2 : 3,
             boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             border: "1px solid #e2e8f0",
           }}
         >
           <Typography
             variant="h6"
-            sx={{ mb: 2, color: "#1e293b", fontSize: "1rem", fontWeight: 600 }}
+            sx={{
+              mb: isMobile ? 1.5 : 2,
+              color: "#1e293b",
+              fontSize: isMobile ? "0.9375rem" : "1rem",
+              fontWeight: 600,
+            }}
           >
             Today's Classes
           </Typography>
-          <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 2 }}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: isMobile ? "1fr 1fr" : "1fr 1fr",
+              gap: isMobile ? 1.5 : 2,
+            }}
+          >
+            {/* Total Classes */}
             <Box
               sx={{
-                p: 2,
+                p: isMobile ? 1.5 : 2,
                 borderRadius: "8px",
                 background: "#f1f5f9",
                 textAlign: "center",
@@ -81,7 +141,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
               <Typography
                 sx={{
                   color: "#64748b",
-                  fontSize: "0.875rem",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
                   mb: 1,
                   fontWeight: 600,
                 }}
@@ -89,14 +149,20 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
                 Total Classes
               </Typography>
               <Typography
-                sx={{ color: "#1e293b", fontSize: "2rem", fontWeight: 600 }}
+                sx={{
+                  color: "#1e293b",
+                  fontSize: isMobile ? "1.5rem" : "2rem",
+                  fontWeight: 600,
+                }}
               >
                 {summary.totalClasses}
               </Typography>
             </Box>
+
+            {/* Completed */}
             <Box
               sx={{
-                p: 2,
+                p: isMobile ? 1.5 : 2,
                 borderRadius: "8px",
                 background: "#dcfce7",
                 textAlign: "center",
@@ -105,7 +171,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
               <Typography
                 sx={{
                   color: "#166534",
-                  fontSize: "0.875rem",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
                   mb: 1,
                   fontWeight: 600,
                 }}
@@ -113,14 +179,20 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
                 Completed
               </Typography>
               <Typography
-                sx={{ color: "#166534", fontSize: "2rem", fontWeight: 600 }}
+                sx={{
+                  color: "#166534",
+                  fontSize: isMobile ? "1.5rem" : "2rem",
+                  fontWeight: 600,
+                }}
               >
                 {summary.completedClasses}
               </Typography>
             </Box>
+
+            {/* In Progress */}
             <Box
               sx={{
-                p: 2,
+                p: isMobile ? 1.5 : 2,
                 borderRadius: "8px",
                 background: "#fff7ed",
                 textAlign: "center",
@@ -129,7 +201,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
               <Typography
                 sx={{
                   color: "#9a3412",
-                  fontSize: "0.875rem",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
                   mb: 1,
                   fontWeight: 600,
                 }}
@@ -137,14 +209,20 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
                 In Progress
               </Typography>
               <Typography
-                sx={{ color: "#9a3412", fontSize: "2rem", fontWeight: 600 }}
+                sx={{
+                  color: "#9a3412",
+                  fontSize: isMobile ? "1.5rem" : "2rem",
+                  fontWeight: 600,
+                }}
               >
                 {summary.activeClasses}
               </Typography>
             </Box>
+
+            {/* Pending */}
             <Box
               sx={{
-                p: 2,
+                p: isMobile ? 1.5 : 2,
                 borderRadius: "8px",
                 background: "#f0f9ff",
                 textAlign: "center",
@@ -153,7 +231,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
               <Typography
                 sx={{
                   color: "#075985",
-                  fontSize: "0.875rem",
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
                   mb: 1,
                   fontWeight: 600,
                 }}
@@ -161,7 +239,11 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
                 Pending
               </Typography>
               <Typography
-                sx={{ color: "#075985", fontSize: "2rem", fontWeight: 600 }}
+                sx={{
+                  color: "#075985",
+                  fontSize: isMobile ? "1.5rem" : "2rem",
+                  fontWeight: 600,
+                }}
               >
                 {summary.pendingClasses}
               </Typography>
@@ -174,24 +256,42 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
           sx={{
             flex: 1,
             background: "#fff",
-            borderRadius: "12px",
-            p: 3,
+            borderRadius: isMobile ? "16px" : "12px",
+            p: isMobile ? 2 : 3,
             boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
             border: "1px solid #e2e8f0",
           }}
         >
           <Typography
             variant="h6"
-            sx={{ mb: 2, color: "#1e293b", fontSize: "1rem", fontWeight: 600 }}
+            sx={{
+              mb: isMobile ? 1.5 : 2,
+              color: "#1e293b",
+              fontSize: isMobile ? "0.9375rem" : "1rem",
+              fontWeight: 600,
+            }}
           >
             Timing Analysis
           </Typography>
-          <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-            <Box sx={{ display: "flex", gap: 2 }}>
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: "column",
+              gap: isMobile ? 1.5 : 2,
+            }}
+          >
+            <Box
+              sx={{
+                display: "flex",
+                gap: isMobile ? 1.5 : 2,
+                flexDirection: isSmallMobile ? "column" : "row",
+              }}
+            >
+              {/* Late Started */}
               <Box
                 sx={{
                   flex: 1,
-                  p: 2,
+                  p: isMobile ? 1.5 : 2,
                   borderRadius: "8px",
                   background: "#fef2f2",
                 }}
@@ -199,7 +299,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
                 <Typography
                   sx={{
                     color: "#991b1b",
-                    fontSize: "0.875rem",
+                    fontSize: isMobile ? "0.75rem" : "0.875rem",
                     mb: 0.5,
                     fontWeight: 600,
                   }}
@@ -210,26 +310,37 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
                   <Typography
                     sx={{
                       color: "#991b1b",
-                      fontSize: "1.5rem",
+                      fontSize: isMobile ? "1.25rem" : "1.5rem",
                       fontWeight: 600,
                     }}
                   >
                     {summary.lateStartedClasses}
                   </Typography>
-                  <Typography sx={{ color: "#991b1b", fontSize: "0.875rem" }}>
+                  <Typography
+                    sx={{
+                      color: "#991b1b",
+                      fontSize: isMobile ? "0.75rem" : "0.875rem",
+                    }}
+                  >
                     classes
                   </Typography>
                 </Box>
                 <Typography
-                  sx={{ color: "#991b1b", fontSize: "0.875rem", mt: 0.5 }}
+                  sx={{
+                    color: "#991b1b",
+                    fontSize: isMobile ? "0.75rem" : "0.875rem",
+                    mt: 0.5,
+                  }}
                 >
                   Total: {summary.totalLateMinutes}m
                 </Typography>
               </Box>
+
+              {/* Early Ended */}
               <Box
                 sx={{
                   flex: 1,
-                  p: 2,
+                  p: isMobile ? 1.5 : 2,
                   borderRadius: "8px",
                   background: "#fff7ed",
                 }}
@@ -237,7 +348,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
                 <Typography
                   sx={{
                     color: "#9a3412",
-                    fontSize: "0.875rem",
+                    fontSize: isMobile ? "0.75rem" : "0.875rem",
                     mb: 0.5,
                     fontWeight: 600,
                   }}
@@ -248,18 +359,27 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
                   <Typography
                     sx={{
                       color: "#9a3412",
-                      fontSize: "1.5rem",
+                      fontSize: isMobile ? "1.25rem" : "1.5rem",
                       fontWeight: 600,
                     }}
                   >
                     {summary.earlyEndedClasses}
                   </Typography>
-                  <Typography sx={{ color: "#9a3412", fontSize: "0.875rem" }}>
+                  <Typography
+                    sx={{
+                      color: "#9a3412",
+                      fontSize: isMobile ? "0.75rem" : "0.875rem",
+                    }}
+                  >
                     classes
                   </Typography>
                 </Box>
                 <Typography
-                  sx={{ color: "#9a3412", fontSize: "0.875rem", mt: 0.5 }}
+                  sx={{
+                    color: "#9a3412",
+                    fontSize: isMobile ? "0.75rem" : "0.875rem",
+                    mt: 0.5,
+                  }}
                 >
                   Total: {summary.totalEarlyMinutes}m
                 </Typography>
@@ -269,33 +389,42 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
         </Box>
       </Box>
 
-      {/* NEW SECTION: Additional Session Statuses */}
+      {/* Additional Session Statuses Section */}
       <Box
         sx={{
           background: "#fff",
-          borderRadius: "12px",
-          p: 3,
+          borderRadius: isMobile ? "16px" : "12px",
+          p: isMobile ? 2 : 3,
           boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
           border: "1px solid #e2e8f0",
         }}
       >
         <Typography
           variant="h6"
-          sx={{ mb: 2, color: "#1e293b", fontSize: "1rem", fontWeight: 600 }}
+          sx={{
+            mb: isMobile ? 1.5 : 2,
+            color: "#1e293b",
+            fontSize: isMobile ? "0.9375rem" : "1rem",
+            fontWeight: 600,
+          }}
         >
           Additional Session Status
         </Typography>
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: 2,
+            gridTemplateColumns: isMobile
+              ? isSmallMobile
+                ? "1fr"
+                : "repeat(2, 1fr)"
+              : "repeat(3, 1fr)",
+            gap: isMobile ? 1.5 : 2,
           }}
         >
           {/* Available Sessions */}
           <Box
             sx={{
-              p: 2,
+              p: isMobile ? 1.5 : 2,
               borderRadius: "8px",
               background: "#e0f2fe",
               textAlign: "center",
@@ -304,7 +433,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
             <Typography
               sx={{
                 color: "#0369a1",
-                fontSize: "0.875rem",
+                fontSize: isMobile ? "0.75rem" : "0.875rem",
                 mb: 1,
                 fontWeight: 600,
               }}
@@ -312,7 +441,11 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
               Available
             </Typography>
             <Typography
-              sx={{ color: "#0369a1", fontSize: "2rem", fontWeight: 600 }}
+              sx={{
+                color: "#0369a1",
+                fontSize: isMobile ? "1.5rem" : "2rem",
+                fontWeight: 600,
+              }}
             >
               {summary.availableClasses || 0}
             </Typography>
@@ -321,7 +454,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
           {/* Absent Sessions */}
           <Box
             sx={{
-              p: 2,
+              p: isMobile ? 1.5 : 2,
               borderRadius: "8px",
               background: "#fee2e2",
               textAlign: "center",
@@ -330,7 +463,7 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
             <Typography
               sx={{
                 color: "#dc2626",
-                fontSize: "0.875rem",
+                fontSize: isMobile ? "0.75rem" : "0.875rem",
                 mb: 1,
                 fontWeight: 600,
               }}
@@ -338,7 +471,11 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
               Absent
             </Typography>
             <Typography
-              sx={{ color: "#dc2626", fontSize: "2rem", fontWeight: 600 }}
+              sx={{
+                color: "#dc2626",
+                fontSize: isMobile ? "1.5rem" : "2rem",
+                fontWeight: 600,
+              }}
             >
               {summary.absentClasses || 0}
             </Typography>
@@ -347,16 +484,17 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
           {/* Leave Sessions */}
           <Box
             sx={{
-              p: 2,
+              p: isMobile ? 1.5 : 2,
               borderRadius: "8px",
               background: "#fed7aa",
               textAlign: "center",
+              gridColumn: isSmallMobile ? "1 / -1" : "auto",
             }}
           >
             <Typography
               sx={{
                 color: "#ea580c",
-                fontSize: "0.875rem",
+                fontSize: isMobile ? "0.75rem" : "0.875rem",
                 mb: 1,
                 fontWeight: 600,
               }}
@@ -364,7 +502,11 @@ const ScheduleSummaryModal = ({ summary, setShowModal, modalStyle }) => {
               Leave
             </Typography>
             <Typography
-              sx={{ color: "#ea580c", fontSize: "2rem", fontWeight: 600 }}
+              sx={{
+                color: "#ea580c",
+                fontSize: isMobile ? "1.5rem" : "2rem",
+                fontWeight: 600,
+              }}
             >
               {summary.leaveClasses || 0}
             </Typography>

@@ -30,11 +30,9 @@ const ViewStaffModal = ({
   isInfoVisible,
   handleAdminPasswordSubmit,
 }) => {
-  // Responsive breakpoints
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
-  // Responsive styles
   const typographyStyles = {
     fontFamily: POPPINS_FONT,
   };
@@ -124,7 +122,6 @@ const ViewStaffModal = ({
     </Box>
   );
 
-  // Responsive modal styles
   const modalBaseStyles = {
     ...modalStyle,
     maxHeight: { xs: "95vh", sm: "90vh" },

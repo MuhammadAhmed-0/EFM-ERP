@@ -33,7 +33,7 @@ const DashboardSidebar = ({
               onClick={(e) => {
                 e.preventDefault();
                 onNavigate(item.path);
-                onClose(); // Close sidebar on mobile after navigation
+                onClose();
               }}
               className={`${styles.navItem} ${
                 window.location.pathname === item.path ? styles.active : ""

@@ -562,17 +562,16 @@ const ViewClientModal = ({
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
-  // Get subject status for a student and subject
   const getSubjectStatus = (student, subjectId) => {
     if (!student.subjectStatus || student.subjectStatus.length === 0) {
-      return true; // Default to active if no status found
+      return true; 
     }
 
     const status = student.subjectStatus.find(
       (status) => status.subject.toString() === subjectId.toString()
     );
 
-    return status ? status.isActive : true; // Default to active if no specific status found
+    return status ? status.isActive : true; 
   };
 
   const showNotification = (message, type = "success") => {
@@ -611,7 +610,6 @@ const ViewClientModal = ({
       );
 
       if (response.data.success) {
-        // Update the client data with new subject status
         setClientData((prevClient) => {
           const updatedClient = { ...prevClient };
           const studentIndex = updatedClient.students.findIndex(
@@ -621,7 +619,6 @@ const ViewClientModal = ({
           if (studentIndex !== -1) {
             const student = { ...updatedClient.students[studentIndex] };
 
-            // Update or create subject status
             if (!student.subjectStatus) {
               student.subjectStatus = [];
             }

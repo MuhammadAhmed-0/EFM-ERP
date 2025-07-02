@@ -1,6 +1,13 @@
 import { useState, useEffect } from "react";
 import { FaSearch, FaFileAlt, FaEye, FaFilter } from "react-icons/fa";
-import { Select, MenuItem, Button, CircularProgress } from "@mui/material";
+import {
+  Select,
+  MenuItem,
+  Button,
+  CircularProgress,
+  useTheme,
+  useMediaQuery,
+} from "@mui/material";
 import axios from "axios";
 import "../../../../styles/components/Management.css";
 import "../../../../styles/components/TeacherStudentLists.css";
@@ -9,6 +16,10 @@ import useNotification from "../../../../hooks/useNotification";
 import SyncButton from "../../../../components/common/SyncButton";
 
 const TeacherStudentList = () => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [students, setStudents] = useState([]);
   const [filteredStudents, setFilteredStudents] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -33,7 +44,6 @@ const TeacherStudentList = () => {
 
   const { notification, showNotification, closeNotification } =
     useNotification();
-
   const BASE_URL = import.meta.env.VITE_BASE_URL;
 
   useEffect(() => {
@@ -155,7 +165,6 @@ const TeacherStudentList = () => {
           const bName = b.name.replace("(Inactive Student)", "").trim();
           return aName.localeCompare(bName);
         }
-
         return 0;
       });
 
@@ -225,7 +234,7 @@ const TeacherStudentList = () => {
     selectedStudent,
     selectedMonth,
     selectedSubject,
-    reportSearchTerm, // Added to dependencies
+    reportSearchTerm,
     reports,
     showActiveStudentReports,
     showInactiveStudentReports,
@@ -237,7 +246,7 @@ const TeacherStudentList = () => {
       studentId: student._id,
       clientId: student.clientId,
       familyName: student.clientName,
-      studentName: student.studentNameFromUser,
+      studentName: student.name,
       grade: student.grade,
       subject: student.assignedSubjects[0]?.subject.name || "",
       tutorName: user?.name || "",
@@ -254,16 +263,12 @@ const TeacherStudentList = () => {
   };
 
   return (
-    <div className="split-container">
-      <div className="students-section">
-        <div
-          className="section-header"
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-          }}
-        >
-          <h2>My Students</h2>
+    <div className={`split-container ${isMobile ? "mobile" : ""}`}>
+      <div className={`students-section ${isMobile ? "mobile" : ""}`}>
+        <div className="section-header">
+          <h2 style={{ fontSize: isMobile ? "1.25rem" : "1.5rem" }}>
+            My Students
+          </h2>
           <SyncButton
             isSyncing={isSyncing}
             onClick={() => fetchStudents(true)}
@@ -274,16 +279,19 @@ const TeacherStudentList = () => {
           <FaSearch className="search-icon" />
           <input
             type="text"
-            placeholder="Search by Student Name/ID."
+            placeholder={
+              isMobile ? "Search Student..." : "Search by Student Name/ID."
+            }
             value={studentSearchTerm}
             onChange={(e) => setStudentSearchTerm(e.target.value)}
+            style={{ fontSize: isMobile ? "0.875rem" : "1rem" }}
           />
         </div>
 
         <div className="students-list">
           {isSyncing ? (
             <div className="loading-container">
-              <CircularProgress />
+              <CircularProgress size={isMobile ? 20 : 24} />
             </div>
           ) : filteredStudents.length > 0 ? (
             filteredStudents.map((student) => {
@@ -291,23 +299,16 @@ const TeacherStudentList = () => {
               return (
                 <div
                   key={student._id}
-                  className={`student-card ${isInactive ? "disabled" : ""}`}
+                  className={`student-card ${isInactive ? "disabled" : ""} ${
+                    isMobile ? "mobile" : ""
+                  }`}
                 >
                   <div className="student-info">
                     <div className="student-name">
                       {student.name.replace("(Inactive Student)", "").trim()}
                     </div>
                     {isInactive && (
-                      <div
-                        style={{
-                          color: "#dc2626",
-                          fontSize: "0.8rem",
-                          fontWeight: "500",
-                          marginTop: "2px",
-                        }}
-                      >
-                        (Inactive Student)
-                      </div>
+                      <div className="inactive-label">(Inactive Student)</div>
                     )}
                     <div className="student-details">
                       {student.studentId} | {student.clientName}
@@ -332,36 +333,28 @@ const TeacherStudentList = () => {
             })
           ) : (
             <div className="no-data">
-              <p>No students found</p>
+              <p style={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+                No students found
+              </p>
             </div>
           )}
         </div>
       </div>
 
-      <div className="reports-section">
+      <div className={`reports-section ${isMobile ? "mobile" : ""}`}>
         <div className="section-header">
-          <div
-            style={{
-              display: "flex",
-              gap: "1rem",
-              justifyContent: "space-between",
-            }}
-          >
-            <h2>Reports</h2>
+          <div className="header-top">
+            <h2 style={{ fontSize: isMobile ? "1.25rem" : "1.5rem" }}>
+              Reports
+            </h2>
             <SyncButton
-              isSyncing={isSyncing}
+              isSyncing={isReportsSyncing}
               onClick={() => fetchAllReports(true)}
             />
           </div>
+
           <div
-            className="filter-box checkbox-filter"
-            style={{
-              margin: "10px 0",
-              padding: "10px 16px",
-              backgroundColor: "white",
-              border: "1px solid #e2e8f0",
-              borderRadius: "6px",
-            }}
+            className={`filter-box checkbox-filter ${isMobile ? "mobile" : ""}`}
           >
             <label className="checkbox-label">
               <input
@@ -372,7 +365,7 @@ const TeacherStudentList = () => {
               />
               <span className="checkbox-text">Active Student Reports</span>
             </label>
-            <label className="checkbox-label" style={{ marginLeft: "16px" }}>
+            <label className="checkbox-label">
               <input
                 type="checkbox"
                 checked={showInactiveStudentReports}
@@ -384,117 +377,158 @@ const TeacherStudentList = () => {
               <span className="checkbox-text">Inactive Student Reports</span>
             </label>
           </div>
-          <div className="filter-section">
-            <div className="search-box" style={{ margin: "10px 0" }}>
-              <FaSearch className="search-icon" />
-              <input
-                type="text"
-                placeholder="Search by Student Name/ID"
-                value={reportSearchTerm}
-                onChange={(e) => setReportSearchTerm(e.target.value)}
-              />
+          <div className="search-box" style={{ width: "100% !important" }}>
+            <FaSearch className="search-icon" />
+            <input
+              type="text"
+              placeholder={isMobile ? "Search..." : "Search by Student Name/ID"}
+              value={reportSearchTerm}
+              onChange={(e) => setReportSearchTerm(e.target.value)}
+              style={{ fontSize: isMobile ? "0.875rem" : "1rem" }}
+            />
+          </div>
+          <div className={`filter-section ${isMobile ? "mobile" : ""}`}>
+            <div className="filter-controls">
+              <div className="filter-box">
+                <FaFilter className="filter-icon" />
+                <Select
+                  className="staff-select"
+                  value={selectedStudent}
+                  onChange={(e) => setSelectedStudent(e.target.value)}
+                  label="Student"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "180px",
+                      md: "200px",
+                    },
+                    minWidth: {
+                      xs: "100%",
+                      sm: "150px",
+                    },
+                    height: "40px",
+                    ".MuiSelect-select": {
+                      padding:
+                        window.innerWidth <= 768
+                          ? "6px 25px"
+                          : "8px 12px 8px 36px",
+                      backgroundColor: "white",
+                      borderRadius: "6px",
+                      fontSize: "0.875rem",
+                      color: "#475569",
+                      marginTop: 0.5,
+                    },
+                    ".MuiOutlinedInput-notchedOutline": {
+                      border: "none",
+                    },
+                  }}
+                >
+                  <MenuItem value="all">All Students</MenuItem>
+                  {students.map((student) => (
+                    <MenuItem
+                      key={student._id}
+                      value={
+                        student.studentId ? student.studentId.toString() : ""
+                      }
+                    >
+                      {student.studentId} - {student.name}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="filter-box">
+                <FaFilter className="filter-icon" />
+                <Select
+                  className="staff-select"
+                  value={selectedMonth}
+                  onChange={(e) => setSelectedMonth(e.target.value)}
+                  label="Month"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "180px",
+                      md: "200px",
+                    },
+                    minWidth: {
+                      xs: "100%",
+                      sm: "150px",
+                    },
+                    height: "40px",
+                    ".MuiSelect-select": {
+                      padding:
+                        window.innerWidth <= 768
+                          ? "6px 25px"
+                          : "8px 12px 8px 36px",
+                      backgroundColor: "white",
+                      borderRadius: "6px",
+                      fontSize: "0.875rem",
+                      color: "#475569",
+                      marginTop: 0.5,
+                    },
+                    ".MuiOutlinedInput-notchedOutline": {
+                      border: "none",
+                    },
+                  }}
+                >
+                  <MenuItem value="all">All Months</MenuItem>
+                  {allMonths.map((month) => (
+                    <MenuItem key={month} value={month}>
+                      {month}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
+
+              <div className="filter-box">
+                <FaFilter className="filter-icon" />
+                <Select
+                  className="staff-select"
+                  value={selectedSubject}
+                  onChange={(e) => setSelectedSubject(e.target.value)}
+                  label="Subject"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    width: {
+                      xs: "100%",
+                      sm: "180px",
+                      md: "200px",
+                    },
+                    minWidth: {
+                      xs: "100%",
+                      sm: "150px",
+                    },
+                    height: "40px",
+                    ".MuiSelect-select": {
+                      padding:
+                        window.innerWidth <= 768
+                          ? "6px 25px"
+                          : "8px 12px 8px 36px",
+                      backgroundColor: "white",
+                      borderRadius: "6px",
+                      fontSize: "0.875rem",
+                      color: "#475569",
+                      marginTop: 0.5,
+                    },
+                    ".MuiOutlinedInput-notchedOutline": {
+                      border: "none",
+                    },
+                  }}
+                >
+                  <MenuItem value="all">All Subjects</MenuItem>
+                  {allSubjects.map((subject) => (
+                    <MenuItem key={subject} value={subject}>
+                      {subject}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </div>
             </div>
 
-            <div className="filter-box">
-              <FaFilter className="filter-icon" />
-              <Select
-                className="staff-select"
-                value={selectedStudent}
-                onChange={(e) => setSelectedStudent(e.target.value)}
-                label="Student"
-                sx={{
-                  width: "200px",
-                  height: "40px",
-                  ".MuiSelect-select": {
-                    padding: "8px 12px 8px 36px",
-                    backgroundColor: "white",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "6px",
-                    fontSize: "0.875rem",
-                    color: "#475569",
-                  },
-                  ".MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                }}
-              >
-                <MenuItem value="all">All Students</MenuItem>
-                {students.map((student) => (
-                  <MenuItem
-                    key={student._id}
-                    value={
-                      student.studentId ? student.studentId.toString() : ""
-                    }
-                  >
-                    {student.studentId} - {student.name}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
-            <div className="filter-box">
-              <FaFilter className="filter-icon" />
-              <Select
-                className="staff-select"
-                value={selectedMonth}
-                onChange={(e) => setSelectedMonth(e.target.value)}
-                label="Month"
-                sx={{
-                  width: "200px",
-                  height: "40px",
-                  ".MuiSelect-select": {
-                    padding: "8px 12px 8px 36px",
-                    backgroundColor: "white",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "6px",
-                    fontSize: "0.875rem",
-                    color: "#475569",
-                  },
-                  ".MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                }}
-              >
-                <MenuItem value="all">All Months</MenuItem>
-                {allMonths.map((month) => (
-                  <MenuItem key={month} value={month}>
-                    {month}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
-            <div className="filter-box">
-              <FaFilter className="filter-icon" />
-              <Select
-                className="staff-select"
-                value={selectedSubject}
-                onChange={(e) => setSelectedSubject(e.target.value)}
-                label="Subject"
-                sx={{
-                  width: "200px",
-                  height: "40px",
-                  ".MuiSelect-select": {
-                    padding: "8px 12px 8px 36px",
-                    backgroundColor: "white",
-                    border: "1px solid #e2e8f0",
-                    borderRadius: "6px",
-                    fontSize: "0.875rem",
-                    color: "#475569",
-                  },
-                  ".MuiOutlinedInput-notchedOutline": {
-                    border: "none",
-                  },
-                }}
-              >
-                <MenuItem value="all">All Subjects</MenuItem>
-                {allSubjects.map((subject) => (
-                  <MenuItem key={subject} value={subject}>
-                    {subject}
-                  </MenuItem>
-                ))}
-              </Select>
-            </div>
             <button
-              className="clear-filters-btn"
+              className={`clear-filters-btn ${isMobile ? "mobile" : ""}`}
               onClick={() => {
                 setSelectedSubject("all");
                 setSelectedStudent("all");
@@ -512,82 +546,154 @@ const TeacherStudentList = () => {
         <div className="reports-list">
           {isReportsSyncing ? (
             <div className="loading-container">
-              <CircularProgress />
+              <CircularProgress size={isMobile ? 20 : 24} />
             </div>
           ) : filteredReports.length > 0 ? (
-            <table>
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Student</th>
-                  <th>Subject</th>
-                  <th>Month</th>
-                  <th>Status</th>
-                  <th>Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredReports.map((report) => {
-                  const isInactiveStudent =
-                    report.studentNameFromUser.includes("(Inactive Student)");
-                  return (
-                    <tr key={report._id}>
-                      <td style={{ fontWeight: "500" }}>
-                        {new Date(report.createdAt).toLocaleDateString()}
-                      </td>
-                      <td>
-                        <div style={{ fontWeight: "500" }}>
-                          {report.studentNameFromUser
-                            .replace("(Inactive Student)", "")
-                            .trim()}
-                        </div>
-                        {isInactiveStudent && (
-                          <div
-                            style={{
-                              color: "#dc2626",
-                              fontSize: "0.75rem",
-                              fontWeight: "500",
-                              marginTop: "2px",
-                            }}
-                          >
-                            (Inactive Student)
+            <div
+              className={`reports-table-container ${isMobile ? "mobile" : ""}`}
+            >
+              {isMobile ? (
+                <div className="reports-cards">
+                  {filteredReports.map((report) => {
+                    const isInactiveStudent =
+                      report.studentNameFromUser.includes("(Inactive Student)");
+                    return (
+                      <div key={report._id} className="report-card">
+                        <div className="report-card-header">
+                          <div className="report-student">
+                            <div className="student-name">
+                              {report.studentNameFromUser
+                                .replace("(Inactive Student)", "")
+                                .trim()}
+                            </div>
+                            {isInactiveStudent && (
+                              <div className="inactive-label">
+                                (Inactive Student)
+                              </div>
+                            )}
+                            <span className="student-id">
+                              ID: {report.student.studentId}
+                            </span>
                           </div>
-                        )}
-                        <span
-                          style={{ color: "#64748b", fontSize: "0.8125rem" }}
-                        >
-                          ID: {report.student.studentId}
-                        </span>
-                      </td>
-                      <td>{report.subjectName}</td>
-                      <td>{report.classCount}</td>
-                      <td>
-                        <span className={`status-tag ${report.status}`}>
-                          {report.status}
-                        </span>
-                      </td>
-                      <td>
-                        <div className="actions">
+                          <span className={`status-tag ${report.status}`}>
+                            {report.status}
+                          </span>
+                        </div>
+
+                        <div className="report-card-body">
+                          <div className="report-info-grid">
+                            <div className="report-info-item">
+                              <span className="label">Date:</span>
+                              <span className="value">
+                                {new Date(
+                                  report.createdAt
+                                ).toLocaleDateString()}
+                              </span>
+                            </div>
+                            <div className="report-info-item">
+                              <span className="label">Subject:</span>
+                              <span className="value">
+                                {report.subjectName}
+                              </span>
+                            </div>
+                            <div className="report-info-item">
+                              <span className="label">Month:</span>
+                              <span className="value">{report.classCount}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div className="report-card-actions">
                           <button
                             onClick={() => handleViewReport(report._id)}
+                            className="view-report-btn"
                             title="View Report"
                           >
                             <FaEye />
+                            <span>View</span>
                           </button>
                         </div>
-                      </td>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Student</th>
+                      <th>Subject</th>
+                      <th>Month</th>
+                      <th>Status</th>
+                      <th>Actions</th>
                     </tr>
-                  );
-                })}
-              </tbody>
-            </table>
+                  </thead>
+                  <tbody>
+                    {filteredReports.map((report) => {
+                      const isInactiveStudent =
+                        report.studentNameFromUser.includes(
+                          "(Inactive Student)"
+                        );
+                      return (
+                        <tr key={report._id}>
+                          <td style={{ fontWeight: "500" }}>
+                            {new Date(report.createdAt).toLocaleDateString()}
+                          </td>
+                          <td>
+                            <div style={{ fontWeight: "500" }}>
+                              {report.studentNameFromUser
+                                .replace("(Inactive Student)", "")
+                                .trim()}
+                            </div>
+                            {isInactiveStudent && (
+                              <div className="inactive-label table">
+                                (Inactive Student)
+                              </div>
+                            )}
+                            <span
+                              style={{
+                                color: "#64748b",
+                                fontSize: "0.8125rem",
+                              }}
+                            >
+                              ID: {report.student.studentId}
+                            </span>
+                          </td>
+                          <td>{report.subjectName}</td>
+                          <td>{report.classCount}</td>
+                          <td>
+                            <span className={`status-tag ${report.status}`}>
+                              {report.status}
+                            </span>
+                          </td>
+                          <td>
+                            <div className="actions">
+                              <button
+                                onClick={() => handleViewReport(report._id)}
+                                title="View Report"
+                              >
+                                <FaEye />
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              )}
+            </div>
           ) : (
             <div className="no-data">
-              <p>No reports found</p>
+              <p style={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+                No reports found
+              </p>
             </div>
           )}
         </div>
       </div>
+
       <NotificationSnackbar
         notification={notification}
         onClose={closeNotification}

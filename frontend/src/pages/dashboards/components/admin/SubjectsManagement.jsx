@@ -19,7 +19,6 @@ import NotificationSnackbar from "../../../../components/common/NotificationSnac
 import SyncButton from "../../../../components/common/SyncButton";
 import { getModalStyles } from "../../../../styles/modal/commonModalStyles";
 
-// Custom hook for responsive design
 const useResponsive = () => {
   const [screenSize, setScreenSize] = useState({
     isMobile: false,

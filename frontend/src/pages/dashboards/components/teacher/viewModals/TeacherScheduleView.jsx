@@ -869,18 +869,28 @@ const TeacherScheduleView = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
+            className="staff-select"
             value={selectedStudent}
             onChange={(e) => setSelectedStudent(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -898,18 +908,28 @@ const TeacherScheduleView = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
+            className="staff-select"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -937,8 +957,27 @@ const TeacherScheduleView = () => {
             isClearable={true}
             dateFormat="dd/MM/yyyy"
             customInput={
-              <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+              <div
+                className="date-input-wrapper"
+                style={{
+                  position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
+                }}
+              >
+                {window.innerWidth >= 768 && (
+                  <FaFilter
+                    className="filter-icon"
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      zIndex: 1,
+                    }}
+                  />
+                )}
                 <input
                   className="date-range-input"
                   placeholder="Select date range"
@@ -951,6 +990,21 @@ const TeacherScheduleView = () => {
                       : ""
                   }
                   readOnly
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    padding:
+                      window.innerWidth >= 768
+                        ? "8px 12px 8px 36px"
+                        : "8px 12px",
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    color: "#475569",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
             }
@@ -958,7 +1012,14 @@ const TeacherScheduleView = () => {
         </div>
 
         <div className="filter-box">
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
             <input
               type="time"
               value={timeRange.start}
@@ -971,10 +1032,17 @@ const TeacherScheduleView = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
-            <span style={{ color: "#64748b" }}>to</span>
+            <span
+              style={{
+                color: "#64748b",
+                textAlign: window.innerWidth < 768 ? "center" : "left",
+              }}
+            >
+              to
+            </span>
             <input
               type="time"
               value={timeRange.end}
@@ -987,7 +1055,7 @@ const TeacherScheduleView = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
           </div>
@@ -1403,7 +1471,7 @@ const TeacherScheduleView = () => {
                       <td colSpan="6">
                         <Box
                           sx={{
-                            p: 1,
+                            p: { xs: 1, sm: 1.5, md: 2 },
                             ...commonStyles,
                             "& .MuiTypography-root": { ...commonStyles },
                             "& .MuiButton-root": { ...commonStyles },
@@ -1411,10 +1479,19 @@ const TeacherScheduleView = () => {
                             "& .MuiTextField-root": { ...commonStyles },
                           }}
                         >
-                          <Box sx={{ mb: 3 }}>
+                          {/* Actions Section */}
+                          <Box sx={{ mb: { xs: 2, sm: 2.5, md: 3 } }}>
                             <Typography
                               variant="subtitle2"
-                              sx={{ mb: 2, fontWeight: 600 }}
+                              sx={{
+                                mb: { xs: 1.5, sm: 2 },
+                                fontWeight: 600,
+                                fontSize: {
+                                  xs: "0.875rem",
+                                  sm: "0.9375rem",
+                                  md: "1rem",
+                                },
+                              }}
                             >
                               Actions
                             </Typography>
@@ -1423,11 +1500,11 @@ const TeacherScheduleView = () => {
                             schedule.sessionStatus === "leave" ? (
                               <Box
                                 sx={{
-                                  p: 2,
+                                  p: { xs: 1.5, sm: 2 },
                                   backgroundColor: "#fef3c7",
                                   borderRadius: "8px",
                                   border: "1px solid #f59e0b",
-                                  mb: 2,
+                                  mb: { xs: 1.5, sm: 2 },
                                 }}
                               >
                                 <Typography
@@ -1436,6 +1513,11 @@ const TeacherScheduleView = () => {
                                     color: "#92400e",
                                     fontWeight: 500,
                                     textAlign: "center",
+                                    fontSize: {
+                                      xs: "0.75rem",
+                                      sm: "0.8125rem",
+                                      md: "0.875rem",
+                                    },
                                   }}
                                 >
                                   This class is marked as{" "}
@@ -1447,13 +1529,32 @@ const TeacherScheduleView = () => {
                               <Box
                                 sx={{
                                   display: "flex",
-                                  gap: 2,
+                                  gap: { xs: 1, sm: 1.5, md: 2 },
                                   flexWrap: "wrap",
+                                  flexDirection: { xs: "column", sm: "row" },
                                 }}
                               >
                                 <Button
                                   variant="contained"
-                                  sx={buttonStyles.available}
+                                  sx={{
+                                    ...buttonStyles.available,
+                                    fontSize: {
+                                      xs: "0.75rem",
+                                      sm: "0.8125rem",
+                                      md: "0.875rem",
+                                    },
+                                    padding: {
+                                      xs: "8px 12px",
+                                      sm: "8px 16px",
+                                      md: "10px 20px",
+                                    },
+                                    minHeight: {
+                                      xs: "36px",
+                                      sm: "40px",
+                                      md: "42px",
+                                    },
+                                    width: { xs: "100%", sm: "auto" },
+                                  }}
                                   onClick={() =>
                                     handleTeacherAvailable(schedule)
                                   }
@@ -1466,9 +1567,28 @@ const TeacherScheduleView = () => {
                                     ? "Already Available"
                                     : "I am Available"}
                                 </Button>
+
                                 <Button
                                   variant="contained"
-                                  sx={buttonStyles.start}
+                                  sx={{
+                                    ...buttonStyles.start,
+                                    fontSize: {
+                                      xs: "0.75rem",
+                                      sm: "0.8125rem",
+                                      md: "0.875rem",
+                                    },
+                                    padding: {
+                                      xs: "8px 12px",
+                                      sm: "8px 16px",
+                                      md: "10px 20px",
+                                    },
+                                    minHeight: {
+                                      xs: "36px",
+                                      sm: "40px",
+                                      md: "42px",
+                                    },
+                                    width: { xs: "100%", sm: "auto" },
+                                  }}
                                   onClick={() => handleStartClass(schedule)}
                                   disabled={
                                     schedule.sessionStatus !== "available" ||
@@ -1479,9 +1599,28 @@ const TeacherScheduleView = () => {
                                     ? "Class Started"
                                     : "Start Class"}
                                 </Button>
+
                                 <Button
                                   variant="contained"
-                                  sx={buttonStyles.end}
+                                  sx={{
+                                    ...buttonStyles.end,
+                                    fontSize: {
+                                      xs: "0.75rem",
+                                      sm: "0.8125rem",
+                                      md: "0.875rem",
+                                    },
+                                    padding: {
+                                      xs: "8px 12px",
+                                      sm: "8px 16px",
+                                      md: "10px 20px",
+                                    },
+                                    minHeight: {
+                                      xs: "36px",
+                                      sm: "40px",
+                                      md: "42px",
+                                    },
+                                    width: { xs: "100%", sm: "auto" },
+                                  }}
                                   onClick={() => handleEndClass(schedule)}
                                   disabled={
                                     schedule.sessionStatus !== "in_progress"
@@ -1489,9 +1628,28 @@ const TeacherScheduleView = () => {
                                 >
                                   End Class
                                 </Button>
+
                                 <Button
                                   variant="contained"
-                                  sx={buttonStyles.leave}
+                                  sx={{
+                                    ...buttonStyles.leave,
+                                    fontSize: {
+                                      xs: "0.75rem",
+                                      sm: "0.8125rem",
+                                      md: "0.875rem",
+                                    },
+                                    padding: {
+                                      xs: "8px 12px",
+                                      sm: "8px 16px",
+                                      md: "10px 20px",
+                                    },
+                                    minHeight: {
+                                      xs: "36px",
+                                      sm: "40px",
+                                      md: "42px",
+                                    },
+                                    width: { xs: "100%", sm: "auto" },
+                                  }}
                                   onClick={() => handleLeaveStudent(schedule)}
                                   disabled={
                                     schedule.sessionStatus === "completed" ||
@@ -1505,23 +1663,41 @@ const TeacherScheduleView = () => {
                               </Box>
                             )}
                           </Box>
-                          <Box sx={{ mb: 3 }}>
+
+                          {/* Timeline Section */}
+                          <Box sx={{ mb: { xs: 2, sm: 2.5, md: 3 } }}>
                             <Typography
                               variant="subtitle2"
                               sx={{
-                                mb: 2,
+                                mb: { xs: 1.5, sm: 2 },
                                 fontWeight: 600,
+                                fontSize: {
+                                  xs: "0.875rem",
+                                  sm: "0.9375rem",
+                                  md: "1rem",
+                                },
                               }}
                             >
                               Timeline
                             </Typography>
-                            <Grid container spacing={2}>
-                              <Grid item xs={4}>
+                            <Grid container spacing={{ xs: 1, sm: 1.5, md: 2 }}>
+                              <Grid item xs={12} sm={4}>
                                 <Box
                                   sx={{
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: 1,
+                                    gap: { xs: 0.75, sm: 1 },
+                                    p: { xs: 1, sm: 1.5 },
+                                    backgroundColor: {
+                                      xs: "#f8fafc",
+                                      sm: "transparent",
+                                    },
+                                    borderRadius: { xs: "6px", sm: "0" },
+                                    border: {
+                                      xs: "1px solid #e2e8f0",
+                                      sm: "none",
+                                    },
+                                    mb: { xs: 1, sm: 0 },
                                   }}
                                 >
                                   <FaUserClock
@@ -1533,6 +1709,12 @@ const TeacherScheduleView = () => {
                                       variant="caption"
                                       sx={{
                                         color: "text.secondary",
+                                        fontSize: {
+                                          xs: "0.6875rem",
+                                          sm: "0.75rem",
+                                          md: "0.8125rem",
+                                        },
+                                        display: "block",
                                       }}
                                     >
                                       Available At
@@ -1541,6 +1723,12 @@ const TeacherScheduleView = () => {
                                       sx={{
                                         color: "#1e40af",
                                         fontWeight: 600,
+                                        fontSize: {
+                                          xs: "0.75rem",
+                                          sm: "0.8125rem",
+                                          md: "0.875rem",
+                                        },
+                                        wordBreak: "break-word",
                                       }}
                                     >
                                       {schedule.teacherAvailableAt
@@ -1552,12 +1740,24 @@ const TeacherScheduleView = () => {
                                   </Box>
                                 </Box>
                               </Grid>
-                              <Grid item xs={4}>
+
+                              <Grid item xs={12} sm={4}>
                                 <Box
                                   sx={{
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: 1,
+                                    gap: { xs: 0.75, sm: 1 },
+                                    p: { xs: 1, sm: 1.5 },
+                                    backgroundColor: {
+                                      xs: "#f8fafc",
+                                      sm: "transparent",
+                                    },
+                                    borderRadius: { xs: "6px", sm: "0" },
+                                    border: {
+                                      xs: "1px solid #e2e8f0",
+                                      sm: "none",
+                                    },
+                                    mb: { xs: 1, sm: 0 },
                                   }}
                                 >
                                   <FaClock
@@ -1567,7 +1767,15 @@ const TeacherScheduleView = () => {
                                   <Box>
                                     <Typography
                                       variant="caption"
-                                      sx={{ color: "text.secondary" }}
+                                      sx={{
+                                        color: "text.secondary",
+                                        fontSize: {
+                                          xs: "0.6875rem",
+                                          sm: "0.75rem",
+                                          md: "0.8125rem",
+                                        },
+                                        display: "block",
+                                      }}
                                     >
                                       Started At
                                     </Typography>
@@ -1575,6 +1783,12 @@ const TeacherScheduleView = () => {
                                       sx={{
                                         color: "#15803d",
                                         fontWeight: 600,
+                                        fontSize: {
+                                          xs: "0.75rem",
+                                          sm: "0.8125rem",
+                                          md: "0.875rem",
+                                        },
+                                        wordBreak: "break-word",
                                       }}
                                     >
                                       {schedule.classStartedAt
@@ -1584,12 +1798,23 @@ const TeacherScheduleView = () => {
                                   </Box>
                                 </Box>
                               </Grid>
-                              <Grid item xs={4}>
+
+                              <Grid item xs={12} sm={4}>
                                 <Box
                                   sx={{
                                     display: "flex",
                                     alignItems: "center",
-                                    gap: 1,
+                                    gap: { xs: 0.75, sm: 1 },
+                                    p: { xs: 1, sm: 1.5 },
+                                    backgroundColor: {
+                                      xs: "#f8fafc",
+                                      sm: "transparent",
+                                    },
+                                    borderRadius: { xs: "6px", sm: "0" },
+                                    border: {
+                                      xs: "1px solid #e2e8f0",
+                                      sm: "none",
+                                    },
                                   }}
                                 >
                                   <FaHistory
@@ -1599,7 +1824,15 @@ const TeacherScheduleView = () => {
                                   <Box>
                                     <Typography
                                       variant="caption"
-                                      sx={{ color: "text.secondary" }}
+                                      sx={{
+                                        color: "text.secondary",
+                                        fontSize: {
+                                          xs: "0.6875rem",
+                                          sm: "0.75rem",
+                                          md: "0.8125rem",
+                                        },
+                                        display: "block",
+                                      }}
                                     >
                                       Ended At
                                     </Typography>
@@ -1607,6 +1840,12 @@ const TeacherScheduleView = () => {
                                       sx={{
                                         color: "#166534",
                                         fontWeight: 600,
+                                        fontSize: {
+                                          xs: "0.75rem",
+                                          sm: "0.8125rem",
+                                          md: "0.875rem",
+                                        },
+                                        wordBreak: "break-word",
                                       }}
                                     >
                                       {schedule.classEndedAt
@@ -1619,10 +1858,19 @@ const TeacherScheduleView = () => {
                             </Grid>
                           </Box>
 
-                          <Box sx={{ mb: 3 }}>
+                          {/* Mark Attendance Section */}
+                          <Box sx={{ mb: { xs: 2, sm: 2.5, md: 3 } }}>
                             <Typography
                               variant="subtitle2"
-                              sx={{ mb: 2, fontWeight: 600 }}
+                              sx={{
+                                mb: { xs: 1.5, sm: 2 },
+                                fontWeight: 600,
+                                fontSize: {
+                                  xs: "0.875rem",
+                                  sm: "0.9375rem",
+                                  md: "1rem",
+                                },
+                              }}
                             >
                               Mark Attendance
                             </Typography>
@@ -1630,7 +1878,7 @@ const TeacherScheduleView = () => {
                             schedule.sessionStatus === "leave" ? (
                               <Box
                                 sx={{
-                                  p: 2,
+                                  p: { xs: 1.5, sm: 2 },
                                   backgroundColor: "#f1f5f9",
                                   borderRadius: "8px",
                                   border: "1px solid #cbd5e1",
@@ -1638,186 +1886,336 @@ const TeacherScheduleView = () => {
                               >
                                 <Typography
                                   variant="body2"
-                                  sx={{ color: "#64748b", textAlign: "center" }}
+                                  sx={{
+                                    color: "#64748b",
+                                    textAlign: "center",
+                                    fontSize: {
+                                      xs: "0.75rem",
+                                      sm: "0.8125rem",
+                                      md: "0.875rem",
+                                    },
+                                  }}
                                 >
                                   Attendance cannot be modified for{" "}
                                   {schedule.sessionStatus} sessions.
                                 </Typography>
                               </Box>
                             ) : (
-                              schedule.studentDetails.map((student, index) => (
-                                <Box
-                                  key={index}
-                                  sx={{
-                                    display: "flex",
-                                    alignItems: "center",
-                                    gap: 2,
-                                    mb: 2,
-                                  }}
-                                >
-                                  <Typography sx={{ minWidth: 150 }}>
-                                    {schedule.studentNames[index]}
-                                  </Typography>
-                                  <Box
-                                    sx={{
-                                      display: "flex",
-                                      gap: 2,
-                                      alignItems: "flex-start",
-                                    }}
-                                  >
-                                    <TextField
-                                      size="small"
-                                      value={
-                                        attendanceStates[
-                                          `${schedule._id}-${index}`
-                                        ] ||
-                                        student.attendance?.status ||
-                                        "not_marked"
-                                      }
-                                      disabled={isAttendanceMarked(student)}
+                              <Box>
+                                {schedule.studentDetails.map(
+                                  (student, index) => (
+                                    <Box
+                                      key={index}
                                       sx={{
-                                        minWidth: 120,
-                                        ".MuiOutlinedInput-notchedOutline": {
-                                          borderColor: "#e2e8f0",
+                                        display: "flex",
+                                        alignItems: {
+                                          xs: "flex-start",
+                                          md: "center",
                                         },
-                                        "& .MuiInputBase-input": {
-                                          color: isAttendanceMarked(student)
-                                            ? "#64748b"
-                                            : "#1f3d61",
-                                          fontWeight: "500",
-                                          textTransform: "capitalize",
-                                          cursor: isAttendanceMarked(student)
-                                            ? "not-allowed"
-                                            : "default",
+                                        gap: { xs: 1, sm: 1.5, md: 2 },
+                                        mb: { xs: 2, sm: 2.5 },
+                                        flexDirection: {
+                                          xs: "column",
+                                          md: "row",
                                         },
-                                        "& .MuiOutlinedInput-root": {
-                                          backgroundColor: isAttendanceMarked(
-                                            student
-                                          )
-                                            ? "#f8fafc"
-                                            : "white",
+                                        p: { xs: 1.5, sm: 0 },
+                                        backgroundColor: {
+                                          xs: "#f8fafc",
+                                          md: "transparent",
                                         },
-                                      }}
-                                      label="Status"
-                                      InputProps={{
-                                        readOnly: true,
-                                      }}
-                                    />
-
-                                    {!isAttendanceMarked(student) && (
-                                      <Select
-                                        value={
-                                          attendanceStates[
-                                            `${schedule._id}-${index}`
-                                          ] || ""
-                                        }
-                                        onChange={(e) =>
-                                          handleAttendanceChange(
-                                            schedule._id,
-                                            index,
-                                            e.target.value
-                                          )
-                                        }
-                                        size="small"
-                                        displayEmpty
-                                        sx={{
-                                          minWidth: 120,
-                                          ".MuiOutlinedInput-notchedOutline": {
-                                            borderColor: "#e2e8f0",
-                                          },
-                                        }}
-                                      >
-                                        <MenuItem value="" disabled>
-                                          Select Status
-                                        </MenuItem>
-                                        <MenuItem value="present">
-                                          Present
-                                        </MenuItem>
-                                        <MenuItem value="absent">
-                                          Absent
-                                        </MenuItem>
-                                        <MenuItem value="leave">Leave</MenuItem>
-                                      </Select>
-                                    )}
-
-                                    <TextField
-                                      size="small"
-                                      placeholder="Add remarks..."
-                                      value={
-                                        attendanceRemarks[
-                                          `${schedule._id}-${index}`
-                                        ] ||
-                                        student.attendance?.remarks ||
-                                        ""
-                                      }
-                                      onChange={(e) =>
-                                        setAttendanceRemarks((prev) => ({
-                                          ...prev,
-                                          [`${schedule._id}-${index}`]:
-                                            e.target.value,
-                                        }))
-                                      }
-                                      disabled={isAttendanceMarked(student)}
-                                      sx={{
-                                        minWidth: 200,
-                                        ".MuiOutlinedInput-notchedOutline": {
-                                          borderColor: "#e2e8f0",
+                                        borderRadius: { xs: "8px", md: "0" },
+                                        border: {
+                                          xs: "1px solid #e2e8f0",
+                                          md: "none",
                                         },
-                                      }}
-                                    />
-
-                                    {!isAttendanceMarked(student) && (
-                                      <Button
-                                        variant="contained"
-                                        size="medium"
-                                        sx={buttonStyles.update}
-                                        disabled={
-                                          !attendanceStates[
-                                            `${schedule._id}-${index}`
-                                          ]
-                                        }
-                                        onClick={() =>
-                                          handleUpdateAttendance(
-                                            schedule._id,
-                                            schedule.students[index],
-                                            attendanceStates[
-                                              `${schedule._id}-${index}`
-                                            ],
-                                            attendanceRemarks[
-                                              `${schedule._id}-${index}`
-                                            ] || ""
-                                          )
-                                        }
-                                      >
-                                        Update
-                                      </Button>
-                                    )}
-                                  </Box>
-
-                                  {isAttendanceMarked(student) && (
-                                    <Typography
-                                      variant="caption"
-                                      sx={{
-                                        ml: 2,
-                                        color: "text.secondary",
-                                        fontStyle: "italic",
                                       }}
                                     >
-                                      Updated: {student.attendance.status}
-                                      {student.attendance.markedAt &&
-                                        ` (${formatDate(
-                                          student.attendance.markedAt
-                                        )})`}
-                                    </Typography>
-                                  )}
-                                </Box>
-                              ))
+                                      <Typography
+                                        sx={{
+                                          minWidth: { xs: "100%", md: 150 },
+                                          fontSize: {
+                                            xs: "0.875rem",
+                                            sm: "0.9375rem",
+                                            md: "1rem",
+                                          },
+                                          fontWeight: 500,
+                                          mb: { xs: 1, md: 0 },
+                                        }}
+                                      >
+                                        {schedule.studentNames[index]}
+                                      </Typography>
+
+                                      <Box
+                                        sx={{
+                                          display: "flex",
+                                          gap: { xs: 1, sm: 1.5, md: 2 },
+                                          alignItems: "flex-start",
+                                          flexDirection: {
+                                            xs: "column",
+                                            sm: "row",
+                                          },
+                                          width: { xs: "100%", md: "auto" },
+                                        }}
+                                      >
+                                        <TextField
+                                          size="small"
+                                          value={
+                                            attendanceStates[
+                                              `${schedule._id}-${index}`
+                                            ] ||
+                                            student.attendance?.status ||
+                                            "not_marked"
+                                          }
+                                          disabled={isAttendanceMarked(student)}
+                                          sx={{
+                                            minWidth: { xs: "100%", sm: 120 },
+                                            ".MuiOutlinedInput-notchedOutline":
+                                              {
+                                                borderColor: "#e2e8f0",
+                                              },
+                                            "& .MuiInputBase-input": {
+                                              color: isAttendanceMarked(student)
+                                                ? "#64748b"
+                                                : "#1f3d61",
+                                              fontWeight: "500",
+                                              textTransform: "capitalize",
+                                              cursor: isAttendanceMarked(
+                                                student
+                                              )
+                                                ? "not-allowed"
+                                                : "default",
+                                              fontSize: {
+                                                xs: "0.8125rem",
+                                                sm: "0.875rem",
+                                              },
+                                            },
+                                            "& .MuiOutlinedInput-root": {
+                                              backgroundColor:
+                                                isAttendanceMarked(student)
+                                                  ? "#f8fafc"
+                                                  : "white",
+                                            },
+                                            "& .MuiInputLabel-root": {
+                                              fontSize: {
+                                                xs: "0.8125rem",
+                                                sm: "0.875rem",
+                                              },
+                                            },
+                                          }}
+                                          label="Status"
+                                          InputProps={{
+                                            readOnly: true,
+                                          }}
+                                        />
+
+                                        {!isAttendanceMarked(student) && (
+                                          <Select
+                                            value={
+                                              attendanceStates[
+                                                `${schedule._id}-${index}`
+                                              ] || ""
+                                            }
+                                            onChange={(e) =>
+                                              handleAttendanceChange(
+                                                schedule._id,
+                                                index,
+                                                e.target.value
+                                              )
+                                            }
+                                            size="small"
+                                            displayEmpty
+                                            sx={{
+                                              minWidth: { xs: "100%", sm: 120 },
+                                              ".MuiOutlinedInput-notchedOutline":
+                                                {
+                                                  borderColor: "#e2e8f0",
+                                                },
+                                              "& .MuiSelect-select": {
+                                                fontSize: {
+                                                  xs: "0.8125rem",
+                                                  sm: "0.875rem",
+                                                },
+                                              },
+                                            }}
+                                          >
+                                            <MenuItem value="" disabled>
+                                              <Typography
+                                                sx={{
+                                                  fontSize: {
+                                                    xs: "0.8125rem",
+                                                    sm: "0.875rem",
+                                                  },
+                                                }}
+                                              >
+                                                Select Status
+                                              </Typography>
+                                            </MenuItem>
+                                            <MenuItem value="present">
+                                              <Typography
+                                                sx={{
+                                                  fontSize: {
+                                                    xs: "0.8125rem",
+                                                    sm: "0.875rem",
+                                                  },
+                                                }}
+                                              >
+                                                Present
+                                              </Typography>
+                                            </MenuItem>
+                                            <MenuItem value="absent">
+                                              <Typography
+                                                sx={{
+                                                  fontSize: {
+                                                    xs: "0.8125rem",
+                                                    sm: "0.875rem",
+                                                  },
+                                                }}
+                                              >
+                                                Absent
+                                              </Typography>
+                                            </MenuItem>
+                                            <MenuItem value="leave">
+                                              <Typography
+                                                sx={{
+                                                  fontSize: {
+                                                    xs: "0.8125rem",
+                                                    sm: "0.875rem",
+                                                  },
+                                                }}
+                                              >
+                                                Leave
+                                              </Typography>
+                                            </MenuItem>
+                                          </Select>
+                                        )}
+
+                                        <TextField
+                                          size="small"
+                                          placeholder="Add remarks..."
+                                          value={
+                                            attendanceRemarks[
+                                              `${schedule._id}-${index}`
+                                            ] ||
+                                            student.attendance?.remarks ||
+                                            ""
+                                          }
+                                          onChange={(e) =>
+                                            setAttendanceRemarks((prev) => ({
+                                              ...prev,
+                                              [`${schedule._id}-${index}`]:
+                                                e.target.value,
+                                            }))
+                                          }
+                                          disabled={isAttendanceMarked(student)}
+                                          sx={{
+                                            minWidth: { xs: "100%", sm: 200 },
+                                            ".MuiOutlinedInput-notchedOutline":
+                                              {
+                                                borderColor: "#e2e8f0",
+                                              },
+                                            "& .MuiInputBase-input": {
+                                              fontSize: {
+                                                xs: "0.8125rem",
+                                                sm: "0.875rem",
+                                              },
+                                            },
+                                            "& .MuiInputLabel-root": {
+                                              fontSize: {
+                                                xs: "0.8125rem",
+                                                sm: "0.875rem",
+                                              },
+                                            },
+                                          }}
+                                        />
+
+                                        {!isAttendanceMarked(student) && (
+                                          <Button
+                                            variant="contained"
+                                            size="medium"
+                                            sx={{
+                                              ...buttonStyles.update,
+                                              fontSize: {
+                                                xs: "0.75rem",
+                                                sm: "0.8125rem",
+                                                md: "0.875rem",
+                                              },
+                                              padding: {
+                                                xs: "8px 16px",
+                                                sm: "8px 20px",
+                                              },
+                                              minHeight: {
+                                                xs: "36px",
+                                                sm: "40px",
+                                              },
+                                              width: { xs: "100%", sm: "auto" },
+                                              mt: { xs: 1, sm: 0 },
+                                            }}
+                                            disabled={
+                                              !attendanceStates[
+                                                `${schedule._id}-${index}`
+                                              ]
+                                            }
+                                            onClick={() =>
+                                              handleUpdateAttendance(
+                                                schedule._id,
+                                                schedule.students[index],
+                                                attendanceStates[
+                                                  `${schedule._id}-${index}`
+                                                ],
+                                                attendanceRemarks[
+                                                  `${schedule._id}-${index}`
+                                                ] || ""
+                                              )
+                                            }
+                                          >
+                                            Update
+                                          </Button>
+                                        )}
+                                      </Box>
+
+                                      {isAttendanceMarked(student) && (
+                                        <Typography
+                                          variant="caption"
+                                          sx={{
+                                            ml: { xs: 0, md: 2 },
+                                            mt: { xs: 1, md: 0 },
+                                            color: "text.secondary",
+                                            fontStyle: "italic",
+                                            fontSize: {
+                                              xs: "0.6875rem",
+                                              sm: "0.75rem",
+                                              md: "0.8125rem",
+                                            },
+                                            width: { xs: "100%", md: "auto" },
+                                          }}
+                                        >
+                                          Updated: {student.attendance.status}
+                                          {student.attendance.markedAt &&
+                                            ` (${formatDate(
+                                              student.attendance.markedAt
+                                            )})`}
+                                        </Typography>
+                                      )}
+                                    </Box>
+                                  )
+                                )}
+                              </Box>
                             )}
                           </Box>
+
+                          {/* Update Lesson Section */}
                           <Box>
                             <Typography
                               variant="subtitle2"
-                              sx={{ mb: 2, fontWeight: 600 }}
+                              sx={{
+                                mb: { xs: 1.5, sm: 2 },
+                                fontWeight: 600,
+                                fontSize: {
+                                  xs: "0.875rem",
+                                  sm: "0.9375rem",
+                                  md: "1rem",
+                                },
+                              }}
                             >
                               Update Lesson
                             </Typography>
@@ -1826,7 +2224,7 @@ const TeacherScheduleView = () => {
                             schedule.sessionStatus === "leave" ? (
                               <Box
                                 sx={{
-                                  p: 2,
+                                  p: { xs: 1.5, sm: 2 },
                                   backgroundColor: "#f1f5f9",
                                   borderRadius: "8px",
                                   border: "1px solid #cbd5e1",
@@ -1834,7 +2232,15 @@ const TeacherScheduleView = () => {
                               >
                                 <Typography
                                   variant="body2"
-                                  sx={{ color: "#64748b", textAlign: "center" }}
+                                  sx={{
+                                    color: "#64748b",
+                                    textAlign: "center",
+                                    fontSize: {
+                                      xs: "0.75rem",
+                                      sm: "0.8125rem",
+                                      md: "0.875rem",
+                                    },
+                                  }}
                                 >
                                   Lesson updates are not available for{" "}
                                   {schedule.sessionStatus} sessions.
@@ -1845,7 +2251,7 @@ const TeacherScheduleView = () => {
                                 sx={{
                                   display: "flex",
                                   flexDirection: "column",
-                                  gap: 2,
+                                  gap: { xs: 1.5, sm: 2 },
                                 }}
                               >
                                 <TextField
@@ -1863,6 +2269,18 @@ const TeacherScheduleView = () => {
                                   sx={{
                                     ".MuiOutlinedInput-notchedOutline": {
                                       borderColor: "#e2e8f0",
+                                    },
+                                    "& .MuiInputBase-input": {
+                                      fontSize: {
+                                        xs: "0.8125rem",
+                                        sm: "0.875rem",
+                                      },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                      fontSize: {
+                                        xs: "0.8125rem",
+                                        sm: "0.875rem",
+                                      },
                                     },
                                   }}
                                 />
@@ -1883,17 +2301,45 @@ const TeacherScheduleView = () => {
                                     ".MuiOutlinedInput-notchedOutline": {
                                       borderColor: "#e2e8f0",
                                     },
+                                    "& .MuiInputBase-input": {
+                                      fontSize: {
+                                        xs: "0.8125rem",
+                                        sm: "0.875rem",
+                                      },
+                                    },
+                                    "& .MuiInputLabel-root": {
+                                      fontSize: {
+                                        xs: "0.8125rem",
+                                        sm: "0.875rem",
+                                      },
+                                    },
                                   }}
                                 />
                                 <Box
                                   sx={{
                                     display: "flex",
-                                    justifyContent: "flex-end",
+                                    justifyContent: {
+                                      xs: "stretch",
+                                      sm: "flex-end",
+                                    },
                                   }}
                                 >
                                   <Button
                                     variant="contained"
-                                    sx={buttonStyles.update}
+                                    sx={{
+                                      ...buttonStyles.update,
+                                      fontSize: {
+                                        xs: "0.75rem",
+                                        sm: "0.8125rem",
+                                        md: "0.875rem",
+                                      },
+                                      padding: {
+                                        xs: "10px 20px",
+                                        sm: "10px 24px",
+                                      },
+                                      minHeight: { xs: "40px", sm: "44px" },
+                                      width: { xs: "100%", sm: "auto" },
+                                    }}
                                     onClick={() => {
                                       handleLessonUpdate(schedule._id);
                                     }}

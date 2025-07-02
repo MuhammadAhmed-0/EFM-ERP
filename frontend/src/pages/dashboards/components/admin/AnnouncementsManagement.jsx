@@ -502,12 +502,7 @@ const AnnouncementManagement = () => {
       auth: { token },
     });
 
-    newSocket.on("connect", () => {
-      console.log("Connected to socket server");
-    });
-
     newSocket.on("announcement_read", (data) => {
-      console.log("Received announcement_read event:", data);
       setAnnouncements((prevAnnouncements) => {
         return prevAnnouncements.map((announcement) => {
           if (announcement._id === data.announcementId) {
@@ -531,7 +526,6 @@ const AnnouncementManagement = () => {
 
     return () => {
       if (newSocket) {
-        console.log("Closing socket connection");
         newSocket.close();
       }
     };

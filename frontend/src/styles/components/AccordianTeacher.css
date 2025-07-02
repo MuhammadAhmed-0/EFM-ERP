@@ -1,59 +1,176 @@
-/* Accordion Content Styles */
+/* Enhanced Responsive Accordion Content Styles */
 .schedule-details {
-  padding: 24px;
+  padding: 16px;
   background: white;
   border-radius: 8px;
+}
+
+@media (min-width: 600px) {
+  .schedule-details {
+    padding: 20px;
+  }
+}
+
+@media (min-width: 900px) {
+  .schedule-details {
+    padding: 24px;
+  }
 }
 
 .schedule-details-header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  margin-bottom: 24px;
+  align-items: flex-start;
+  margin-bottom: 16px;
+  flex-direction: column;
+  gap: 8px;
+}
+
+@media (min-width: 600px) {
+  .schedule-details-header {
+    flex-direction: row;
+    align-items: center;
+    gap: 0;
+    margin-bottom: 20px;
+  }
+}
+
+@media (min-width: 900px) {
+  .schedule-details-header {
+    margin-bottom: 24px;
+  }
 }
 
 .schedule-details-header h3 {
-  font-size: 1.25rem;
+  font-size: 1rem;
   font-weight: 600;
   color: #1e293b;
   margin: 0;
 }
 
+@media (min-width: 600px) {
+  .schedule-details-header h3 {
+    font-size: 1.125rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .schedule-details-header h3 {
+    font-size: 1.25rem;
+  }
+}
+
 .schedule-details-header .date {
   color: #64748b;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .schedule-details-header .date {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .schedule-details-header .date {
+    font-size: 0.875rem;
+  }
 }
 
 .info-grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 24px;
-  margin-bottom: 24px;
+  grid-template-columns: 1fr;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+@media (min-width: 600px) {
+  .info-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+    margin-bottom: 20px;
+  }
+}
+
+@media (min-width: 900px) {
+  .info-grid {
+    gap: 24px;
+    margin-bottom: 24px;
+  }
 }
 
 .info-item {
   display: flex;
-  gap: 12px;
+  gap: 8px;
+  flex-direction: column;
+}
+
+@media (min-width: 600px) {
+  .info-item {
+    gap: 12px;
+    flex-direction: row;
+  }
 }
 
 .info-item .label {
   color: #64748b;
-  font-size: 0.875rem;
-  min-width: 100px;
+  font-size: 0.75rem;
+  min-width: auto;
+}
+
+@media (min-width: 600px) {
+  .info-item .label {
+    font-size: 0.8125rem;
+    min-width: 80px;
+  }
+}
+
+@media (min-width: 900px) {
+  .info-item .label {
+    font-size: 0.875rem;
+    min-width: 100px;
+  }
 }
 
 .info-item .value {
   color: #1e293b;
   font-weight: 500;
+  font-size: 0.8125rem;
+}
+
+@media (min-width: 600px) {
+  .info-item .value {
+    font-size: 0.875rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .info-item .value {
+    font-size: 1rem;
+  }
 }
 
 .status-indicator {
   display: inline-flex;
   align-items: center;
-  padding: 4px 12px;
+  padding: 3px 8px;
   border-radius: 9999px;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
   font-weight: 500;
+}
+
+@media (min-width: 600px) {
+  .status-indicator {
+    padding: 4px 10px;
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .status-indicator {
+    padding: 4px 12px;
+    font-size: 0.875rem;
+  }
 }
 
 .status-indicator.pending {
@@ -71,10 +188,21 @@
   color: #b45309;
   padding: 12px 16px;
   border-radius: 6px;
-  margin-top: 16px;
+  margin-top: 12px;
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+  flex-direction: column;
+  text-align: center;
+}
+
+@media (min-width: 600px) {
+  .student-on-leave {
+    flex-direction: row;
+    text-align: left;
+    gap: 8px;
+    margin-top: 16px;
+  }
 }
 
 .student-on-leave svg {
@@ -83,5 +211,36 @@
 
 .student-on-leave p {
   margin: 0;
-  font-size: 0.875rem;
+  font-size: 0.75rem;
+}
+
+@media (min-width: 600px) {
+  .student-on-leave p {
+    font-size: 0.8125rem;
+  }
+}
+
+@media (min-width: 900px) {
+  .student-on-leave p {
+    font-size: 0.875rem;
+  }
+}
+
+/* Mobile-specific table adjustments */
+@media (max-width: 599px) {
+  .expanded-content td {
+    padding: 8px !important;
+  }
+}
+
+@media (min-width: 600px) and (max-width: 899px) {
+  .expanded-content td {
+    padding: 12px !important;
+  }
+}
+
+@media (min-width: 900px) {
+  .expanded-content td {
+    padding: 16px !important;
+  }
 }

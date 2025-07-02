@@ -27,7 +27,7 @@ const ViewTimetableModal = ({ isOpen, onClose, userRole = "admin" }) => {
       userRole === "admin"
         ? "/api/schedules/admin/timetable/today"
         : "/api/schedules/supervisor/timetable/today";
-
+    console.log(userRole);
     return date ? `${baseEndpoint}?date=${date}` : baseEndpoint;
   };
 
@@ -138,14 +138,27 @@ const ViewTimetableModal = ({ isOpen, onClose, userRole = "admin" }) => {
   useEffect(() => {
     if (subjectTypeFilter === "all") {
       setFilteredData(timetableData);
-    } else {
+    } else if (subjectTypeFilter === "subjects") {
       const filtered = timetableData.filter(
-        (schedule) => schedule.subject?.type === subjectTypeFilter
+        (schedule) => schedule.subject?.type === "subjects"
+      );
+      setFilteredData(filtered);
+    } else if (subjectTypeFilter === "male_quran") {
+      const filtered = timetableData.filter(
+        (schedule) =>
+          schedule.subject?.type === "quran" &&
+          schedule.teacher?.gender === "male"
+      );
+      setFilteredData(filtered);
+    } else if (subjectTypeFilter === "female_quran") {
+      const filtered = timetableData.filter(
+        (schedule) =>
+          schedule.subject?.type === "quran" &&
+          schedule.teacher?.gender === "female"
       );
       setFilteredData(filtered);
     }
   }, [subjectTypeFilter, timetableData]);
-
   const getTeachersWithSchedules = () => {
     const teacherMap = new Map();
 
@@ -376,7 +389,8 @@ const ViewTimetableModal = ({ isOpen, onClose, userRole = "admin" }) => {
                     className="subject-filter"
                   >
                     <option value="all">All Subjects</option>
-                    <option value="quran">Quran Classes</option>
+                    <option value="male_quran">Male Quran Teachers</option>
+                    <option value="female_quran">Female Quran Teachers</option>
                     <option value="subjects">Academic Subjects</option>
                   </select>
                   <FaChevronDown className="custom-dropdown-icon" />
@@ -476,8 +490,10 @@ const ViewTimetableModal = ({ isOpen, onClose, userRole = "admin" }) => {
                       <td colSpan={timeSlots.length + 1} className="no-data">
                         {showSubjectFilter && subjectTypeFilter !== "all"
                           ? `No ${
-                              subjectTypeFilter === "quran"
-                                ? "Quran"
+                              subjectTypeFilter === "male_quran"
+                                ? "Male Quran"
+                                : subjectTypeFilter === "female_quran"
+                                ? "Female Quran"
                                 : "Academic"
                             } classes scheduled for ${
                               selectedDate ? "selected date" : "today"

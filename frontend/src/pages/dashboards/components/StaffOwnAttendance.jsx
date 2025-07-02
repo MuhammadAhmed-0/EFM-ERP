@@ -214,8 +214,27 @@ Status: ${selectedRecord.status}`;
             dateFormat="dd/MM/yyyy"
             timeZone="Asia/Karachi"
             customInput={
-              <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+              <div
+                className="date-input-wrapper"
+                style={{
+                  position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
+                }}
+              >
+                {window.innerWidth >= 768 && (
+                  <FaFilter
+                    className="filter-icon"
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      zIndex: 1,
+                    }}
+                  />
+                )}
                 <input
                   className="date-range-input"
                   placeholder="Select date range"
@@ -229,6 +248,21 @@ Status: ${selectedRecord.status}`;
                       : ""
                   }
                   readOnly
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    padding:
+                      window.innerWidth >= 768
+                        ? "8px 12px 8px 36px"
+                        : "8px 12px",
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    color: "#475569",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
             }

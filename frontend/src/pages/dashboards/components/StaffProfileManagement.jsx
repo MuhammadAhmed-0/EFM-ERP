@@ -39,7 +39,6 @@ const theme = createTheme({
   },
 });
 
-// Simple optimized Avatar component
 const OptimizedAvatar = ({ src, alt, sx, children, ...props }) => {
   const [imageLoaded, setImageLoaded] = useState(false);
   const [imageError, setImageError] = useState(false);

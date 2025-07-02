@@ -22,6 +22,8 @@ import {
   TextField,
   Chip,
   Autocomplete,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -66,6 +68,9 @@ const RECURRENCE_PATTERNS = {
   CUSTOM: "custom",
 };
 
+const POPPINS_FONT =
+  "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
 const modalStyle = {
   position: "absolute",
   top: "50%",
@@ -96,6 +101,13 @@ const DeleteSchedulesModal = ({
   groupStudentsByClient,
   s,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const POPPINS_FONT =
+    "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif";
+
   const [selectedSchedules, setSelectedSchedules] = useState([]);
   const [isDeleting, setIsDeleting] = useState(false);
   const [showPasswordConfirm, setShowPasswordConfirm] = useState(false);
@@ -106,11 +118,7 @@ const DeleteSchedulesModal = ({
   const [dateRange, setDateRange] = useState([null, null]);
 
   const getDeletableSchedules = (schedulesList) => {
-    return schedulesList.filter(
-      (schedule) =>
-        schedule.sessionStatus !== SESSION_STATUS.PENDING &&
-        schedule.sessionStatus !== SESSION_STATUS.IN_PROGRESS
-    );
+    return schedulesList;
   };
 
   const getFilterOptions = () => {
@@ -317,43 +325,48 @@ const DeleteSchedulesModal = ({
         return { color: "#ea580c", backgroundColor: "#fed7aa" };
       case "available":
         return { color: "#0369a1", backgroundColor: "#e0f2fe" };
+      case "pending":
+        return { color: "#dc2626", backgroundColor: "#fee2e2" };
+      case "scheduled":
+        return { color: "#0369a1", backgroundColor: "#e0f2fe" };
       default:
         return { color: "#64748b", backgroundColor: "#f1f5f9" };
     }
   };
 
-  const modalStyle = {
+  const getResponsiveModalStyle = () => ({
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: 900,
-    maxHeight: "90vh",
+    width: isMobile ? "95vw" : isSmallMobile ? "98vw" : 900,
+    maxWidth: isMobile ? "none" : 900,
+    maxHeight: isMobile ? "95vh" : "90vh",
     bgcolor: "background.paper",
-    borderRadius: "12px",
+    borderRadius: isMobile ? "16px" : "12px",
     boxShadow:
       "0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1)",
-    p: 4,
+    p: isMobile ? 2 : 4,
     overflow: "hidden",
     display: "flex",
     flexDirection: "column",
-    fontFamily:
-      "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+    fontFamily: POPPINS_FONT,
     "&:focus-visible": {
       outline: "none",
     },
     "& *": {
-      fontFamily:
-        "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif !important",
+      fontFamily: `${POPPINS_FONT} !important`,
     },
-  };
+  });
 
   const totalDeletableSchedules = getDeletableSchedules(schedules).length;
-  const totalPendingSchedules = schedules.filter(
-    (s) =>
-      s.sessionStatus === SESSION_STATUS.PENDING ||
-      s.sessionStatus === SESSION_STATUS.IN_PROGRESS
+  const pendingSchedulesCount = schedules.filter(
+    (s) => s.sessionStatus === SESSION_STATUS.PENDING
   ).length;
+  const selectedPendingSchedules = selectedSchedules.filter((scheduleId) => {
+    const schedule = schedules.find((s) => s._id === scheduleId);
+    return schedule && schedule.sessionStatus === SESSION_STATUS.PENDING;
+  });
 
   return (
     <Modal
@@ -361,32 +374,92 @@ const DeleteSchedulesModal = ({
       onClose={handleModalClose}
       aria-labelledby="delete-schedules-modal"
     >
-      <Box sx={modalStyle}>
+      <Box sx={getResponsiveModalStyle()}>
         {!showPasswordConfirm ? (
           <>
-            <Box sx={{ borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
-              <Typography
-                variant="h6"
-                component="h2"
-                sx={{ color: "#dc2626", fontWeight: 600 }}
-              >
-                Delete Class Schedules
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Select completed, absent, leave, or available schedules to
-                delete permanently.
-              </Typography>
-              {totalPendingSchedules > 0 && (
-                <Typography variant="body2" sx={{ mt: 1, color: "#f59e0b" }}>
-                  ⚠️ {totalPendingSchedules} pending/in-progress schedules are
-                  excluded from deletion
+            {/* Header */}
+            <Box
+              sx={{
+                borderBottom: "1px solid #e2e8f0",
+                pb: isMobile ? 1.5 : 2,
+                mb: isMobile ? 2 : 3,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: isMobile ? "flex-start" : "center",
+                flexDirection: isMobile ? "column" : "row",
+                gap: isMobile ? 1 : 0,
+              }}
+            >
+              <Box>
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  sx={{
+                    color: "#dc2626",
+                    fontWeight: 600,
+                    fontSize: isMobile ? "1.125rem" : "1.25rem",
+                  }}
+                >
+                  Delete Class Schedules
                 </Typography>
-              )}
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    mt: 1,
+                    fontSize: isMobile ? "0.875rem" : "1rem",
+                  }}
+                >
+                  Select schedules to delete permanently. Be careful with
+                  pending schedules.
+                </Typography>
+                {pendingSchedulesCount > 0 && (
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      mt: 1,
+                      color: "#f59e0b",
+                      fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                    }}
+                  >
+                    ⚠️ {pendingSchedulesCount} pending schedule
+                    {pendingSchedulesCount > 1 ? "s" : ""} found - be cautious
+                    when deleting
+                  </Typography>
+                )}
+              </Box>
+
+              {/* Close Button */}
+              <Button
+                onClick={handleModalClose}
+                sx={{
+                  minWidth: isMobile ? "28px" : "auto",
+                  height: isMobile ? "28px" : "auto",
+                  p: isMobile ? 0 : 1,
+                  color: "#64748b",
+                  alignSelf: isMobile ? "flex-end" : "auto",
+                  fontSize: isMobile ? "1.25rem" : "1.5rem",
+                  borderRadius: isMobile ? "50%" : "4px",
+                  "&:hover": {
+                    bgcolor: "#f1f5f9",
+                    color: "#3949ab",
+                  },
+                }}
+              >
+                ×
+              </Button>
             </Box>
 
             {/* Search and Filter Section */}
-            <Box sx={{ mb: 3 }}>
-              <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+            <Box sx={{ mb: isMobile ? 2 : 3 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  gap: isMobile ? 1.5 : 2,
+                  mb: isMobile ? 1.5 : 2,
+                  flexDirection: isMobile ? "column" : "row",
+                }}
+              >
                 {/* Autocomplete for specific filtering */}
                 <Autocomplete
                   options={allOptions}
@@ -394,17 +467,26 @@ const DeleteSchedulesModal = ({
                   value={searchValue}
                   onChange={handleSearchSelect}
                   sx={{ flex: 1 }}
+                  size={isMobile ? "small" : "medium"}
                   renderInput={(params) => (
                     <TextField
                       {...params}
                       label="Filter by Client/Student/Teacher"
-                      size="small"
-                      placeholder="Search and select to filter..."
+                      size={isMobile ? "small" : "medium"}
+                      placeholder={
+                        isMobile
+                          ? "Search..."
+                          : "Search and select to filter..."
+                      }
                       sx={{
-                        fontFamily: "'Poppins', sans-serif",
+                        fontFamily: POPPINS_FONT,
                         "& .MuiOutlinedInput-root": {
                           backgroundColor: "#fafafa",
-                          fontFamily: "'Poppins', sans-serif",
+                          fontFamily: POPPINS_FONT,
+                          fontSize: isMobile ? "0.875rem" : "1rem",
+                        },
+                        "& .MuiInputLabel-root": {
+                          fontSize: isMobile ? "0.875rem" : "1rem",
                         },
                       }}
                     />
@@ -418,21 +500,31 @@ const DeleteSchedulesModal = ({
                             display: "flex",
                             justifyContent: "space-between",
                             width: "100%",
+                            flexDirection: isMobile ? "column" : "row",
+                            gap: isMobile ? 0.5 : 0,
                           }}
                         >
                           <Box>
-                            <Typography variant="body2" fontWeight="500">
+                            <Typography
+                              variant="body2"
+                              fontWeight="500"
+                              sx={{
+                                fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                              }}
+                            >
                               {option.name}
                             </Typography>
                             <Typography
                               variant="caption"
                               color="text.secondary"
+                              sx={{
+                                fontSize: isMobile ? "0.75rem" : "0.8125rem",
+                              }}
                             >
                               {option.type.charAt(0).toUpperCase() +
                                 option.type.slice(1)}
                               {option.type === "client" &&
-                                ` • ID: ${option.id}`}{" "}
-                              {/* Show ID only for clients */}
+                                ` • ID: ${option.id}`}
                             </Typography>
                           </Box>
                           <Chip
@@ -441,10 +533,11 @@ const DeleteSchedulesModal = ({
                             }`}
                             size="small"
                             sx={{
-                              fontSize: "0.6rem",
-                              height: "16px",
+                              fontSize: isMobile ? "0.5rem" : "0.6rem",
+                              height: isMobile ? "14px" : "16px",
                               backgroundColor: "#e0f2fe",
                               color: "#0369a1",
+                              alignSelf: isMobile ? "flex-start" : "center",
                             }}
                           />
                         </Box>
@@ -456,7 +549,7 @@ const DeleteSchedulesModal = ({
                 />
 
                 {/* Date Range Filter */}
-                <Box sx={{ width: 280 }}>
+                <Box sx={{ width: isMobile ? "100%" : 280 }}>
                   <ReactDatePicker
                     selectsRange={true}
                     startDate={dateRange[0]}
@@ -468,9 +561,11 @@ const DeleteSchedulesModal = ({
                     dateFormat="dd/MM/yyyy"
                     customInput={
                       <TextField
-                        size="small"
+                        size={isMobile ? "small" : "medium"}
                         label="Date Range Filter"
-                        placeholder="Select date range"
+                        placeholder={
+                          isMobile ? "Select dates" : "Select date range"
+                        }
                         value={
                           dateRange[0] && dateRange[1]
                             ? `${format(dateRange[0], "dd/MM/yyyy")} - ${format(
@@ -485,10 +580,14 @@ const DeleteSchedulesModal = ({
                         }}
                         sx={{
                           width: "100%",
-                          fontFamily: "'Poppins', sans-serif",
+                          fontFamily: POPPINS_FONT,
                           "& .MuiOutlinedInput-root": {
                             backgroundColor: "#fafafa",
-                            fontFamily: "'Poppins', sans-serif",
+                            fontFamily: POPPINS_FONT,
+                            fontSize: isMobile ? "0.875rem" : "1rem",
+                          },
+                          "& .MuiInputLabel-root": {
+                            fontSize: isMobile ? "0.875rem" : "1rem",
                           },
                         }}
                       />
@@ -501,12 +600,18 @@ const DeleteSchedulesModal = ({
                 sx={{
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "center",
+                  alignItems: isMobile ? "flex-start" : "center",
+                  flexDirection: isMobile ? "column" : "row",
+                  gap: isMobile ? 1 : 0,
                 }}
               >
-                <Typography variant="body2" color="text.secondary">
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                >
                   Showing {filteredSchedules.length} of{" "}
-                  {totalDeletableSchedules} deletable schedules
+                  {totalDeletableSchedules} schedules
                   {dateRange[0] && dateRange[1] && (
                     <span style={{ marginLeft: "8px", color: "#0369a1" }}>
                       (filtered by date: {format(dateRange[0], "dd/MM/yyyy")} -{" "}
@@ -520,6 +625,10 @@ const DeleteSchedulesModal = ({
                     setDateRange([null, null]);
                     setFilteredSchedules(getDeletableSchedules(schedules));
                     setSearchValue(null);
+                  }}
+                  style={{
+                    fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                    padding: isMobile ? "6px 12px" : "8px 16px",
                   }}
                 >
                   Clear Filters
@@ -540,33 +649,54 @@ const DeleteSchedulesModal = ({
               <Box
                 sx={{
                   bgcolor: "#fef2f2",
-                  p: 2,
+                  p: isMobile ? 1.5 : 2,
                   borderBottom: "1px solid #e2e8f0",
                   display: "flex",
                   justifyContent: "space-between",
-                  alignItems: "center",
+                  alignItems: isMobile ? "flex-start" : "center",
+                  flexDirection: isMobile ? "column" : "row",
+                  gap: isMobile ? 1 : 0,
                 }}
               >
                 <Typography
                   variant="subtitle2"
                   fontWeight="600"
-                  sx={{ color: "#dc2626" }}
+                  sx={{
+                    color: "#dc2626",
+                    fontSize: isMobile ? "0.9375rem" : "1rem",
+                  }}
                 >
-                  Deletable Schedules ({filteredSchedules.length} total)
+                  All Schedules ({filteredSchedules.length} total)
                 </Typography>
-                <Box sx={{ display: "flex", alignItems: "center", gap: 2 }}>
+                <Box
+                  sx={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: isMobile ? 1 : 2,
+                    flexDirection: isMobile ? "column" : "row",
+                    alignSelf: isMobile ? "stretch" : "auto",
+                  }}
+                >
                   {selectedSchedules.length > 0 && (
-                    <Typography variant="caption" sx={{ color: "#dc2626" }}>
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: "#dc2626",
+                        fontSize: isMobile ? "0.75rem" : "0.8125rem",
+                      }}
+                    >
                       {selectedSchedules.length} selected for deletion
                     </Typography>
                   )}
                   {filteredSchedules.length > 0 && (
                     <Button
-                      size="small"
+                      size={isMobile ? "small" : "medium"}
                       onClick={handleSelectAll}
                       sx={{
                         textTransform: "none",
                         color: "#dc2626",
+                        fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                        padding: isMobile ? "4px 8px" : "6px 12px",
                         "&:hover": { bgcolor: "rgba(220, 38, 38, 0.1)" },
                       }}
                     >
@@ -580,9 +710,9 @@ const DeleteSchedulesModal = ({
 
               <Box
                 sx={{
-                  maxHeight: "400px",
+                  maxHeight: isMobile ? "300px" : "400px",
                   overflowY: "auto",
-                  p: 1,
+                  p: isMobile ? 0.5 : 1,
                 }}
               >
                 {filteredSchedules.length === 0 ? (
@@ -592,38 +722,41 @@ const DeleteSchedulesModal = ({
                       flexDirection: "column",
                       alignItems: "center",
                       justifyContent: "center",
-                      p: 4,
+                      p: isMobile ? 3 : 4,
                       color: "#64748b",
                     }}
                   >
-                    <Typography variant="h6" sx={{ mb: 1, color: "#f59e0b" }}>
-                      📅 No Deletable Schedules Found
+                    <Typography
+                      variant="h6"
+                      sx={{
+                        mb: 1,
+                        color: "#f59e0b",
+                        fontSize: isMobile ? "1rem" : "1.125rem",
+                      }}
+                    >
+                      📅 No Schedules Found
                     </Typography>
                     <Typography
                       variant="body2"
-                      sx={{ mb: 1, textAlign: "center" }}
+                      sx={{
+                        mb: 1,
+                        textAlign: "center",
+                        fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                      }}
                     >
                       {dateRange[0] && dateRange[1]
-                        ? "No deletable schedules found in the selected date range"
+                        ? "No schedules found in the selected date range"
                         : searchValue
-                        ? "No deletable schedules match your search criteria"
-                        : "No completed, absent, leave, or available schedules found"}
+                        ? "No schedules match your search criteria"
+                        : "No schedules found"}
                     </Typography>
-                    {totalPendingSchedules > 0 && (
-                      <Typography
-                        variant="caption"
-                        color="text.secondary"
-                        sx={{ textAlign: "center" }}
-                      >
-                        Only schedules that are not pending or in-progress can
-                        be deleted
-                      </Typography>
-                    )}
                   </Box>
                 ) : (
                   filteredSchedules.map((schedule) => {
                     const groupedClients = groupStudentsByClient(schedule);
                     const statusStyle = getStatusColor(schedule.sessionStatus);
+                    const isPending =
+                      schedule.sessionStatus === SESSION_STATUS.PENDING;
 
                     return (
                       <Box
@@ -631,33 +764,106 @@ const DeleteSchedulesModal = ({
                         sx={{
                           display: "flex",
                           alignItems: "flex-start",
-                          p: 2,
+                          p: isMobile ? 1.5 : 2,
                           borderRadius: "6px",
                           cursor: "pointer",
-                          mb: 1,
+                          mb: isMobile ? 0.5 : 1,
                           "&:hover": { bgcolor: "#fef2f2" },
                           bgcolor: selectedSchedules.includes(schedule._id)
                             ? "#fee2e2"
+                            : isPending
+                            ? "#fef3c7"
                             : "transparent",
                           border: selectedSchedules.includes(schedule._id)
                             ? "2px solid #dc2626"
+                            : isPending
+                            ? "2px solid #f59e0b"
                             : "2px solid transparent",
+                          flexDirection: isMobile ? "column" : "row",
+                          gap: isMobile ? 1 : 0,
                         }}
                         onClick={() => handleScheduleSelect(schedule._id)}
                       >
-                        <input
-                          type="checkbox"
-                          checked={selectedSchedules.includes(schedule._id)}
-                          onChange={() => handleScheduleSelect(schedule._id)}
-                          style={{
-                            marginRight: "12px",
-                            accentColor: "#dc2626",
+                        <Box
+                          sx={{
+                            display: "flex",
+                            alignItems: isMobile ? "center" : "flex-start",
+                            width: isMobile ? "100%" : "auto",
+                            justifyContent: isMobile
+                              ? "space-between"
+                              : "flex-start",
                           }}
-                        />
+                        >
+                          <input
+                            type="checkbox"
+                            checked={selectedSchedules.includes(schedule._id)}
+                            onChange={() => handleScheduleSelect(schedule._id)}
+                            style={{
+                              marginRight: isMobile ? "8px" : "12px",
+                              accentColor: "#dc2626",
+                            }}
+                          />
 
-                        <Box sx={{ flex: 1 }}>
+                          {/* Status Badge - Mobile */}
+                          {isMobile && (
+                            <Box
+                              sx={{
+                                display: "flex",
+                                flexDirection: "column",
+                                alignItems: "flex-end",
+                                gap: 0.5,
+                              }}
+                            >
+                              <Chip
+                                label={schedule.sessionStatus.replace("_", " ")}
+                                size="small"
+                                sx={{
+                                  fontSize: "0.6rem",
+                                  textTransform: "capitalize",
+                                  backgroundColor: statusStyle.backgroundColor,
+                                  color: statusStyle.color,
+                                }}
+                              />
+                              <Typography
+                                variant="caption"
+                                sx={{ color: "#64748b", fontSize: "0.6rem" }}
+                              >
+                                {schedule.subjectType}
+                              </Typography>
+                            </Box>
+                          )}
+                        </Box>
+
+                        <Box
+                          sx={{ flex: 1, width: isMobile ? "100%" : "auto" }}
+                        >
+                          {/* Pending Warning */}
+                          {isPending && (
+                            <Box
+                              sx={{
+                                mb: 1,
+                                p: 1,
+                                bgcolor: "#fef3c7",
+                                border: "1px solid #f59e0b",
+                                borderRadius: "4px",
+                              }}
+                            >
+                              <Typography
+                                variant="caption"
+                                sx={{
+                                  color: "#92400e",
+                                  fontWeight: 500,
+                                  fontSize: isMobile ? "0.6875rem" : "0.75rem",
+                                }}
+                              >
+                                ⚠️ PENDING SCHEDULE - Exercise caution when
+                                deleting
+                              </Typography>
+                            </Box>
+                          )}
+
                           {/* Students and Clients */}
-                          <Box sx={{ mb: 1 }}>
+                          <Box sx={{ mb: isMobile ? 0.5 : 1 }}>
                             {groupedClients.map((group, groupIndex) => (
                               <Box
                                 key={groupIndex}
@@ -668,7 +874,15 @@ const DeleteSchedulesModal = ({
                                       : 0,
                                 }}
                               >
-                                <Typography variant="body2" fontWeight="500">
+                                <Typography
+                                  variant="body2"
+                                  fontWeight="500"
+                                  sx={{
+                                    fontSize: isMobile
+                                      ? "0.8125rem"
+                                      : "0.875rem",
+                                  }}
+                                >
                                   Students:{" "}
                                   {group.students
                                     .map((s) =>
@@ -681,6 +895,11 @@ const DeleteSchedulesModal = ({
                                 <Typography
                                   variant="caption"
                                   color="text.secondary"
+                                  sx={{
+                                    fontSize: isMobile
+                                      ? "0.75rem"
+                                      : "0.8125rem",
+                                  }}
                                 >
                                   Client: {group.clientName} ({group.clientId})
                                 </Typography>
@@ -692,14 +911,18 @@ const DeleteSchedulesModal = ({
                           <Box
                             sx={{
                               display: "flex",
-                              gap: 2,
+                              gap: isMobile ? 1 : 2,
                               flexWrap: "wrap",
-                              alignItems: "center",
+                              alignItems: isMobile ? "flex-start" : "center",
+                              flexDirection: isMobile ? "column" : "row",
                             }}
                           >
                             <Typography
                               variant="caption"
-                              sx={{ color: "#475569" }}
+                              sx={{
+                                color: "#475569",
+                                fontSize: isMobile ? "0.75rem" : "0.8125rem",
+                              }}
                             >
                               <strong>Teacher:</strong>{" "}
                               {schedule.teacherName
@@ -708,13 +931,19 @@ const DeleteSchedulesModal = ({
                             </Typography>
                             <Typography
                               variant="caption"
-                              sx={{ color: "#475569" }}
+                              sx={{
+                                color: "#475569",
+                                fontSize: isMobile ? "0.75rem" : "0.8125rem",
+                              }}
                             >
                               <strong>Subject:</strong> {schedule.subjectName}
                             </Typography>
                             <Typography
                               variant="caption"
-                              sx={{ color: "#475569" }}
+                              sx={{
+                                color: "#475569",
+                                fontSize: isMobile ? "0.75rem" : "0.8125rem",
+                              }}
                             >
                               <strong>Schedule:</strong> {schedule.day},{" "}
                               {convertTo12Hour(schedule.startTime)} -{" "}
@@ -722,7 +951,10 @@ const DeleteSchedulesModal = ({
                             </Typography>
                             <Typography
                               variant="caption"
-                              sx={{ color: "#475569" }}
+                              sx={{
+                                color: "#475569",
+                                fontSize: isMobile ? "0.75rem" : "0.8125rem",
+                              }}
                             >
                               <strong>Date:</strong>{" "}
                               {formatTableDate(schedule.classDate)}
@@ -730,32 +962,34 @@ const DeleteSchedulesModal = ({
                           </Box>
                         </Box>
 
-                        {/* Status Badge */}
-                        <Box
-                          sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignItems: "flex-end",
-                            gap: 1,
-                          }}
-                        >
-                          <Chip
-                            label={schedule.sessionStatus.replace("_", " ")}
-                            size="small"
+                        {/* Status Badge - Desktop */}
+                        {!isMobile && (
+                          <Box
                             sx={{
-                              fontSize: "0.7rem",
-                              textTransform: "capitalize",
-                              backgroundColor: statusStyle.backgroundColor,
-                              color: statusStyle.color,
+                              display: "flex",
+                              flexDirection: "column",
+                              alignItems: "flex-end",
+                              gap: 1,
                             }}
-                          />
-                          <Typography
-                            variant="caption"
-                            sx={{ color: "#64748b", fontSize: "0.65rem" }}
                           >
-                            {schedule.subjectType}
-                          </Typography>
-                        </Box>
+                            <Chip
+                              label={schedule.sessionStatus.replace("_", " ")}
+                              size="small"
+                              sx={{
+                                fontSize: "0.7rem",
+                                textTransform: "capitalize",
+                                backgroundColor: statusStyle.backgroundColor,
+                                color: statusStyle.color,
+                              }}
+                            />
+                            <Typography
+                              variant="caption"
+                              sx={{ color: "#64748b", fontSize: "0.65rem" }}
+                            >
+                              {schedule.subjectType}
+                            </Typography>
+                          </Box>
+                        )}
                       </Box>
                     );
                   })
@@ -763,26 +997,70 @@ const DeleteSchedulesModal = ({
               </Box>
             </Box>
 
-            {/* Warning Message */}
+            {/* Warning Messages */}
             {selectedSchedules.length > 0 && (
-              <Box
-                sx={{
-                  mt: 2,
-                  p: 2,
-                  bgcolor: "#fef2f2",
-                  border: "1px solid #fecaca",
-                  borderRadius: "6px",
-                }}
-              >
-                <Typography
-                  variant="body2"
-                  sx={{ color: "#dc2626", fontWeight: 500 }}
+              <Box sx={{ mt: isMobile ? 1.5 : 2 }}>
+                {/* General Warning */}
+                <Box
+                  sx={{
+                    p: isMobile ? 1.5 : 2,
+                    bgcolor: "#fef2f2",
+                    border: "1px solid #fecaca",
+                    borderRadius: "6px",
+                    mb: selectedPendingSchedules.length > 0 ? 1 : 0,
+                  }}
                 >
-                  ⚠️ Warning: This will permanently delete{" "}
-                  {selectedSchedules.length} schedule
-                  {selectedSchedules.length > 1 ? "s" : ""}. This action cannot
-                  be undone.
-                </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#dc2626",
+                      fontWeight: 500,
+                      fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                    }}
+                  >
+                    ⚠️ Warning: This will permanently delete{" "}
+                    {selectedSchedules.length} schedule
+                    {selectedSchedules.length > 1 ? "s" : ""}. This action
+                    cannot be undone.
+                  </Typography>
+                </Box>
+
+                {/* Pending Schedules Warning */}
+                {selectedPendingSchedules.length > 0 && (
+                  <Box
+                    sx={{
+                      p: isMobile ? 1.5 : 2,
+                      bgcolor: "#fef3c7",
+                      border: "1px solid #f59e0b",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#92400e",
+                        fontWeight: 600,
+                        fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                      }}
+                    >
+                      🚨 CRITICAL WARNING: You have selected{" "}
+                      {selectedPendingSchedules.length} PENDING schedule
+                      {selectedPendingSchedules.length > 1 ? "s" : ""} for
+                      deletion!
+                    </Typography>
+                    <Typography
+                      variant="body2"
+                      sx={{
+                        color: "#92400e",
+                        fontSize: isMobile ? "0.75rem" : "0.8125rem",
+                        mt: 0.5,
+                      }}
+                    >
+                      Pending schedules may be actively used by the system.
+                      Please verify before proceeding.
+                    </Typography>
+                  </Box>
+                )}
               </Box>
             )}
 
@@ -791,15 +1069,21 @@ const DeleteSchedulesModal = ({
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: 2,
-                mt: 3,
-                pt: 2,
+                gap: isMobile ? 1.5 : 2,
+                mt: isMobile ? 2 : 3,
+                pt: isMobile ? 1.5 : 2,
                 borderTop: "1px solid #e2e8f0",
+                flexDirection: isMobile ? "column-reverse" : "row",
               }}
             >
               <button
                 className="clear-filters-btn"
                 onClick={() => setShowModal(false)}
+                style={{
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  padding: isMobile ? "12px" : "8px 16px",
+                  width: isMobile ? "100%" : "auto",
+                }}
               >
                 Cancel
               </button>
@@ -810,6 +1094,11 @@ const DeleteSchedulesModal = ({
                   selectedSchedules.length === 0 ||
                   filteredSchedules.length === 0
                 }
+                style={{
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  padding: isMobile ? "12px" : "8px 16px",
+                  width: isMobile ? "100%" : "auto",
+                }}
               >
                 {filteredSchedules.length === 0
                   ? "No Schedules to Delete"
@@ -822,22 +1111,66 @@ const DeleteSchedulesModal = ({
         ) : (
           /* Password Confirmation Screen */
           <>
-            <Box sx={{ borderBottom: "1px solid #e2e8f0", pb: 2, mb: 3 }}>
-              <Typography
-                variant="h6"
-                component="h2"
-                sx={{ color: "#dc2626", fontWeight: 600 }}
+            <Box
+              sx={{
+                borderBottom: "1px solid #e2e8f0",
+                pb: isMobile ? 1.5 : 2,
+                mb: isMobile ? 2 : 3,
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: isMobile ? "flex-start" : "center",
+                flexDirection: isMobile ? "column" : "row",
+                gap: isMobile ? 1 : 0,
+              }}
+            >
+              <Box>
+                <Typography
+                  variant="h6"
+                  component="h2"
+                  sx={{
+                    color: "#dc2626",
+                    fontWeight: 600,
+                    fontSize: isMobile ? "1.125rem" : "1.25rem",
+                  }}
+                >
+                  🔒 Confirm Schedule Deletion
+                </Typography>
+                <Typography
+                  variant="body2"
+                  color="text.secondary"
+                  sx={{
+                    mt: 1,
+                    fontSize: isMobile ? "0.875rem" : "1rem",
+                  }}
+                >
+                  Enter admin password to confirm deletion of{" "}
+                  {selectedSchedules.length} schedule
+                  {selectedSchedules.length > 1 ? "s" : ""}
+                </Typography>
+              </Box>
+
+              <Button
+                onClick={handleCancelPassword}
+                disabled={isDeleting}
+                sx={{
+                  minWidth: isMobile ? "28px" : "auto",
+                  height: isMobile ? "28px" : "auto",
+                  p: isMobile ? 0 : 1,
+                  color: "#64748b",
+                  alignSelf: isMobile ? "flex-end" : "auto",
+                  fontSize: isMobile ? "1.25rem" : "1.5rem",
+                  borderRadius: isMobile ? "50%" : "4px",
+                  "&:hover": {
+                    bgcolor: "#f1f5f9",
+                    color: "#3949ab",
+                  },
+                }}
               >
-                🔒 Confirm Schedule Deletion
-              </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                Enter admin password to confirm deletion of{" "}
-                {selectedSchedules.length} schedule
-                {selectedSchedules.length > 1 ? "s" : ""}
-              </Typography>
+                ×
+              </Button>
             </Box>
 
-            <Box sx={{ my: 3 }}>
+            <Box sx={{ my: isMobile ? 2 : 3 }}>
               <TextField
                 fullWidth
                 type="password"
@@ -851,38 +1184,87 @@ const DeleteSchedulesModal = ({
                 helperText={passwordError}
                 placeholder="Enter admin password"
                 autoFocus
+                size={isMobile ? "medium" : "large"}
                 onKeyPress={(e) => {
                   if (e.key === "Enter" && password) {
                     handlePasswordConfirm();
                   }
                 }}
                 sx={{
-                  fontFamily: "'Poppins', sans-serif",
+                  fontFamily: POPPINS_FONT,
                   "& .MuiOutlinedInput-root": {
-                    fontFamily: "'Poppins', sans-serif",
+                    fontFamily: POPPINS_FONT,
+                    fontSize: isMobile ? "0.875rem" : "1rem",
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: isMobile ? "0.875rem" : "1rem",
+                  },
+                  "& .MuiFormHelperText-root": {
+                    fontSize: isMobile ? "0.75rem" : "0.875rem",
                   },
                 }}
               />
             </Box>
 
-            <Box
-              sx={{
-                p: 2,
-                bgcolor: "#fef2f2",
-                border: "1px solid #fecaca",
-                borderRadius: "6px",
-                mb: 3,
-              }}
-            >
-              <Typography
-                variant="body2"
-                sx={{ color: "#dc2626", fontWeight: 500 }}
+            {/* Final Warning with Pending Details */}
+            <Box sx={{ mb: isMobile ? 2 : 3 }}>
+              <Box
+                sx={{
+                  p: isMobile ? 1.5 : 2,
+                  bgcolor: "#fef2f2",
+                  border: "1px solid #fecaca",
+                  borderRadius: "6px",
+                  mb: selectedPendingSchedules.length > 0 ? 1 : 0,
+                }}
               >
-                ⚠️ Final Warning: You are about to permanently delete{" "}
-                {selectedSchedules.length} schedule
-                {selectedSchedules.length > 1 ? "s" : ""}. This action cannot be
-                undone.
-              </Typography>
+                <Typography
+                  variant="body2"
+                  sx={{
+                    color: "#dc2626",
+                    fontWeight: 500,
+                    fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                  }}
+                >
+                  ⚠️ Final Warning: You are about to permanently delete{" "}
+                  {selectedSchedules.length} schedule
+                  {selectedSchedules.length > 1 ? "s" : ""}. This action cannot
+                  be undone.
+                </Typography>
+              </Box>
+
+              {selectedPendingSchedules.length > 0 && (
+                <Box
+                  sx={{
+                    p: isMobile ? 1.5 : 2,
+                    bgcolor: "#fef3c7",
+                    border: "2px solid #f59e0b",
+                    borderRadius: "6px",
+                  }}
+                >
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#92400e",
+                      fontWeight: 600,
+                      fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                    }}
+                  >
+                    🚨 FINAL PENDING WARNING: {selectedPendingSchedules.length}{" "}
+                    of the selected schedules are PENDING!
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      color: "#92400e",
+                      fontSize: isMobile ? "0.75rem" : "0.8125rem",
+                      mt: 0.5,
+                    }}
+                  >
+                    Are you absolutely sure you want to delete pending
+                    schedules? This may disrupt ongoing operations.
+                  </Typography>
+                </Box>
+              )}
             </Box>
 
             {/* Password Confirmation Buttons */}
@@ -890,15 +1272,21 @@ const DeleteSchedulesModal = ({
               sx={{
                 display: "flex",
                 justifyContent: "flex-end",
-                gap: 2,
-                pt: 2,
+                gap: isMobile ? 1.5 : 2,
+                pt: isMobile ? 1.5 : 2,
                 borderTop: "1px solid #e2e8f0",
+                flexDirection: isMobile ? "column-reverse" : "row",
               }}
             >
               <button
                 className="clear-filters-btn"
                 onClick={handleCancelPassword}
                 disabled={isDeleting}
+                style={{
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  padding: isMobile ? "12px" : "8px 16px",
+                  width: isMobile ? "100%" : "auto",
+                }}
               >
                 Cancel
               </button>
@@ -906,6 +1294,13 @@ const DeleteSchedulesModal = ({
                 className="delete-btn"
                 onClick={handlePasswordConfirm}
                 disabled={!password || isDeleting}
+                style={{
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                  padding: isMobile ? "12px" : "8px 16px",
+                  width: isMobile ? "100%" : "auto",
+                  backgroundColor:
+                    selectedPendingSchedules.length > 0 ? "#dc2626" : undefined,
+                }}
               >
                 {isDeleting ? (
                   <div className="loading-spinner"></div>
@@ -920,6 +1315,7 @@ const DeleteSchedulesModal = ({
     </Modal>
   );
 };
+
 const ScheduleFormModal = ({
   showModal,
   setShowModal,
@@ -932,10 +1328,28 @@ const ScheduleFormModal = ({
   isLoading,
   allSubjects,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
   const [teacherAvailability, setTeacherAvailability] = useState(null);
   const [loadingAvailability, setLoadingAvailability] = useState(false);
 
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+  const DAYS = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  const RECURRENCE_PATTERNS = {
+    WEEKDAYS: "weekdays",
+    CUSTOM: "custom",
+  };
 
   const convertTo12Hour = (time24) => {
     if (!time24) return "";
@@ -1119,50 +1533,16 @@ const ScheduleFormModal = ({
       .join(",");
   };
 
-  const formatAvailabilityText = () => {
-    if (!teacherAvailability) {
-      return null;
-    }
-
-    const dayGroups = {};
-
-    if (teacherAvailability.freeSlots) {
-      teacherAvailability.freeSlots.forEach((slot) => {
-        const daysKey = slot.daysText;
-        if (!dayGroups[daysKey]) {
-          dayGroups[daysKey] = {
-            freeSlots: [],
-            reservedSlots: [],
-          };
-        }
-        dayGroups[daysKey].freeSlots.push(convertTimeSlotToAMPM(slot.timeSlot));
-      });
-    }
-
-    if (teacherAvailability.reservedSlots) {
-      teacherAvailability.reservedSlots.forEach((slot) => {
-        const daysKey = slot.daysText;
-        if (!dayGroups[daysKey]) {
-          dayGroups[daysKey] = {
-            freeSlots: [],
-            reservedSlots: [],
-          };
-        }
-        dayGroups[daysKey].reservedSlots.push({
-          timeSlot: convertTimeSlotToAMPM(slot.timeSlot),
-          reasons: slot.reasons || ["Reserved"],
-        });
-      });
-    }
-
-    return Object.entries(dayGroups).map(([days, slots]) => ({
-      days,
-      freeSlots: slots.freeSlots || [],
-      reservedSlots: slots.reservedSlots || [],
-      hasFreeSlots: (slots.freeSlots || []).length > 0,
-      hasReservedSlots: (slots.reservedSlots || []).length > 0,
-    }));
-  };
+  const getResponsiveModalStyle = () => ({
+    ...getModalStyles(),
+    width: isMobile ? "95vw" : isSmallMobile ? "98vw" : "900px",
+    maxWidth: isMobile ? "none" : "900px",
+    maxHeight: isMobile ? "95vh" : "90vh",
+    borderRadius: isMobile ? "16px" : "12px",
+    padding: isMobile ? "16px" : "24px",
+    overflow: "auto",
+    margin: isMobile ? "10px" : "auto",
+  });
 
   if (!formData) return null;
 
@@ -1195,13 +1575,62 @@ const ScheduleFormModal = ({
 
   return (
     <Modal open={showModal} onClose={() => !isLoading && setShowModal(false)}>
-      <Box sx={getModalStyles()}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          {currentSchedule ? "Edit Schedule" : "Add New Schedule"}
-        </Typography>
+      <Box sx={getResponsiveModalStyle()}>
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: isMobile ? "flex-start" : "center",
+            mb: isMobile ? 2 : 3,
+            borderBottom: "1px solid #e2e8f0",
+            pb: isMobile ? 1.5 : 2,
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 1 : 0,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: isMobile ? "1.125rem" : "1.25rem",
+              fontWeight: 600,
+              color: "#1e293b",
+            }}
+          >
+            {currentSchedule ? "Edit Schedule" : "Add New Schedule"}
+          </Typography>
+
+          <button
+            onClick={() => setShowModal(false)}
+            disabled={isLoading}
+            style={{
+              border: "none",
+              background: "none",
+              fontSize: isMobile ? "1.25rem" : "1.5rem",
+              cursor: "pointer",
+              color: "#64748b",
+              padding: isMobile ? "4px" : "8px",
+              alignSelf: isMobile ? "flex-end" : "auto",
+              borderRadius: isMobile ? "50%" : "4px",
+              minWidth: isMobile ? "28px" : "auto",
+              height: isMobile ? "28px" : "auto",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            ×
+          </button>
+        </Box>
 
         <form onSubmit={handleSubmit}>
-          <FormControl fullWidth margin="normal" size="small" required>
+          {/* Students Selection */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+            required
+          >
             <Autocomplete
               multiple
               id="students-autocomplete"
@@ -1231,21 +1660,39 @@ const ScheduleFormModal = ({
                 <TextField
                   {...params}
                   label="Students (Active Only)"
-                  size="small"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    fontSize: isMobile ? "0.875rem" : "1rem",
+                    "& .MuiInputLabel-root": {
+                      fontSize: isMobile ? "0.875rem" : "1rem",
+                    },
+                  }}
                 />
               )}
               renderOption={(props, option) => {
                 const { key, ...restProps } = props;
                 return (
                   <li key={key} {...restProps}>
-                    {`${option?.profile?.studentId || ""} - ${option.name}`}
+                    <Typography
+                      sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                    >
+                      {`${option?.profile?.studentId || ""} - ${option.name}`}
+                    </Typography>
                   </li>
                 );
               }}
               disabled={!!currentSchedule}
+              size={isMobile ? "small" : "medium"}
             />
           </FormControl>
-          <FormControl fullWidth margin="normal" size="small" required>
+
+          {/* Subject Selection */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+            required
+          >
             <Autocomplete
               id="subject-autocomplete"
               options={
@@ -1278,12 +1725,30 @@ const ScheduleFormModal = ({
                 });
               }}
               renderInput={(params) => (
-                <TextField {...params} label="Subject" size="small" />
+                <TextField
+                  {...params}
+                  label="Subject"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    fontSize: isMobile ? "0.875rem" : "1rem",
+                    "& .MuiInputLabel-root": {
+                      fontSize: isMobile ? "0.875rem" : "1rem",
+                    },
+                  }}
+                />
               )}
               disabled={!(formData.students && formData.students.length > 0)}
+              size={isMobile ? "small" : "medium"}
             />
           </FormControl>
-          <FormControl fullWidth margin="normal" size="small" required>
+
+          {/* Teacher Selection */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+            required
+          >
             <Autocomplete
               id="teacher-autocomplete"
               options={getFilteredTeachers()}
@@ -1306,24 +1771,45 @@ const ScheduleFormModal = ({
                   {...params}
                   label="Active Teachers Only"
                   required
-                  size="small"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    fontSize: isMobile ? "0.875rem" : "1rem",
+                    "& .MuiInputLabel-root": {
+                      fontSize: isMobile ? "0.875rem" : "1rem",
+                    },
+                  }}
                 />
               )}
               renderOption={(props, option) => {
                 const { key, ...restProps } = props;
                 return (
                   <li key={key} {...restProps}>
-                    {getTeacherDisplayName(option)}
-                    <span
-                      style={{
-                        marginLeft: "8px",
-                        color: "#22c55e",
-                        fontSize: "0.75rem",
-                        fontWeight: "500",
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
                       }}
                     >
-                      ✓ Active
-                    </span>
+                      <Typography
+                        sx={{
+                          fontSize: isMobile ? "0.8125rem" : "0.875rem",
+                          flex: 1,
+                        }}
+                      >
+                        {getTeacherDisplayName(option)}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          marginLeft: "8px",
+                          color: "#22c55e",
+                          fontSize: isMobile ? "0.6875rem" : "0.75rem",
+                          fontWeight: "500",
+                        }}
+                      >
+                        ✓ Active
+                      </Typography>
+                    </Box>
                   </li>
                 );
               }}
@@ -1333,25 +1819,29 @@ const ScheduleFormModal = ({
                   ? "Please select a subject first"
                   : "No active teachers found for this subject"
               }
+              size={isMobile ? "small" : "medium"}
             />
           </FormControl>
+
+          {/* Teacher Availability Section */}
           {formData.teacher && (
-            <Box sx={{ mt: 2, mb: 2 }}>
+            <Box sx={{ mt: isMobile ? 1.5 : 2, mb: isMobile ? 1.5 : 2 }}>
               {loadingAvailability ? (
                 <Box
                   sx={{
-                    p: 2,
+                    p: isMobile ? 1.5 : 2,
                     bgcolor: "#f8fafc",
-                    borderRadius: 1,
+                    borderRadius: isMobile ? "12px" : "8px",
                     border: "1px solid #e2e8f0",
                   }}
                 >
                   <Typography
                     variant="subtitle2"
                     sx={{
-                      mb: 2,
+                      mb: isMobile ? 1.5 : 2,
                       color: "#475569",
                       fontWeight: 600,
+                      fontSize: isMobile ? "0.8125rem" : "0.875rem",
                     }}
                   >
                     📅 Teacher Availability (Mon to Fri):
@@ -1362,28 +1852,35 @@ const ScheduleFormModal = ({
                       display: "flex",
                       alignItems: "center",
                       gap: 1,
-                      mb: 2,
+                      mb: isMobile ? 1.5 : 2,
                     }}
                   >
-                    <CircularProgress size={16} sx={{ color: "#6b7280" }} />
+                    <CircularProgress
+                      size={isMobile ? 14 : 16}
+                      sx={{ color: "#6b7280" }}
+                    />
                     <Typography
                       variant="body2"
-                      sx={{ color: "#6b7280", fontSize: "0.75rem" }}
+                      sx={{
+                        color: "#6b7280",
+                        fontSize: isMobile ? "0.6875rem" : "0.75rem",
+                      }}
                     >
                       Analyzing teacher's schedule...
                     </Typography>
                   </Box>
 
+                  {/* Loading skeleton */}
                   {[1, 2, 3, 4].map((dayIndex) => (
-                    <Box key={dayIndex} sx={{ mb: 2 }}>
+                    <Box key={dayIndex} sx={{ mb: isMobile ? 1.5 : 2 }}>
                       <Box
                         sx={{
-                          height: 14,
+                          height: isMobile ? 12 : 14,
                           bgcolor: "#cbd5e1",
                           borderRadius: 1,
                           mb: 1,
                           width: `${50 + dayIndex * 8}%`,
-                          maxWidth: "200px",
+                          maxWidth: isMobile ? "150px" : "200px",
                           animation: "pulse 1.5s ease-in-out infinite",
                           animationDelay: `${dayIndex * 0.1}s`,
                         }}
@@ -1399,8 +1896,8 @@ const ScheduleFormModal = ({
                         >
                           <Box
                             sx={{
-                              width: 8,
-                              height: 8,
+                              width: isMobile ? 6 : 8,
+                              height: isMobile ? 6 : 8,
                               borderRadius: "50%",
                               bgcolor: "#86efac",
                               flexShrink: 0,
@@ -1408,49 +1905,17 @@ const ScheduleFormModal = ({
                           />
                           <Box
                             sx={{
-                              height: 8,
+                              height: isMobile ? 6 : 8,
                               bgcolor: "#d1d5db",
                               borderRadius: 1,
                               width: `${60 + dayIndex * 10}%`,
-                              maxWidth: "300px",
+                              maxWidth: isMobile ? "200px" : "300px",
                               animation: "pulse 1.5s ease-in-out infinite",
                               animationDelay: `${dayIndex * 0.1 + 0.2}s`,
                             }}
                           />
                         </Box>
                       </Box>
-                      {dayIndex % 2 === 0 && (
-                        <Box sx={{ pl: 1 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: 8,
-                                height: 8,
-                                borderRadius: "50%",
-                                bgcolor: "#fca5a5",
-                                flexShrink: 0,
-                              }}
-                            />
-                            <Box
-                              sx={{
-                                height: 8,
-                                bgcolor: "#d1d5db",
-                                borderRadius: 1,
-                                width: `${40 + dayIndex * 5}%`,
-                                maxWidth: "250px",
-                                animation: "pulse 1.5s ease-in-out infinite",
-                                animationDelay: `${dayIndex * 0.1 + 0.4}s`,
-                              }}
-                            />
-                          </Box>
-                        </Box>
-                      )}
                     </Box>
                   ))}
                 </Box>
@@ -1459,28 +1924,30 @@ const ScheduleFormModal = ({
                   teacherAvailability.reservedSlots) ? (
                 <Box
                   sx={{
-                    p: 2,
+                    p: isMobile ? 1.5 : 2,
                     bgcolor: "#f8fafc",
-                    borderRadius: 1,
+                    borderRadius: isMobile ? "12px" : "8px",
                     border: "1px solid #e2e8f0",
                   }}
                 >
                   <Typography
                     variant="subtitle2"
                     sx={{
-                      mb: 2,
+                      mb: isMobile ? 1.5 : 2,
                       color: "#475569",
                       fontWeight: 600,
+                      fontSize: isMobile ? "0.8125rem" : "0.875rem",
                     }}
                   >
                     📅 Teacher Availability (Mon to Fri):
                   </Typography>
 
+                  {/* Legend */}
                   <Box
                     sx={{
-                      mb: 2,
+                      mb: isMobile ? 1.5 : 2,
                       display: "flex",
-                      gap: 2,
+                      gap: isMobile ? 1.5 : 2,
                       flexWrap: "wrap",
                       justifyContent: "center",
                     }}
@@ -1490,14 +1957,17 @@ const ScheduleFormModal = ({
                     >
                       <Box
                         sx={{
-                          width: 12,
-                          height: 12,
+                          width: isMobile ? 10 : 12,
+                          height: isMobile ? 10 : 12,
                           borderRadius: "50%",
                           bgcolor: "#22c55e",
                         }}
                       />
                       <Typography
-                        sx={{ fontSize: "0.65rem", color: "#374151" }}
+                        sx={{
+                          fontSize: isMobile ? "0.6rem" : "0.65rem",
+                          color: "#374151",
+                        }}
                       >
                         Free
                       </Typography>
@@ -1507,14 +1977,17 @@ const ScheduleFormModal = ({
                     >
                       <Box
                         sx={{
-                          width: 12,
-                          height: 12,
+                          width: isMobile ? 10 : 12,
+                          height: isMobile ? 10 : 12,
                           borderRadius: "50%",
                           bgcolor: "#ef4444",
                         }}
                       />
                       <Typography
-                        sx={{ fontSize: "0.65rem", color: "#374151" }}
+                        sx={{
+                          fontSize: isMobile ? "0.6rem" : "0.65rem",
+                          color: "#374151",
+                        }}
                       >
                         Reserved
                       </Typography>
@@ -1524,14 +1997,17 @@ const ScheduleFormModal = ({
                     >
                       <Box
                         sx={{
-                          width: 12,
-                          height: 12,
+                          width: isMobile ? 10 : 12,
+                          height: isMobile ? 10 : 12,
                           borderRadius: "50%",
                           bgcolor: "#9ca3af",
                         }}
                       />
                       <Typography
-                        sx={{ fontSize: "0.65rem", color: "#374151" }}
+                        sx={{
+                          fontSize: isMobile ? "0.6rem" : "0.65rem",
+                          color: "#374151",
+                        }}
                       >
                         Unavailable
                       </Typography>
@@ -1539,12 +2015,18 @@ const ScheduleFormModal = ({
                   </Box>
 
                   {/* Time Grid */}
-                  <Box sx={{ display: "flex", gap: 3 }}>
-                    {/* Morning Column (7:00 AM - 1:00 PM) */}
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: isMobile ? 2 : 3,
+                      flexDirection: isMobile ? "column" : "row",
+                    }}
+                  >
+                    {/* Morning Column */}
                     <Box sx={{ flex: 1 }}>
                       <Typography
                         sx={{
-                          fontSize: "0.7rem",
+                          fontSize: isMobile ? "0.65rem" : "0.7rem",
                           fontWeight: 600,
                           mb: 1,
                           color: "#1f2937",
@@ -1580,15 +2062,15 @@ const ScheduleFormModal = ({
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              gap: 1,
+                              gap: isMobile ? 0.5 : 1,
                               mb: 0.3,
-                              minHeight: "20px",
+                              minHeight: isMobile ? "16px" : "20px",
                             }}
                           >
                             <Typography
                               sx={{
-                                fontSize: "0.65rem",
-                                minWidth: "55px",
+                                fontSize: isMobile ? "0.6rem" : "0.65rem",
+                                minWidth: isMobile ? "45px" : "55px",
                                 color: "#374151",
                                 fontFamily: "monospace",
                                 textAlign: "right",
@@ -1603,19 +2085,24 @@ const ScheduleFormModal = ({
 
                             <Box
                               sx={{
-                                width: 8,
-                                height: 8,
+                                width: isMobile ? 6 : 8,
+                                height: isMobile ? 6 : 8,
                                 borderRadius: "50%",
                                 bgcolor: dotColor,
                                 flexShrink: 0,
                               }}
                             />
 
-                            <Box sx={{ minWidth: "45px", textAlign: "left" }}>
+                            <Box
+                              sx={{
+                                minWidth: isMobile ? "35px" : "45px",
+                                textAlign: "left",
+                              }}
+                            >
                               {label && (
                                 <Typography
                                   sx={{
-                                    fontSize: "0.55rem",
+                                    fontSize: isMobile ? "0.5rem" : "0.55rem",
                                     color:
                                       availability.status === "free"
                                         ? "#059669"
@@ -1629,7 +2116,7 @@ const ScheduleFormModal = ({
                                         : availability.status === "reserved"
                                         ? "#fef2f2"
                                         : "#f9fafb",
-                                    px: 0.5,
+                                    px: isMobile ? 0.3 : 0.5,
                                     py: 0.1,
                                     borderRadius: 0.5,
                                     textDecoration:
@@ -1648,11 +2135,11 @@ const ScheduleFormModal = ({
                       })}
                     </Box>
 
-                    {/* Afternoon Column (1:00 PM - 7:00 PM) */}
+                    {/* Afternoon Column */}
                     <Box sx={{ flex: 1 }}>
                       <Typography
                         sx={{
-                          fontSize: "0.7rem",
+                          fontSize: isMobile ? "0.65rem" : "0.7rem",
                           fontWeight: 600,
                           mb: 1,
                           color: "#1f2937",
@@ -1688,15 +2175,15 @@ const ScheduleFormModal = ({
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              gap: 1,
+                              gap: isMobile ? 0.5 : 1,
                               mb: 0.3,
-                              minHeight: "20px",
+                              minHeight: isMobile ? "16px" : "20px",
                             }}
                           >
                             <Typography
                               sx={{
-                                fontSize: "0.65rem",
-                                minWidth: "55px",
+                                fontSize: isMobile ? "0.6rem" : "0.65rem",
+                                minWidth: isMobile ? "45px" : "55px",
                                 color: "#374151",
                                 fontFamily: "monospace",
                                 textAlign: "right",
@@ -1711,19 +2198,24 @@ const ScheduleFormModal = ({
 
                             <Box
                               sx={{
-                                width: 8,
-                                height: 8,
+                                width: isMobile ? 6 : 8,
+                                height: isMobile ? 6 : 8,
                                 borderRadius: "50%",
                                 bgcolor: dotColor,
                                 flexShrink: 0,
                               }}
                             />
 
-                            <Box sx={{ minWidth: "45px", textAlign: "left" }}>
+                            <Box
+                              sx={{
+                                minWidth: isMobile ? "35px" : "45px",
+                                textAlign: "left",
+                              }}
+                            >
                               {label && (
                                 <Typography
                                   sx={{
-                                    fontSize: "0.55rem",
+                                    fontSize: isMobile ? "0.5rem" : "0.55rem",
                                     color:
                                       availability.status === "free"
                                         ? "#059669"
@@ -1737,7 +2229,7 @@ const ScheduleFormModal = ({
                                         : availability.status === "reserved"
                                         ? "#fef2f2"
                                         : "#f9fafb",
-                                    px: 0.5,
+                                    px: isMobile ? 0.3 : 0.5,
                                     py: 0.1,
                                     borderRadius: 0.5,
                                     textDecoration:
@@ -1760,11 +2252,11 @@ const ScheduleFormModal = ({
                   {/* Summary */}
                   <Box
                     sx={{
-                      mt: 2,
+                      mt: isMobile ? 1.5 : 2,
                       pt: 1,
                       borderTop: "1px solid #e2e8f0",
                       display: "flex",
-                      gap: 2,
+                      gap: isMobile ? 1.5 : 2,
                       flexWrap: "wrap",
                       justifyContent: "center",
                     }}
@@ -1773,7 +2265,7 @@ const ScheduleFormModal = ({
                       variant="caption"
                       sx={{
                         color: "#059669",
-                        fontSize: "0.65rem",
+                        fontSize: isMobile ? "0.6rem" : "0.65rem",
                         fontWeight: 500,
                       }}
                     >
@@ -1784,7 +2276,7 @@ const ScheduleFormModal = ({
                       variant="caption"
                       sx={{
                         color: "#dc2626",
-                        fontSize: "0.65rem",
+                        fontSize: isMobile ? "0.6rem" : "0.65rem",
                         fontWeight: 500,
                       }}
                     >
@@ -1796,7 +2288,7 @@ const ScheduleFormModal = ({
                       variant="caption"
                       sx={{
                         color: "#6b7280",
-                        fontSize: "0.65rem",
+                        fontSize: isMobile ? "0.6rem" : "0.65rem",
                       }}
                     >
                       Total: {teacherAvailability.summary?.totalTimeSlots || 0}{" "}
@@ -1807,22 +2299,47 @@ const ScheduleFormModal = ({
               ) : null}
             </Box>
           )}
-          <FormControl fullWidth margin="normal" size="small" required>
-            <InputLabel>Day</InputLabel>
+
+          {/* Day Selection */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+            required
+          >
+            <InputLabel sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+              Day
+            </InputLabel>
             <Select
               name="day"
               value={formData.day}
               label="Day"
               onChange={handleChange}
+              sx={{
+                fontSize: isMobile ? "0.875rem" : "1rem",
+              }}
             >
               {DAYS.map((day) => (
                 <MenuItem key={day} value={day}>
-                  {day}
+                  <Typography
+                    sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                  >
+                    {day}
+                  </Typography>
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+
+          {/* Time Selection */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: isMobile ? 1.5 : 2,
+              mb: isMobile ? 1.5 : 2,
+              flexDirection: isMobile ? "column" : "row",
+            }}
+          >
             <TextField
               label="Start Time"
               name="startTime"
@@ -1831,10 +2348,16 @@ const ScheduleFormModal = ({
               onChange={handleChange}
               required
               fullWidth
-              size="small"
+              size={isMobile ? "small" : "medium"}
               InputLabelProps={{ shrink: true }}
               inputProps={{ step: 300 }}
-              sx={{ mt: 2 }}
+              sx={{
+                mt: 2,
+                fontSize: isMobile ? "0.875rem" : "1rem",
+                "& .MuiInputLabel-root": {
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                },
+              }}
             />
 
             <TextField
@@ -1845,12 +2368,20 @@ const ScheduleFormModal = ({
               onChange={handleChange}
               required
               fullWidth
-              size="small"
+              size={isMobile ? "small" : "medium"}
               InputLabelProps={{ shrink: true }}
               inputProps={{ step: 300 }}
-              sx={{ mt: 2 }}
+              sx={{
+                mt: 2,
+                fontSize: isMobile ? "0.875rem" : "1rem",
+                "& .MuiInputLabel-root": {
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                },
+              }}
             />
           </Box>
+
+          {/* Date Picker */}
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Class Date"
@@ -1863,26 +2394,55 @@ const ScheduleFormModal = ({
               slotProps={{
                 textField: {
                   fullWidth: true,
-                  size: "small",
+                  size: isMobile ? "small" : "medium",
                   required: true,
-                  sx: { mt: 2 },
+                  sx: {
+                    mt: 2,
+                    fontSize: isMobile ? "0.875rem" : "1rem",
+                    "& .MuiInputLabel-root": {
+                      fontSize: isMobile ? "0.875rem" : "1rem",
+                    },
+                  },
                 },
               }}
               minDate={new Date()}
             />
           </LocalizationProvider>
-          <FormControl fullWidth margin="normal" size="small">
-            <InputLabel>Recurring Schedule</InputLabel>
+
+          {/* Recurring Schedule */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+          >
+            <InputLabel sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+              Recurring Schedule
+            </InputLabel>
             <Select
               name="isRecurring"
               value={formData.isRecurring}
               label="Recurring Schedule"
               onChange={handleChange}
+              sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}
             >
-              <MenuItem value={true}>Yes</MenuItem>
-              <MenuItem value={false}>No</MenuItem>
+              <MenuItem value={true}>
+                <Typography
+                  sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                >
+                  Yes
+                </Typography>
+              </MenuItem>
+              <MenuItem value={false}>
+                <Typography
+                  sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                >
+                  No
+                </Typography>
+              </MenuItem>
             </Select>
           </FormControl>
+
+          {/* Recurrence Pattern */}
           {currentSchedule ? (
             <TextField
               fullWidth
@@ -1893,7 +2453,7 @@ const ScheduleFormModal = ({
                   : "Custom Days"
               }
               margin="normal"
-              size="small"
+              size={isMobile ? "small" : "medium"}
               InputProps={{
                 readOnly: true,
               }}
@@ -1901,28 +2461,49 @@ const ScheduleFormModal = ({
                 "& .MuiInputBase-input": {
                   backgroundColor: "#f8fafc",
                   color: "#64748b",
+                  fontSize: isMobile ? "0.875rem" : "1rem",
+                },
+                "& .MuiInputLabel-root": {
+                  fontSize: isMobile ? "0.875rem" : "1rem",
                 },
               }}
             />
           ) : (
-            <FormControl fullWidth margin="normal" size="small">
-              <InputLabel>Recurrence Pattern</InputLabel>
+            <FormControl
+              fullWidth
+              margin="normal"
+              size={isMobile ? "small" : "medium"}
+            >
+              <InputLabel sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+                Recurrence Pattern
+              </InputLabel>
               <Select
                 name="recurrencePattern"
                 value={formData.recurrencePattern}
                 label="Recurrence Pattern"
                 onChange={handleChange}
                 disabled={!formData.isRecurring}
+                sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}
               >
                 <MenuItem value={RECURRENCE_PATTERNS.WEEKDAYS}>
-                  Weekdays (Mon-Fri)
+                  <Typography
+                    sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                  >
+                    Weekdays (Mon-Fri)
+                  </Typography>
                 </MenuItem>
                 <MenuItem value={RECURRENCE_PATTERNS.CUSTOM}>
-                  Custom Days
+                  <Typography
+                    sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                  >
+                    Custom Days
+                  </Typography>
                 </MenuItem>
               </Select>
             </FormControl>
           )}
+
+          {/* Custom Days Selection */}
           {formData.isRecurring && formData.recurrencePattern === "custom" && (
             <>
               {currentSchedule ? (
@@ -1935,7 +2516,7 @@ const ScheduleFormModal = ({
                       : ""
                   }
                   margin="normal"
-                  size="small"
+                  size={isMobile ? "small" : "medium"}
                   InputProps={{
                     readOnly: true,
                   }}
@@ -1943,12 +2524,23 @@ const ScheduleFormModal = ({
                     "& .MuiInputBase-input": {
                       backgroundColor: "#f8fafc",
                       color: "#64748b",
+                      fontSize: isMobile ? "0.875rem" : "1rem",
+                    },
+                    "& .MuiInputLabel-root": {
+                      fontSize: isMobile ? "0.875rem" : "1rem",
                     },
                   }}
                 />
               ) : (
-                <FormControl fullWidth margin="normal" size="small" required>
-                  <InputLabel>Select Days</InputLabel>
+                <FormControl
+                  fullWidth
+                  margin="normal"
+                  size={isMobile ? "small" : "medium"}
+                  required
+                >
+                  <InputLabel sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+                    Select Days
+                  </InputLabel>
                   <Select
                     multiple
                     name="customDays"
@@ -1969,14 +2561,27 @@ const ScheduleFormModal = ({
                     renderValue={(selected) => (
                       <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                         {selected.map((day) => (
-                          <Chip key={day} label={day} size="small" />
+                          <Chip
+                            key={day}
+                            label={day}
+                            size={isMobile ? "small" : "medium"}
+                            sx={{
+                              fontSize: isMobile ? "0.6875rem" : "0.75rem",
+                              height: isMobile ? "20px" : "24px",
+                            }}
+                          />
                         ))}
                       </Box>
                     )}
+                    sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}
                   >
                     {DAYS.map((day) => (
                       <MenuItem key={day} value={day}>
-                        {day}
+                        <Typography
+                          sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                        >
+                          {day}
+                        </Typography>
                       </MenuItem>
                     ))}
                   </Select>
@@ -1985,7 +2590,7 @@ const ScheduleFormModal = ({
                     sx={{
                       mt: 1,
                       color: "text.secondary",
-                      fontSize: "0.75rem",
+                      fontSize: isMobile ? "0.6875rem" : "0.75rem",
                     }}
                   >
                     Next schedule will be created on the next selected day after
@@ -1995,36 +2600,80 @@ const ScheduleFormModal = ({
               )}
             </>
           )}
+
+          {/* Reschedule Type (for edit mode) */}
           {currentSchedule && (
-            <FormControl fullWidth margin="normal" size="small" required>
-              <InputLabel>Reschedule Type</InputLabel>
+            <FormControl
+              fullWidth
+              margin="normal"
+              size={isMobile ? "small" : "medium"}
+              required
+            >
+              <InputLabel sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}>
+                Reschedule Type
+              </InputLabel>
               <Select
                 name="rescheduleType"
                 value={formData.rescheduleType}
                 label="Reschedule Type"
                 onChange={handleChange}
+                sx={{ fontSize: isMobile ? "0.875rem" : "1rem" }}
               >
-                <MenuItem value="temporary">Temporary</MenuItem>
-                <MenuItem value="permanent">Permanent</MenuItem>
+                <MenuItem value="temporary">
+                  <Typography
+                    sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                  >
+                    Temporary
+                  </Typography>
+                </MenuItem>
+                <MenuItem value="permanent">
+                  <Typography
+                    sx={{ fontSize: isMobile ? "0.8125rem" : "0.875rem" }}
+                  >
+                    Permanent
+                  </Typography>
+                </MenuItem>
               </Select>
             </FormControl>
           )}
+
+          {/* Action Buttons */}
           <Box
             sx={{
-              mt: 3,
+              mt: isMobile ? 2 : 3,
               display: "flex",
               justifyContent: "flex-end",
-              gap: 2,
+              gap: isMobile ? 1.5 : 2,
+              pt: isMobile ? 1.5 : 2,
+              borderTop: "1px solid #e2e8f0",
+              flexDirection: isMobile ? "column-reverse" : "row",
             }}
           >
             <button
               className="clear-filters-btn"
               onClick={() => setShowModal(false)}
               disabled={isLoading}
+              style={{
+                fontSize: isMobile ? "0.875rem" : "1rem",
+                padding: isMobile ? "12px" : "8px 16px",
+                width: isMobile ? "100%" : "auto",
+              }}
             >
               Cancel
             </button>
-            <button className="add-btn" type="submit" disabled={isLoading}>
+            <button
+              className="add-btn"
+              type="submit"
+              disabled={isLoading}
+              style={{
+                fontSize: isMobile ? "0.875rem" : "1rem",
+                padding: isMobile ? "12px" : "8px 16px",
+                width: isMobile ? "100%" : "auto",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               {isLoading ? (
                 <div className="loading-spinner"></div>
               ) : currentSchedule ? (
@@ -2507,7 +3156,6 @@ const AdminScheduleView = () => {
           studentId: student.profile?.studentId,
         },
       }));
-      console.log(studentsWithDetails);
       setStudents(studentsWithDetails);
     } catch (error) {
       showNotification(
@@ -3285,7 +3933,13 @@ const AdminScheduleView = () => {
             isClearable={true}
             dateFormat="dd/MM/yyyy"
             customInput={
-              <div className="date-input-wrapper">
+              <div
+                className="date-input-wrapper"
+                style={{
+                  position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
+                }}
+              >
                 {window.innerWidth >= 768 && (
                   <FaFilter className="filter-icon" />
                 )}
@@ -3853,6 +4507,8 @@ const AdminScheduleView = () => {
         isLoading={isDeleting}
         type="schedule"
         data={scheduleToDelete}
+        formatTableDate={formatTableDate}
+        convertTo12Hour={convertTo12Hour}
       />
       <DeleteSchedulesModal
         showModal={showDeleteSchedulesModal}

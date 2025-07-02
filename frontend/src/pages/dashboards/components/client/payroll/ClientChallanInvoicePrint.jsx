@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
-import "../../../../..//styles/components/ChallanInvoicePrint.css";
+import "../../../../../styles/components/ChallanInvoicePrint.css";
 import Logo from "../../../../../assets/logo.png";
 import { CircularProgress } from "@mui/material";
 
@@ -39,7 +39,6 @@ const ClientChallanInvoicePrint = () => {
             },
           }
         );
-        console.log(response.data.data);
         setChallanData(response.data.data);
         setLoading(false);
       } catch (error) {

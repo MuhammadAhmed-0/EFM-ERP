@@ -1256,7 +1256,7 @@ const SalaryInvoiceManagement = () => {
       showNotification(
         response.data.msg || "All pending invoices marked as paid successfully"
       );
-      fetchInvoices(); // Refresh the data
+      fetchInvoices(); 
       setShowPaidAllModal(false);
       setPaidAllMonth("");
     } catch (error) {

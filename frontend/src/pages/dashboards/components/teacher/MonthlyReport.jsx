@@ -1,4 +1,4 @@
-import  { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import "../../../../styles/components/MonthlyReport.css";
 import Logo from "../../../../assets/logo.png";
 import { FaGlobe, FaPhoneAlt, FaPrint, FaSave } from "react-icons/fa";
@@ -71,13 +71,16 @@ const MonthlyReport = () => {
       setIsViewMode(true);
       fetchReport(loadedReportId);
     } else {
-      setFormData((prevData) => ({
-        ...prevData,
+      const urlParams = {
         familyName: params.get("familyName") || "",
         studentName: params.get("studentName") || "",
         grade: params.get("grade") || "",
         subject: params.get("subject") || "",
         tutorName: params.get("tutorName") || "",
+      };
+      setFormData((prevData) => ({
+        ...prevData,
+        ...urlParams,
       }));
       const initialRows = Array.from({ length: 5 }, (_, index) => ({
         id: `initial-row-${Date.now()}-${index}`,
@@ -108,7 +111,6 @@ const MonthlyReport = () => {
       });
 
       const report = response.data.report;
-      console.log(report);
       setReportId(report._id);
       setFormData({
         familyName: report.familyName,

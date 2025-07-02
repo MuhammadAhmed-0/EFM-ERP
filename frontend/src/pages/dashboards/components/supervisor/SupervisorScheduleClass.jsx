@@ -14,6 +14,8 @@ import {
   Chip,
   Tooltip,
   Autocomplete,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import ReactDatePicker from "react-datepicker";
@@ -78,9 +80,30 @@ const ScheduleFormModal = ({
   teachers,
   isLoading,
 }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const isTablet = useMediaQuery(theme.breakpoints.between("md", "lg"));
+
   const [teacherAvailability, setTeacherAvailability] = useState(null);
   const [loadingAvailability, setLoadingAvailability] = useState(false);
+
   const BASE_URL = import.meta.env.VITE_BASE_URL;
+
+  const DAYS = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+  const RECURRENCE_PATTERNS = {
+    WEEKDAYS: "weekdays",
+    CUSTOM: "custom",
+  };
+
   const convertTo12Hour = (time24) => {
     if (!time24) return "";
 
@@ -264,6 +287,7 @@ const ScheduleFormModal = ({
   }, [formData.teacher, showModal]);
 
   if (!formData) return null;
+
   const getFilteredTeachers = () => {
     if (!formData.subject) {
       return teachers.filter((teacher) => teacher.isActive !== false);
@@ -288,15 +312,94 @@ const ScheduleFormModal = ({
     return `${teacher.staffId || ""} - ${teacher.name}${subjectName}`;
   };
 
+  const getResponsiveModalStyle = () => ({
+    ...getModalStyles(),
+    width: isSmallMobile
+      ? "98vw"
+      : isMobile
+      ? "95vw"
+      : isTablet
+      ? "85vw"
+      : "900px",
+    maxWidth: isSmallMobile
+      ? "100%"
+      : isMobile
+      ? "500px"
+      : isTablet
+      ? "700px"
+      : "900px",
+    maxHeight: isMobile ? "95vh" : "90vh",
+    borderRadius: isSmallMobile ? "12px" : isMobile ? "16px" : "12px",
+    padding: isSmallMobile ? "12px" : isMobile ? "16px" : "24px",
+    overflow: "auto",
+    margin: isMobile ? "8px" : "16px",
+  });
+
   return (
     <Modal open={showModal} onClose={() => !isLoading && setShowModal(false)}>
-      <Box sx={getModalStyles()}>
-        <Typography variant="h6" sx={{ mb: 2 }}>
-          {currentSchedule ? "Edit Schedule" : "Add New Schedule"}
-        </Typography>
+      <Box sx={getResponsiveModalStyle()}>
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: isMobile ? "flex-start" : "center",
+            mb: isSmallMobile ? 2 : isMobile ? 2.5 : 3,
+            borderBottom: "1px solid #e2e8f0",
+            pb: isSmallMobile ? 1 : isMobile ? 1.5 : 2,
+            flexDirection: isMobile ? "column" : "row",
+            gap: isMobile ? 1 : 0,
+          }}
+        >
+          <Typography
+            variant="h6"
+            sx={{
+              fontSize: isSmallMobile
+                ? "1rem"
+                : isMobile
+                ? "1.125rem"
+                : "1.25rem",
+              fontWeight: 600,
+              color: "#1e293b",
+            }}
+          >
+            {currentSchedule ? "Edit Schedule" : "Add New Schedule"}
+          </Typography>
+
+          <button
+            onClick={() => setShowModal(false)}
+            disabled={isLoading}
+            style={{
+              border: "none",
+              background: "none",
+              fontSize: isSmallMobile
+                ? "1.125rem"
+                : isMobile
+                ? "1.25rem"
+                : "1.5rem",
+              cursor: "pointer",
+              color: "#64748b",
+              padding: isSmallMobile ? "2px" : isMobile ? "4px" : "8px",
+              alignSelf: isMobile ? "flex-end" : "auto",
+              borderRadius: isMobile ? "50%" : "4px",
+              minWidth: isSmallMobile ? "24px" : isMobile ? "28px" : "auto",
+              height: isSmallMobile ? "24px" : isMobile ? "28px" : "auto",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            ×
+          </button>
+        </Box>
 
         <form onSubmit={handleSubmit}>
-          <FormControl fullWidth margin="normal" size="small">
+          {/* Students Selection */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+          >
             <Autocomplete
               multiple
               id="students-autocomplete"
@@ -340,12 +443,27 @@ const ScheduleFormModal = ({
                   {...params}
                   label="Students (Active Only)"
                   required={false}
-                  size="small"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    "& .MuiInputLabel-root": {
+                      fontSize: isSmallMobile
+                        ? "0.8125rem"
+                        : isMobile
+                        ? "0.875rem"
+                        : "1rem",
+                    },
+                    "& .MuiInputBase-input": {
+                      fontSize: isSmallMobile
+                        ? "0.8125rem"
+                        : isMobile
+                        ? "0.875rem"
+                        : "1rem",
+                    },
+                  }}
                 />
               )}
               renderOption={(props, option) => {
                 const { key, ...restProps } = props;
-
                 const studentId =
                   option.profile?.studentId || option.studentId || "";
                 const studentName = option.name || "";
@@ -360,7 +478,17 @@ const ScheduleFormModal = ({
                         width: "100%",
                       }}
                     >
-                      <Typography variant="body2" sx={{ fontWeight: 500 }}>
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          fontWeight: 500,
+                          fontSize: isSmallMobile
+                            ? "0.75rem"
+                            : isMobile
+                            ? "0.8125rem"
+                            : "0.875rem",
+                        }}
+                      >
                         {`${studentId} - ${studentName}`}
                       </Typography>
                       {clientInfo &&
@@ -370,7 +498,11 @@ const ScheduleFormModal = ({
                             variant="caption"
                             sx={{
                               color: "#333",
-                              fontSize: "0.85rem",
+                              fontSize: isSmallMobile
+                                ? "0.6875rem"
+                                : isMobile
+                                ? "0.75rem"
+                                : "0.85rem",
                               marginTop: "2px",
                               fontWeight: "600",
                             }}
@@ -386,12 +518,25 @@ const ScheduleFormModal = ({
               disabled={!!currentSchedule}
               sx={{
                 "& .MuiAutocomplete-tag": {
-                  maxWidth: "400px",
+                  maxWidth: isMobile ? "200px" : "400px",
+                  fontSize: isSmallMobile
+                    ? "0.6875rem"
+                    : isMobile
+                    ? "0.75rem"
+                    : "0.875rem",
                 },
               }}
+              size={isMobile ? "small" : "medium"}
             />
           </FormControl>
-          <FormControl fullWidth margin="normal" size="small" required>
+
+          {/* Subject Selection */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+            required
+          >
             <Autocomplete
               id="subject-autocomplete"
               options={
@@ -419,13 +564,41 @@ const ScheduleFormModal = ({
                 });
               }}
               renderInput={(params) => (
-                <TextField {...params} label="Subject" required size="small" />
+                <TextField
+                  {...params}
+                  label="Subject"
+                  required
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    "& .MuiInputLabel-root": {
+                      fontSize: isSmallMobile
+                        ? "0.8125rem"
+                        : isMobile
+                        ? "0.875rem"
+                        : "1rem",
+                    },
+                    "& .MuiInputBase-input": {
+                      fontSize: isSmallMobile
+                        ? "0.8125rem"
+                        : isMobile
+                        ? "0.875rem"
+                        : "1rem",
+                    },
+                  }}
+                />
               )}
               disabled={!(formData.students && formData.students.length > 0)}
+              size={isMobile ? "small" : "medium"}
             />
           </FormControl>
 
-          <FormControl fullWidth margin="normal" size="small" required>
+          {/* Teacher Selection */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+            required
+          >
             <Autocomplete
               id="teacher-autocomplete"
               options={getFilteredTeachers()}
@@ -448,24 +621,63 @@ const ScheduleFormModal = ({
                   {...params}
                   label="Active Teachers Only"
                   required
-                  size="small"
+                  size={isMobile ? "small" : "medium"}
+                  sx={{
+                    "& .MuiInputLabel-root": {
+                      fontSize: isSmallMobile
+                        ? "0.8125rem"
+                        : isMobile
+                        ? "0.875rem"
+                        : "1rem",
+                    },
+                    "& .MuiInputBase-input": {
+                      fontSize: isSmallMobile
+                        ? "0.8125rem"
+                        : isMobile
+                        ? "0.875rem"
+                        : "1rem",
+                    },
+                  }}
                 />
               )}
               renderOption={(props, option) => {
                 const { key, ...restProps } = props;
                 return (
                   <li key={key} {...restProps}>
-                    {getTeacherDisplayName(option)}
-                    <span
-                      style={{
-                        marginLeft: "8px",
-                        color: "#22c55e",
-                        fontSize: "0.75rem",
-                        fontWeight: "500",
+                    <Box
+                      sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        width: "100%",
                       }}
                     >
-                      ✓ Active
-                    </span>
+                      <Typography
+                        sx={{
+                          fontSize: isSmallMobile
+                            ? "0.75rem"
+                            : isMobile
+                            ? "0.8125rem"
+                            : "0.875rem",
+                          flex: 1,
+                        }}
+                      >
+                        {getTeacherDisplayName(option)}
+                      </Typography>
+                      <Typography
+                        sx={{
+                          marginLeft: "8px",
+                          color: "#22c55e",
+                          fontSize: isSmallMobile
+                            ? "0.625rem"
+                            : isMobile
+                            ? "0.6875rem"
+                            : "0.75rem",
+                          fontWeight: "500",
+                        }}
+                      >
+                        ✓ Active
+                      </Typography>
+                    </Box>
                   </li>
                 );
               }}
@@ -475,25 +687,42 @@ const ScheduleFormModal = ({
                   ? "Please select a subject first"
                   : "No active teachers found for this subject"
               }
+              size={isMobile ? "small" : "medium"}
             />
           </FormControl>
+
+          {/* Teacher Availability Section */}
           {formData.teacher && (
-            <Box sx={{ mt: 2, mb: 2 }}>
+            <Box
+              sx={{
+                mt: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
+                mb: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
+              }}
+            >
               {loadingAvailability ? (
                 <Box
                   sx={{
-                    p: 2,
+                    p: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
                     bgcolor: "#f8fafc",
-                    borderRadius: 1,
+                    borderRadius: isSmallMobile
+                      ? "8px"
+                      : isMobile
+                      ? "12px"
+                      : "8px",
                     border: "1px solid #e2e8f0",
                   }}
                 >
                   <Typography
                     variant="subtitle2"
                     sx={{
-                      mb: 2,
+                      mb: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
                       color: "#475569",
                       fontWeight: 600,
+                      fontSize: isSmallMobile
+                        ? "0.75rem"
+                        : isMobile
+                        ? "0.8125rem"
+                        : "0.875rem",
                     }}
                   >
                     📅 Teacher Availability (Mon to Fri):
@@ -504,28 +733,46 @@ const ScheduleFormModal = ({
                       display: "flex",
                       alignItems: "center",
                       gap: 1,
-                      mb: 2,
+                      mb: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
                     }}
                   >
-                    <CircularProgress size={16} sx={{ color: "#6b7280" }} />
+                    <CircularProgress
+                      size={isSmallMobile ? 12 : isMobile ? 14 : 16}
+                      sx={{ color: "#6b7280" }}
+                    />
                     <Typography
                       variant="body2"
-                      sx={{ color: "#6b7280", fontSize: "0.75rem" }}
+                      sx={{
+                        color: "#6b7280",
+                        fontSize: isSmallMobile
+                          ? "0.6875rem"
+                          : isMobile
+                          ? "0.75rem"
+                          : "0.75rem",
+                      }}
                     >
                       Analyzing teacher's schedule...
                     </Typography>
                   </Box>
 
+                  {/* Loading skeleton */}
                   {[1, 2, 3, 4].map((dayIndex) => (
-                    <Box key={dayIndex} sx={{ mb: 2 }}>
+                    <Box
+                      key={dayIndex}
+                      sx={{ mb: isSmallMobile ? 1.5 : isMobile ? 2 : 2 }}
+                    >
                       <Box
                         sx={{
-                          height: 14,
+                          height: isSmallMobile ? 10 : isMobile ? 12 : 14,
                           bgcolor: "#cbd5e1",
                           borderRadius: 1,
                           mb: 1,
                           width: `${50 + dayIndex * 8}%`,
-                          maxWidth: "200px",
+                          maxWidth: isSmallMobile
+                            ? "120px"
+                            : isMobile
+                            ? "150px"
+                            : "200px",
                           animation: "pulse 1.5s ease-in-out infinite",
                           animationDelay: `${dayIndex * 0.1}s`,
                         }}
@@ -541,8 +788,8 @@ const ScheduleFormModal = ({
                         >
                           <Box
                             sx={{
-                              width: 8,
-                              height: 8,
+                              width: isSmallMobile ? 6 : isMobile ? 7 : 8,
+                              height: isSmallMobile ? 6 : isMobile ? 7 : 8,
                               borderRadius: "50%",
                               bgcolor: "#86efac",
                               flexShrink: 0,
@@ -550,49 +797,21 @@ const ScheduleFormModal = ({
                           />
                           <Box
                             sx={{
-                              height: 8,
+                              height: isSmallMobile ? 6 : isMobile ? 7 : 8,
                               bgcolor: "#d1d5db",
                               borderRadius: 1,
                               width: `${60 + dayIndex * 10}%`,
-                              maxWidth: "300px",
+                              maxWidth: isSmallMobile
+                                ? "180px"
+                                : isMobile
+                                ? "220px"
+                                : "300px",
                               animation: "pulse 1.5s ease-in-out infinite",
                               animationDelay: `${dayIndex * 0.1 + 0.2}s`,
                             }}
                           />
                         </Box>
                       </Box>
-                      {dayIndex % 2 === 0 && (
-                        <Box sx={{ pl: 1 }}>
-                          <Box
-                            sx={{
-                              display: "flex",
-                              alignItems: "center",
-                              gap: 1,
-                            }}
-                          >
-                            <Box
-                              sx={{
-                                width: 8,
-                                height: 8,
-                                borderRadius: "50%",
-                                bgcolor: "#fca5a5",
-                                flexShrink: 0,
-                              }}
-                            />
-                            <Box
-                              sx={{
-                                height: 8,
-                                bgcolor: "#d1d5db",
-                                borderRadius: 1,
-                                width: `${40 + dayIndex * 5}%`,
-                                maxWidth: "250px",
-                                animation: "pulse 1.5s ease-in-out infinite",
-                                animationDelay: `${dayIndex * 0.1 + 0.4}s`,
-                              }}
-                            />
-                          </Box>
-                        </Box>
-                      )}
                     </Box>
                   ))}
                 </Box>
@@ -601,28 +820,38 @@ const ScheduleFormModal = ({
                   teacherAvailability.reservedSlots) ? (
                 <Box
                   sx={{
-                    p: 2,
+                    p: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
                     bgcolor: "#f8fafc",
-                    borderRadius: 1,
+                    borderRadius: isSmallMobile
+                      ? "8px"
+                      : isMobile
+                      ? "12px"
+                      : "8px",
                     border: "1px solid #e2e8f0",
                   }}
                 >
                   <Typography
                     variant="subtitle2"
                     sx={{
-                      mb: 2,
+                      mb: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
                       color: "#475569",
                       fontWeight: 600,
+                      fontSize: isSmallMobile
+                        ? "0.75rem"
+                        : isMobile
+                        ? "0.8125rem"
+                        : "0.875rem",
                     }}
                   >
                     📅 Teacher Availability (Mon to Fri):
                   </Typography>
 
+                  {/* Legend */}
                   <Box
                     sx={{
-                      mb: 2,
+                      mb: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
                       display: "flex",
-                      gap: 2,
+                      gap: isSmallMobile ? 1 : isMobile ? 1.5 : 2,
                       flexWrap: "wrap",
                       justifyContent: "center",
                     }}
@@ -632,14 +861,21 @@ const ScheduleFormModal = ({
                     >
                       <Box
                         sx={{
-                          width: 12,
-                          height: 12,
+                          width: isSmallMobile ? 8 : isMobile ? 10 : 12,
+                          height: isSmallMobile ? 8 : isMobile ? 10 : 12,
                           borderRadius: "50%",
                           bgcolor: "#22c55e",
                         }}
                       />
                       <Typography
-                        sx={{ fontSize: "0.65rem", color: "#374151" }}
+                        sx={{
+                          fontSize: isSmallMobile
+                            ? "0.6rem"
+                            : isMobile
+                            ? "0.625rem"
+                            : "0.65rem",
+                          color: "#374151",
+                        }}
                       >
                         Free
                       </Typography>
@@ -649,14 +885,21 @@ const ScheduleFormModal = ({
                     >
                       <Box
                         sx={{
-                          width: 12,
-                          height: 12,
+                          width: isSmallMobile ? 8 : isMobile ? 10 : 12,
+                          height: isSmallMobile ? 8 : isMobile ? 10 : 12,
                           borderRadius: "50%",
                           bgcolor: "#ef4444",
                         }}
                       />
                       <Typography
-                        sx={{ fontSize: "0.65rem", color: "#374151" }}
+                        sx={{
+                          fontSize: isSmallMobile
+                            ? "0.6rem"
+                            : isMobile
+                            ? "0.625rem"
+                            : "0.65rem",
+                          color: "#374151",
+                        }}
                       >
                         Reserved
                       </Typography>
@@ -666,14 +909,21 @@ const ScheduleFormModal = ({
                     >
                       <Box
                         sx={{
-                          width: 12,
-                          height: 12,
+                          width: isSmallMobile ? 8 : isMobile ? 10 : 12,
+                          height: isSmallMobile ? 8 : isMobile ? 10 : 12,
                           borderRadius: "50%",
                           bgcolor: "#9ca3af",
                         }}
                       />
                       <Typography
-                        sx={{ fontSize: "0.65rem", color: "#374151" }}
+                        sx={{
+                          fontSize: isSmallMobile
+                            ? "0.6rem"
+                            : isMobile
+                            ? "0.625rem"
+                            : "0.65rem",
+                          color: "#374151",
+                        }}
                       >
                         Unavailable
                       </Typography>
@@ -681,12 +931,22 @@ const ScheduleFormModal = ({
                   </Box>
 
                   {/* Time Grid */}
-                  <Box sx={{ display: "flex", gap: 3 }}>
+                  <Box
+                    sx={{
+                      display: "flex",
+                      gap: isSmallMobile ? 1.5 : isMobile ? 2 : 3,
+                      flexDirection: isMobile ? "column" : "row",
+                    }}
+                  >
                     {/* Morning Column */}
                     <Box sx={{ flex: 1 }}>
                       <Typography
                         sx={{
-                          fontSize: "0.7rem",
+                          fontSize: isSmallMobile
+                            ? "0.6rem"
+                            : isMobile
+                            ? "0.65rem"
+                            : "0.7rem",
                           fontWeight: 600,
                           mb: 1,
                           color: "#1f2937",
@@ -722,15 +982,27 @@ const ScheduleFormModal = ({
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              gap: 1,
+                              gap: isSmallMobile ? 0.5 : isMobile ? 0.75 : 1,
                               mb: 0.3,
-                              minHeight: "20px",
+                              minHeight: isSmallMobile
+                                ? "16px"
+                                : isMobile
+                                ? "18px"
+                                : "20px",
                             }}
                           >
                             <Typography
                               sx={{
-                                fontSize: "0.65rem",
-                                minWidth: "80px",
+                                fontSize: isSmallMobile
+                                  ? "0.55rem"
+                                  : isMobile
+                                  ? "0.6rem"
+                                  : "0.65rem",
+                                minWidth: isSmallMobile
+                                  ? "60px"
+                                  : isMobile
+                                  ? "70px"
+                                  : "80px",
                                 color: "#374151",
                                 fontFamily: "monospace",
                                 textAlign: "right",
@@ -745,19 +1017,32 @@ const ScheduleFormModal = ({
 
                             <Box
                               sx={{
-                                width: 8,
-                                height: 8,
+                                width: isSmallMobile ? 6 : isMobile ? 7 : 8,
+                                height: isSmallMobile ? 6 : isMobile ? 7 : 8,
                                 borderRadius: "50%",
                                 bgcolor: dotColor,
                                 flexShrink: 0,
                               }}
                             />
 
-                            <Box sx={{ minWidth: "45px", textAlign: "left" }}>
+                            <Box
+                              sx={{
+                                minWidth: isSmallMobile
+                                  ? "30px"
+                                  : isMobile
+                                  ? "35px"
+                                  : "45px",
+                                textAlign: "left",
+                              }}
+                            >
                               {label && (
                                 <Typography
                                   sx={{
-                                    fontSize: "0.55rem",
+                                    fontSize: isSmallMobile
+                                      ? "0.5rem"
+                                      : isMobile
+                                      ? "0.525rem"
+                                      : "0.55rem",
                                     color:
                                       availability.status === "free"
                                         ? "#059669"
@@ -771,7 +1056,11 @@ const ScheduleFormModal = ({
                                         : availability.status === "reserved"
                                         ? "#fef2f2"
                                         : "#f9fafb",
-                                    px: 0.5,
+                                    px: isSmallMobile
+                                      ? 0.25
+                                      : isMobile
+                                      ? 0.3
+                                      : 0.5,
                                     py: 0.1,
                                     borderRadius: 0.5,
                                     textDecoration:
@@ -794,7 +1083,11 @@ const ScheduleFormModal = ({
                     <Box sx={{ flex: 1 }}>
                       <Typography
                         sx={{
-                          fontSize: "0.7rem",
+                          fontSize: isSmallMobile
+                            ? "0.6rem"
+                            : isMobile
+                            ? "0.65rem"
+                            : "0.7rem",
                           fontWeight: 600,
                           mb: 1,
                           color: "#1f2937",
@@ -830,15 +1123,27 @@ const ScheduleFormModal = ({
                               display: "flex",
                               alignItems: "center",
                               justifyContent: "center",
-                              gap: 1,
+                              gap: isSmallMobile ? 0.5 : isMobile ? 0.75 : 1,
                               mb: 0.3,
-                              minHeight: "20px",
+                              minHeight: isSmallMobile
+                                ? "16px"
+                                : isMobile
+                                ? "18px"
+                                : "20px",
                             }}
                           >
                             <Typography
                               sx={{
-                                fontSize: "0.65rem",
-                                minWidth: "80px",
+                                fontSize: isSmallMobile
+                                  ? "0.55rem"
+                                  : isMobile
+                                  ? "0.6rem"
+                                  : "0.65rem",
+                                minWidth: isSmallMobile
+                                  ? "60px"
+                                  : isMobile
+                                  ? "70px"
+                                  : "80px",
                                 color: "#374151",
                                 fontFamily: "monospace",
                                 textAlign: "right",
@@ -853,19 +1158,32 @@ const ScheduleFormModal = ({
 
                             <Box
                               sx={{
-                                width: 8,
-                                height: 8,
+                                width: isSmallMobile ? 6 : isMobile ? 7 : 8,
+                                height: isSmallMobile ? 6 : isMobile ? 7 : 8,
                                 borderRadius: "50%",
                                 bgcolor: dotColor,
                                 flexShrink: 0,
                               }}
                             />
 
-                            <Box sx={{ minWidth: "45px", textAlign: "left" }}>
+                            <Box
+                              sx={{
+                                minWidth: isSmallMobile
+                                  ? "30px"
+                                  : isMobile
+                                  ? "35px"
+                                  : "45px",
+                                textAlign: "left",
+                              }}
+                            >
                               {label && (
                                 <Typography
                                   sx={{
-                                    fontSize: "0.55rem",
+                                    fontSize: isSmallMobile
+                                      ? "0.5rem"
+                                      : isMobile
+                                      ? "0.525rem"
+                                      : "0.55rem",
                                     color:
                                       availability.status === "free"
                                         ? "#059669"
@@ -879,7 +1197,11 @@ const ScheduleFormModal = ({
                                         : availability.status === "reserved"
                                         ? "#fef2f2"
                                         : "#f9fafb",
-                                    px: 0.5,
+                                    px: isSmallMobile
+                                      ? 0.25
+                                      : isMobile
+                                      ? 0.3
+                                      : 0.5,
                                     py: 0.1,
                                     borderRadius: 0.5,
                                     textDecoration:
@@ -902,11 +1224,11 @@ const ScheduleFormModal = ({
                   {/* Summary */}
                   <Box
                     sx={{
-                      mt: 2,
+                      mt: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
                       pt: 1,
                       borderTop: "1px solid #e2e8f0",
                       display: "flex",
-                      gap: 2,
+                      gap: isSmallMobile ? 1 : isMobile ? 1.5 : 2,
                       flexWrap: "wrap",
                       justifyContent: "center",
                     }}
@@ -915,7 +1237,11 @@ const ScheduleFormModal = ({
                       variant="caption"
                       sx={{
                         color: "#059669",
-                        fontSize: "0.65rem",
+                        fontSize: isSmallMobile
+                          ? "0.6rem"
+                          : isMobile
+                          ? "0.625rem"
+                          : "0.65rem",
                         fontWeight: 500,
                       }}
                     >
@@ -926,7 +1252,11 @@ const ScheduleFormModal = ({
                       variant="caption"
                       sx={{
                         color: "#dc2626",
-                        fontSize: "0.65rem",
+                        fontSize: isSmallMobile
+                          ? "0.6rem"
+                          : isMobile
+                          ? "0.625rem"
+                          : "0.65rem",
                         fontWeight: 500,
                       }}
                     >
@@ -938,7 +1268,11 @@ const ScheduleFormModal = ({
                       variant="caption"
                       sx={{
                         color: "#6b7280",
-                        fontSize: "0.65rem",
+                        fontSize: isSmallMobile
+                          ? "0.6rem"
+                          : isMobile
+                          ? "0.625rem"
+                          : "0.65rem",
                       }}
                     >
                       Total: {teacherAvailability.summary?.totalTimeSlots || 0}{" "}
@@ -949,22 +1283,65 @@ const ScheduleFormModal = ({
               ) : null}
             </Box>
           )}
-          <FormControl fullWidth margin="normal" size="small" required>
-            <InputLabel>Day</InputLabel>
+
+          {/* Day Selection */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+            required
+          >
+            <InputLabel
+              sx={{
+                fontSize: isSmallMobile
+                  ? "0.8125rem"
+                  : isMobile
+                  ? "0.875rem"
+                  : "1rem",
+              }}
+            >
+              Day
+            </InputLabel>
             <Select
               name="day"
               value={formData.day}
               label="Day"
               onChange={handleChange}
+              sx={{
+                fontSize: isSmallMobile
+                  ? "0.8125rem"
+                  : isMobile
+                  ? "0.875rem"
+                  : "1rem",
+              }}
             >
               {DAYS.map((day) => (
                 <MenuItem key={day} value={day}>
-                  {day}
+                  <Typography
+                    sx={{
+                      fontSize: isSmallMobile
+                        ? "0.75rem"
+                        : isMobile
+                        ? "0.8125rem"
+                        : "0.875rem",
+                    }}
+                  >
+                    {day}
+                  </Typography>
                 </MenuItem>
               ))}
             </Select>
           </FormControl>
-          <Box sx={{ display: "flex", gap: 2, mb: 2 }}>
+
+          {/* Time Selection */}
+          <Box
+            sx={{
+              display: "flex",
+              gap: isSmallMobile ? 1 : isMobile ? 1.5 : 2,
+              mb: isSmallMobile ? 1.5 : isMobile ? 2 : 2,
+              flexDirection: isMobile ? "column" : "row",
+            }}
+          >
             <TextField
               label="Start Time"
               name="startTime"
@@ -973,10 +1350,26 @@ const ScheduleFormModal = ({
               onChange={handleChange}
               required
               fullWidth
-              size="small"
+              size={isMobile ? "small" : "medium"}
               InputLabelProps={{ shrink: true }}
               inputProps={{ step: 300 }}
-              sx={{ mt: 2 }}
+              sx={{
+                mt: 2,
+                "& .MuiInputLabel-root": {
+                  fontSize: isSmallMobile
+                    ? "0.8125rem"
+                    : isMobile
+                    ? "0.875rem"
+                    : "1rem",
+                },
+                "& .MuiInputBase-input": {
+                  fontSize: isSmallMobile
+                    ? "0.8125rem"
+                    : isMobile
+                    ? "0.875rem"
+                    : "1rem",
+                },
+              }}
             />
 
             <TextField
@@ -987,12 +1380,30 @@ const ScheduleFormModal = ({
               onChange={handleChange}
               required
               fullWidth
-              size="small"
+              size={isMobile ? "small" : "medium"}
               InputLabelProps={{ shrink: true }}
               inputProps={{ step: 300 }}
-              sx={{ mt: 2 }}
+              sx={{
+                mt: 2,
+                "& .MuiInputLabel-root": {
+                  fontSize: isSmallMobile
+                    ? "0.8125rem"
+                    : isMobile
+                    ? "0.875rem"
+                    : "1rem",
+                },
+                "& .MuiInputBase-input": {
+                  fontSize: isSmallMobile
+                    ? "0.8125rem"
+                    : isMobile
+                    ? "0.875rem"
+                    : "1rem",
+                },
+              }}
             />
           </Box>
+
+          {/* Date Picker */}
           <LocalizationProvider dateAdapter={AdapterDateFns}>
             <DatePicker
               label="Class Date"
@@ -1005,47 +1416,169 @@ const ScheduleFormModal = ({
               slotProps={{
                 textField: {
                   fullWidth: true,
-                  size: "small",
+                  size: isMobile ? "small" : "medium",
                   required: true,
-                  sx: { mt: 2 },
+                  sx: {
+                    mt: 2,
+                    "& .MuiInputLabel-root": {
+                      fontSize: isSmallMobile
+                        ? "0.8125rem"
+                        : isMobile
+                        ? "0.875rem"
+                        : "1rem",
+                    },
+                    "& .MuiInputBase-input": {
+                      fontSize: isSmallMobile
+                        ? "0.8125rem"
+                        : isMobile
+                        ? "0.875rem"
+                        : "1rem",
+                    },
+                  },
                 },
               }}
               minDate={new Date()}
             />
           </LocalizationProvider>
-          <FormControl fullWidth margin="normal" size="small">
-            <InputLabel>Recurring Schedule</InputLabel>
+
+          {/* Recurring Schedule */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+          >
+            <InputLabel
+              sx={{
+                fontSize: isSmallMobile
+                  ? "0.8125rem"
+                  : isMobile
+                  ? "0.875rem"
+                  : "1rem",
+              }}
+            >
+              Recurring Schedule
+            </InputLabel>
             <Select
               name="isRecurring"
               value={formData.isRecurring}
               label="Recurring Schedule"
               onChange={handleChange}
+              sx={{
+                fontSize: isSmallMobile
+                  ? "0.8125rem"
+                  : isMobile
+                  ? "0.875rem"
+                  : "1rem",
+              }}
             >
-              <MenuItem value={true}>Yes</MenuItem>
-              <MenuItem value={false}>No</MenuItem>
+              <MenuItem value={true}>
+                <Typography
+                  sx={{
+                    fontSize: isSmallMobile
+                      ? "0.75rem"
+                      : isMobile
+                      ? "0.8125rem"
+                      : "0.875rem",
+                  }}
+                >
+                  Yes
+                </Typography>
+              </MenuItem>
+              <MenuItem value={false}>
+                <Typography
+                  sx={{
+                    fontSize: isSmallMobile
+                      ? "0.75rem"
+                      : isMobile
+                      ? "0.8125rem"
+                      : "0.875rem",
+                  }}
+                >
+                  No
+                </Typography>
+              </MenuItem>
             </Select>
           </FormControl>
-          <FormControl fullWidth margin="normal" size="small">
-            <InputLabel>Recurrence Pattern</InputLabel>
+
+          {/* Recurrence Pattern */}
+          <FormControl
+            fullWidth
+            margin="normal"
+            size={isMobile ? "small" : "medium"}
+          >
+            <InputLabel
+              sx={{
+                fontSize: isSmallMobile
+                  ? "0.8125rem"
+                  : isMobile
+                  ? "0.875rem"
+                  : "1rem",
+              }}
+            >
+              Recurrence Pattern
+            </InputLabel>
             <Select
               name="recurrencePattern"
               value={formData.recurrencePattern}
               label="Recurrence Pattern"
               onChange={handleChange}
               disabled={!formData.isRecurring}
+              sx={{
+                fontSize: isSmallMobile
+                  ? "0.8125rem"
+                  : isMobile
+                  ? "0.875rem"
+                  : "1rem",
+              }}
             >
               <MenuItem value={RECURRENCE_PATTERNS.WEEKDAYS}>
-                Weekdays (Mon-Fri)
+                <Typography
+                  sx={{
+                    fontSize: isSmallMobile
+                      ? "0.75rem"
+                      : isMobile
+                      ? "0.8125rem"
+                      : "0.875rem",
+                  }}
+                >
+                  Weekdays (Mon-Fri)
+                </Typography>
               </MenuItem>
-
               <MenuItem value={RECURRENCE_PATTERNS.CUSTOM}>
-                Custom Days
+                <Typography
+                  sx={{
+                    fontSize: isSmallMobile
+                      ? "0.75rem"
+                      : isMobile
+                      ? "0.8125rem"
+                      : "0.875rem",
+                  }}
+                >
+                  Custom Days
+                </Typography>
               </MenuItem>
             </Select>
           </FormControl>
+
+          {/* Custom Days Selection */}
           {formData.isRecurring && formData.recurrencePattern === "custom" && (
-            <FormControl fullWidth margin="normal" size="small" required>
-              <InputLabel>Select Days</InputLabel>
+            <FormControl
+              fullWidth
+              margin="normal"
+              size={isMobile ? "small" : "medium"}
+              required
+            >
+              <InputLabel
+                sx={{
+                  fontSize: isSmallMobile
+                    ? "0.8125rem"
+                    : isMobile
+                    ? "0.875rem"
+                    : "1rem",
+                }}
+              >
+                Select Days
+              </InputLabel>
               <Select
                 multiple
                 name="customDays"
@@ -1064,14 +1597,47 @@ const ScheduleFormModal = ({
                 renderValue={(selected) => (
                   <Box sx={{ display: "flex", flexWrap: "wrap", gap: 0.5 }}>
                     {selected.map((day) => (
-                      <Chip key={day} label={day} size="small" />
+                      <Chip
+                        key={day}
+                        label={day}
+                        size={isMobile ? "small" : "medium"}
+                        sx={{
+                          fontSize: isSmallMobile
+                            ? "0.6875rem"
+                            : isMobile
+                            ? "0.75rem"
+                            : "0.875rem",
+                          height: isSmallMobile
+                            ? "18px"
+                            : isMobile
+                            ? "20px"
+                            : "24px",
+                        }}
+                      />
                     ))}
                   </Box>
                 )}
+                sx={{
+                  fontSize: isSmallMobile
+                    ? "0.8125rem"
+                    : isMobile
+                    ? "0.875rem"
+                    : "1rem",
+                }}
               >
                 {DAYS.map((day) => (
                   <MenuItem key={day} value={day}>
-                    {day}
+                    <Typography
+                      sx={{
+                        fontSize: isSmallMobile
+                          ? "0.75rem"
+                          : isMobile
+                          ? "0.8125rem"
+                          : "0.875rem",
+                      }}
+                    >
+                      {day}
+                    </Typography>
                   </MenuItem>
                 ))}
               </Select>
@@ -1080,7 +1646,11 @@ const ScheduleFormModal = ({
                 sx={{
                   mt: 1,
                   color: "text.secondary",
-                  fontSize: "0.75rem",
+                  fontSize: isSmallMobile
+                    ? "0.6875rem"
+                    : isMobile
+                    ? "0.75rem"
+                    : "0.75rem",
                 }}
               >
                 Next schedule will be created on the next selected day after
@@ -1088,36 +1658,122 @@ const ScheduleFormModal = ({
               </Typography>
             </FormControl>
           )}
+
+          {/* Reschedule Type (for edit mode) */}
           {currentSchedule && (
-            <FormControl fullWidth margin="normal" size="small" required>
-              <InputLabel>Reschedule Type</InputLabel>
+            <FormControl
+              fullWidth
+              margin="normal"
+              size={isMobile ? "small" : "medium"}
+              required
+            >
+              <InputLabel
+                sx={{
+                  fontSize: isSmallMobile
+                    ? "0.8125rem"
+                    : isMobile
+                    ? "0.875rem"
+                    : "1rem",
+                }}
+              >
+                Reschedule Type
+              </InputLabel>
               <Select
                 name="rescheduleType"
                 value={formData.rescheduleType}
                 label="Reschedule Type"
                 onChange={handleChange}
+                sx={{
+                  fontSize: isSmallMobile
+                    ? "0.8125rem"
+                    : isMobile
+                    ? "0.875rem"
+                    : "1rem",
+                }}
               >
-                <MenuItem value="temporary">Temporary</MenuItem>
-                <MenuItem value="permanent">Permanent</MenuItem>
+                <MenuItem value="temporary">
+                  <Typography
+                    sx={{
+                      fontSize: isSmallMobile
+                        ? "0.75rem"
+                        : isMobile
+                        ? "0.8125rem"
+                        : "0.875rem",
+                    }}
+                  >
+                    Temporary
+                  </Typography>
+                </MenuItem>
+                <MenuItem value="permanent">
+                  <Typography
+                    sx={{
+                      fontSize: isSmallMobile
+                        ? "0.75rem"
+                        : isMobile
+                        ? "0.8125rem"
+                        : "0.875rem",
+                    }}
+                  >
+                    Permanent
+                  </Typography>
+                </MenuItem>
               </Select>
             </FormControl>
           )}
+
+          {/* Action Buttons */}
           <Box
             sx={{
-              mt: 3,
+              mt: isSmallMobile ? 2 : isMobile ? 2.5 : 3,
               display: "flex",
               justifyContent: "flex-end",
-              gap: 2,
+              gap: isSmallMobile ? 1 : isMobile ? 1.5 : 2,
+              pt: isSmallMobile ? 1 : isMobile ? 1.5 : 2,
+              borderTop: "1px solid #e2e8f0",
+              flexDirection: isMobile ? "column-reverse" : "row",
             }}
           >
             <button
               className="clear-filters-btn"
               onClick={() => setShowModal(false)}
               disabled={isLoading}
+              style={{
+                fontSize: isSmallMobile
+                  ? "0.8125rem"
+                  : isMobile
+                  ? "0.875rem"
+                  : "1rem",
+                padding: isSmallMobile
+                  ? "10px"
+                  : isMobile
+                  ? "12px"
+                  : "8px 16px",
+                width: isMobile ? "100%" : "auto",
+              }}
             >
               Cancel
             </button>
-            <button className="add-btn" type="submit" disabled={isLoading}>
+            <button
+              className="add-btn"
+              type="submit"
+              disabled={isLoading}
+              style={{
+                fontSize: isSmallMobile
+                  ? "0.8125rem"
+                  : isMobile
+                  ? "0.875rem"
+                  : "1rem",
+                padding: isSmallMobile
+                  ? "10px"
+                  : isMobile
+                  ? "12px"
+                  : "8px 16px",
+                width: isMobile ? "100%" : "auto",
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
               {isLoading ? (
                 <div className="loading-spinner"></div>
               ) : currentSchedule ? (
@@ -1132,6 +1788,7 @@ const ScheduleFormModal = ({
     </Modal>
   );
 };
+
 const SupervisorScheduleClass = () => {
   const [schedules, setSchedules] = useState([]);
   const [filteredSchedules, setFilteredSchedules] = useState([]);
@@ -1831,7 +2488,7 @@ const SupervisorScheduleClass = () => {
             onClick={() => fetchSchedules(true)}
           />
           <button
-            className="add-btn"
+            className="add-btn responsive-add-btn"
             onClick={() => {
               setCurrentSchedule(null);
               setFormData({
@@ -1848,7 +2505,8 @@ const SupervisorScheduleClass = () => {
               setShowModal(true);
             }}
           >
-            <FaPlus /> Add Schedule
+            <FaPlus />
+            <span className="add-btn-text">Add Schedule</span>
           </button>
         </div>
       </div>
@@ -1946,19 +2604,28 @@ const SupervisorScheduleClass = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
-            className="subject-select"
+            className="staff-select"
             value={selectedSubjectFilter}
             onChange={(e) => setSelectedSubjectFilter(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -1977,19 +2644,28 @@ const SupervisorScheduleClass = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
-            className="student-select"
+            className="staff-select"
             value={selectedStatus}
             onChange={(e) => setSelectedStatus(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -2008,19 +2684,28 @@ const SupervisorScheduleClass = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
-            className="student-select"
+            className="staff-select"
             value={selectedStudentFilter}
             onChange={(e) => setSelectedStudentFilter(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -2046,8 +2731,27 @@ const SupervisorScheduleClass = () => {
             isClearable={true}
             dateFormat="dd/MM/yyyy"
             customInput={
-              <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+              <div
+                className="date-input-wrapper"
+                style={{
+                  position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
+                }}
+              >
+                {window.innerWidth >= 768 && (
+                  <FaFilter
+                    className="filter-icon"
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      zIndex: 1,
+                    }}
+                  />
+                )}
                 <input
                   className="date-range-input"
                   placeholder="Select date range"
@@ -2060,13 +2764,35 @@ const SupervisorScheduleClass = () => {
                       : ""
                   }
                   readOnly
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    padding:
+                      window.innerWidth >= 768
+                        ? "8px 12px 8px 36px"
+                        : "8px 12px",
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    color: "#475569",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
             }
           />
         </div>
         <div className="filter-box">
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
             <input
               type="time"
               value={timeRange.start}
@@ -2079,10 +2805,17 @@ const SupervisorScheduleClass = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
-            <span style={{ color: "#64748b" }}>to</span>
+            <span
+              style={{
+                color: "#64748b",
+                textAlign: window.innerWidth < 768 ? "center" : "left",
+              }}
+            >
+              to
+            </span>
             <input
               type="time"
               value={timeRange.end}
@@ -2095,7 +2828,7 @@ const SupervisorScheduleClass = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
           </div>

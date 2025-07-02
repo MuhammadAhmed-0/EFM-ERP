@@ -1648,8 +1648,8 @@ const StudentAttendance = () => {
               <div
                 className="date-input-wrapper"
                 style={{
-                  width: window.innerWidth < 768 ? "100%" : "200px",
                   position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
                 }}
               >
                 {window.innerWidth >= 768 && (

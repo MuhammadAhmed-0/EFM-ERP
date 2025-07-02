@@ -6,6 +6,8 @@ import {
   Box,
   Typography,
   Button,
+  useTheme,
+  useMediaQuery,
 } from "@mui/material";
 import axios from "axios";
 import "../../../styles/components/Management.css";
@@ -49,14 +51,57 @@ const formatDateTime = (dateString) => {
 };
 
 const ViewModalContent = ({ announcement, onClose }) => {
+  const theme = useTheme();
+  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
+
+  const getModalStyles = () => ({
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: isMobile ? "95vw" : "600px",
+    maxWidth: isMobile ? "none" : "600px",
+    maxHeight: "90vh",
+    bgcolor: "background.paper",
+    border: "none",
+    borderRadius: "12px",
+    boxShadow: 24,
+    p: isMobile ? 2 : 4,
+    outline: "none",
+    display: "flex",
+    flexDirection: "column",
+    fontFamily:
+      "'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+  });
+
+  const scrollableContentStyles = {
+    overflowY: "auto",
+    flex: 1,
+    pr: isMobile ? 1 : 2,
+    "&::-webkit-scrollbar": {
+      width: isMobile ? "4px" : "6px",
+    },
+    "&::-webkit-scrollbar-track": {
+      background: "#f1f5f9",
+    },
+    "&::-webkit-scrollbar-thumb": {
+      background: "#cbd5e1",
+      borderRadius: "3px",
+    },
+  };
+
   return (
     <Box sx={getModalStyles()}>
+      {/* Header */}
       <Box
         sx={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          mb: 3,
+          alignItems: isMobile ? "flex-start" : "center",
+          mb: isMobile ? 2 : 3,
+          flexDirection: isMobile ? "column" : "row",
+          gap: isMobile ? 1 : 0,
         }}
       >
         <Typography
@@ -64,8 +109,9 @@ const ViewModalContent = ({ announcement, onClose }) => {
           component="h2"
           sx={{
             color: "#1e293b",
-            fontSize: "1.25rem",
+            fontSize: isMobile ? "1.125rem" : "1.25rem",
             fontWeight: 500,
+            fontFamily: "'Poppins', sans-serif",
           }}
         >
           Announcement Details
@@ -73,9 +119,13 @@ const ViewModalContent = ({ announcement, onClose }) => {
         <Button
           onClick={onClose}
           sx={{
-            minWidth: "auto",
-            p: 1,
+            minWidth: isMobile ? "28px" : "auto",
+            height: isMobile ? "28px" : "auto",
+            p: isMobile ? 0 : 1,
             color: "#64748b",
+            alignSelf: isMobile ? "flex-end" : "auto",
+            fontSize: isMobile ? "1.25rem" : "1.5rem",
+            borderRadius: isMobile ? "50%" : "4px",
             "&:hover": {
               bgcolor: "#f1f5f9",
               color: "#3949ab",
@@ -86,86 +136,137 @@ const ViewModalContent = ({ announcement, onClose }) => {
         </Button>
       </Box>
 
-      <Box sx={{ mb: 3 }}>
-        <Typography
-          sx={{
-            color: "#64748b",
-            fontSize: "0.875rem",
-            mb: 1,
-          }}
-        >
-          Title
-        </Typography>
-        <Typography
-          sx={{
-            color: "#1e293b",
-            fontSize: "1rem",
-            fontWeight: 500,
-          }}
-        >
-          {announcement.title}
-        </Typography>
-      </Box>
-
-      <Box sx={{ mb: 3 }}>
-        <Typography
-          sx={{
-            color: "#64748b",
-            fontSize: "0.875rem",
-            mb: 1,
-          }}
-        >
-          Content
-        </Typography>
-        <Typography
-          sx={{
-            color: "#1e293b",
-            fontSize: "1rem",
-            whiteSpace: "pre-wrap",
-          }}
-        >
-          {announcement.content}
-        </Typography>
-      </Box>
-
-      <Box sx={{ mb: 3 }}>
-        <Typography
-          sx={{
-            color: "#64748b",
-            fontSize: "0.875rem",
-            mb: 1,
-          }}
-        >
-          Recipients
-        </Typography>
-        <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1 }}>
-          {Array.isArray(announcement.recipients?.role) ? (
-            announcement.recipients.role.map((recipient) => {
-              const recipientOption = RECIPIENT_OPTIONS.find(
-                (option) => option.value === recipient
-              );
-              return (
-                <span key={recipient} className={`recipient-tag ${recipient}`}>
-                  {recipientOption?.label || recipient}
-                </span>
-              );
-            })
-          ) : (
-            <span className="recipient-tag">No recipients</span>
-          )}
+      {/* Scrollable Content */}
+      <Box sx={scrollableContentStyles}>
+        {/* Title Section */}
+        <Box sx={{ mb: isMobile ? 2 : 3 }}>
+          <Typography
+            sx={{
+              color: "#64748b",
+              fontSize: isMobile ? "0.8125rem" : "0.875rem",
+              mb: isMobile ? 0.75 : 1,
+              fontFamily: "'Poppins', sans-serif",
+            }}
+          >
+            Title
+          </Typography>
+          <Typography
+            sx={{
+              color: "#1e293b",
+              fontSize: isMobile ? "0.9375rem" : "1rem",
+              fontWeight: 500,
+              fontFamily: "'Poppins', sans-serif",
+              wordBreak: "break-word",
+            }}
+          >
+            {announcement.title}
+          </Typography>
         </Box>
-      </Box>
 
-      <Box sx={{ borderTop: "1px solid #e2e8f0", pt: 2 }}>
-        <Typography
+        {/* Content Section */}
+        <Box sx={{ mb: isMobile ? 2 : 3 }}>
+          <Typography
+            sx={{
+              color: "#64748b",
+              fontSize: isMobile ? "0.8125rem" : "0.875rem",
+              mb: isMobile ? 0.75 : 1,
+              fontFamily: "'Poppins', sans-serif",
+            }}
+          >
+            Content
+          </Typography>
+          <Typography
+            sx={{
+              color: "#1e293b",
+              fontSize: isMobile ? "0.9375rem" : "1rem",
+              whiteSpace: "pre-wrap",
+              fontFamily: "'Poppins', sans-serif",
+              lineHeight: isMobile ? 1.5 : 1.6,
+              wordBreak: "break-word",
+            }}
+          >
+            {announcement.content}
+          </Typography>
+        </Box>
+
+        {/* Recipients Section */}
+        <Box sx={{ mb: isMobile ? 2 : 3 }}>
+          <Typography
+            sx={{
+              color: "#64748b",
+              fontSize: isMobile ? "0.8125rem" : "0.875rem",
+              mb: isMobile ? 0.75 : 1,
+              fontFamily: "'Poppins', sans-serif",
+            }}
+          >
+            Recipients
+          </Typography>
+          <Box
+            sx={{
+              display: "flex",
+              flexWrap: "wrap",
+              gap: isMobile ? 0.75 : 1,
+            }}
+          >
+            {Array.isArray(announcement.recipients?.role) ? (
+              announcement.recipients.role.map((recipient) => {
+                const recipientOption = RECIPIENT_OPTIONS.find(
+                  (option) => option.value === recipient
+                );
+                return (
+                  <span
+                    key={recipient}
+                    className={`recipient-tag ${recipient}`}
+                    style={{
+                      fontSize: isMobile ? "0.75rem" : "0.875rem",
+                      padding: isMobile ? "4px 8px" : "6px 12px",
+                      borderRadius: "6px",
+                      fontFamily: "'Poppins', sans-serif",
+                    }}
+                  >
+                    {recipientOption?.label || recipient}
+                  </span>
+                );
+              })
+            ) : (
+              <span
+                className="recipient-tag"
+                style={{
+                  fontSize: isMobile ? "0.75rem" : "0.875rem",
+                  padding: isMobile ? "4px 8px" : "6px 12px",
+                  borderRadius: "6px",
+                  fontFamily: "'Poppins', sans-serif",
+                  color: "#64748b",
+                  backgroundColor: "#f1f5f9",
+                  border: "1px solid #e2e8f0",
+                }}
+              >
+                No recipients
+              </span>
+            )}
+          </Box>
+        </Box>
+
+        {/* Timestamp Section */}
+        <Box
           sx={{
-            color: "#333",
-            fontSize: "0.95rem",
-            fontWeight: 600,
+            borderTop: "1px solid #e2e8f0",
+            pt: isMobile ? 1.5 : 2,
+            mt: isMobile ? 1 : 2,
           }}
         >
-          Announced At: {formatDateTime(announcement.createdAt)}
-        </Typography>
+          <Typography
+            sx={{
+              color: "#333",
+              fontSize: isMobile ? "0.875rem" : "0.95rem",
+              fontWeight: 600,
+              fontFamily: "'Poppins', sans-serif",
+              wordBreak: "break-word",
+            }}
+          >
+            Announced At: {formatDateTime(announcement.createdAt)}
+          </Typography>
+        </Box>
       </Box>
     </Box>
   );

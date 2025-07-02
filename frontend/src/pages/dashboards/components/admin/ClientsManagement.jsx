@@ -84,7 +84,6 @@ const ModalContent = ({
   isInfoVisible,
   handleAdminPasswordSubmit,
 }) => {
-  // Responsive breakpoints
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
 
@@ -115,7 +114,6 @@ const ModalContent = ({
     });
   };
 
-  // Responsive modal styles
   const getResponsiveModalStyles = () => ({
     position: "absolute",
     top: "50%",
@@ -855,7 +853,6 @@ const ModalContent = ({
                     <Box
                       sx={{
                         display: "flex",
-                        alignItems: "center",
                         width: "100%",
                         padding: { xs: "6px 12px", sm: "8px 16px" },
                         flexDirection: { xs: "column", sm: "row" },
@@ -1283,7 +1280,6 @@ const ClientsManagement = () => {
 
       const response = await axios.get(url);
       setClients(response.data.clients || []);
-      console.log(response.data.clients);
       setReferralClients(response.data.clients || []);
       if (showSuccessMessage) {
         showNotification("Clients refreshed successfully");
@@ -1728,6 +1724,11 @@ const ClientsManagement = () => {
         return clientDate >= dateRange[0] && clientDate <= dateRange[1];
       });
     }
+    filtered.sort((a, b) => {
+      const aId = a.clientId.toLowerCase();
+      const bId = b.clientId.toLowerCase();
+      return bId.localeCompare(aId);
+    });
 
     setFilteredClients(filtered);
   }, [clients, searchTerm, selectedStatus, dateRange, selectedActiveStatus]);
@@ -1875,8 +1876,8 @@ const ClientsManagement = () => {
               <div
                 className="date-input-wrapper"
                 style={{
-                  width: window.innerWidth < 768 ? "100%" : "200px",
                   position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
                 }}
               >
                 {window.innerWidth >= 768 && (

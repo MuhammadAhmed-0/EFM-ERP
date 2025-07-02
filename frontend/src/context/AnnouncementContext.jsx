@@ -29,18 +29,9 @@ export const AnnouncementProvider = ({ children }) => {
       auth: { token },
     });
 
-    newSocket.on("connect", () => {
-      console.log("Context: Connected to socket server");
-    });
-
     newSocket.on("new_announcement", (data) => {
-      console.log("Context: Received new announcement", data);
       setAnnouncements((prev) => [data.announcement, ...prev]);
       setUnreadCount((prev) => prev + 1);
-    });
-
-    newSocket.on("announcement_read", (data) => {
-      console.log("Context: Received announcement read", data);
     });
 
     setSocket(newSocket);

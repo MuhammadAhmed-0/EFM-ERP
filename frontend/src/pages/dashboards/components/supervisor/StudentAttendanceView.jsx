@@ -341,19 +341,28 @@ const StudentAttendanceView = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
-            className="student-select"
+            className="staff-select"
             value={selectedStudent}
             onChange={(e) => setSelectedStudent(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -372,19 +381,28 @@ const StudentAttendanceView = () => {
         <div className="filter-box">
           <FaFilter className="filter-icon" />
           <Select
-            className="subject-select"
+            className="staff-select"
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
             sx={{
-              width: "200px",
+              width: {
+                xs: "100%",
+                sm: "180px",
+                md: "200px",
+              },
+              minWidth: {
+                xs: "100%",
+                sm: "150px",
+              },
               height: "40px",
               ".MuiSelect-select": {
-                padding: "8px 12px 8px 36px",
+                padding:
+                  window.innerWidth <= 768 ? "6px 25px" : "8px 12px 8px 36px",
                 backgroundColor: "white",
-                border: "1px solid #e2e8f0",
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
+                marginTop: 0.5,
               },
               ".MuiOutlinedInput-notchedOutline": {
                 border: "none",
@@ -411,8 +429,27 @@ const StudentAttendanceView = () => {
             isClearable={true}
             dateFormat="dd/MM/yyyy"
             customInput={
-              <div className="date-input-wrapper">
-                <FaFilter className="filter-icon" />
+              <div
+                className="date-input-wrapper"
+                style={{
+                  position: "relative",
+                  width: window.innerWidth <= 768 && "100%",
+                }}
+              >
+                {window.innerWidth >= 768 && (
+                  <FaFilter
+                    className="filter-icon"
+                    style={{
+                      position: "absolute",
+                      left: "12px",
+                      top: "50%",
+                      transform: "translateY(-50%)",
+                      color: "#94a3b8",
+                      fontSize: "0.875rem",
+                      zIndex: 1,
+                    }}
+                  />
+                )}
                 <input
                   className="date-range-input"
                   placeholder="Select date range"
@@ -425,13 +462,35 @@ const StudentAttendanceView = () => {
                       : ""
                   }
                   readOnly
+                  style={{
+                    width: "100%",
+                    height: "44px",
+                    padding:
+                      window.innerWidth >= 768
+                        ? "8px 12px 8px 36px"
+                        : "8px 12px",
+                    backgroundColor: "white",
+                    border: "1px solid #e2e8f0",
+                    borderRadius: "8px",
+                    fontSize: "0.875rem",
+                    color: "#475569",
+                    cursor: "pointer",
+                    boxSizing: "border-box",
+                  }}
                 />
               </div>
             }
           />
         </div>
         <div className="filter-box">
-          <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+          <div
+            style={{
+              display: "flex",
+              gap: "8px",
+              alignItems: "center",
+              flexDirection: "row",
+            }}
+          >
             <input
               type="time"
               value={timeRange.start}
@@ -444,10 +503,17 @@ const StudentAttendanceView = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
-            <span style={{ color: "#64748b" }}>to</span>
+            <span
+              style={{
+                color: "#64748b",
+                textAlign: window.innerWidth < 768 ? "center" : "left",
+              }}
+            >
+              to
+            </span>
             <input
               type="time"
               value={timeRange.end}
@@ -460,7 +526,7 @@ const StudentAttendanceView = () => {
                 borderRadius: "6px",
                 fontSize: "0.875rem",
                 color: "#475569",
-                width: "130px",
+                width: window.innerWidth < 768 ? "100%" : "130px",
               }}
             />
           </div>

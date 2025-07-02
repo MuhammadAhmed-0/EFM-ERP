@@ -11,7 +11,6 @@ import {
   FaRegCommentDots,
 } from "react-icons/fa";
 
-// Custom hook for responsive design
 const useResponsive = () => {
   const [screenSize, setScreenSize] = useState({
     isMobile: false,

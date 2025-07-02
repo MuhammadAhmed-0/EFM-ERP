@@ -28,7 +28,6 @@ const InfoModal = ({
   const isSmallMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const isExtraSmall = useMediaQuery(theme.breakpoints.down("xs"));
 
-  // Responsive modal styles
   const getResponsiveModalStyles = () => ({
     position: "absolute",
     top: "50%",
