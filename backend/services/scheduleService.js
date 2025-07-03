@@ -87,6 +87,7 @@ const createNextRecurringSchedule = async (currentSchedule) => {
       return null;
     }
 
+    // Improved duplicate detection
     const existingSchedule = await Schedule.findOne({
       $or: [
         { _id: currentSchedule.recurrenceParentId || currentSchedule._id },
@@ -101,13 +102,14 @@ const createNextRecurringSchedule = async (currentSchedule) => {
         $gte: moment(nextDate).startOf("day").toDate(),
         $lte: moment(nextDate).endOf("day").toDate(),
       },
+      day: moment(nextDate).format("dddd"), // Add day check
     });
 
     if (existingSchedule) {
       console.log(
-        `⚠️ Next schedule already exists for ${moment(nextDate).format(
-          "YYYY-MM-DD"
-        )}, skipping...`
+        `⚠️ Next schedule already exists (${existingSchedule._id}) for ${moment(
+          nextDate
+        ).format("YYYY-MM-DD")}, skipping...`
       );
       return null;
     }
@@ -168,7 +170,6 @@ const createNextRecurringSchedule = async (currentSchedule) => {
     return null;
   }
 };
-
 const calculateNextDate = (schedule) => {
   const currentDate = moment(schedule.classDate).tz(TIMEZONE);
   let nextDate;
@@ -385,11 +386,6 @@ const startScheduleCronJob = () => {
       timezone: TIMEZONE,
     }
   );
-
-  setTimeout(() => {
-    console.log("🔄 Running initial schedule check...");
-    checkAndCreateRecurringSchedules();
-  }, 5000);
 
   console.log("⏰ Cron job scheduled to run every 30 minutes (Pakistan Time)");
 };

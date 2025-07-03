@@ -465,6 +465,20 @@ exports.updateSchedule = async (req, res) => {
       isRecurring,
     } = req.body;
 
+    console.log(`📝 Updating schedule ${id} by user ${userId}`);
+    console.log(`📊 Update data:`, {
+      students: studentUserIds,
+      teacher,
+      subject,
+      day,
+      startTime,
+      endTime,
+      classDate,
+      rescheduleType,
+      isRecurring,
+    });
+
+    // Check user permissions
     if (
       !["admin", "supervisor_quran", "supervisor_subjects"].includes(
         req.user.role
@@ -475,17 +489,28 @@ exports.updateSchedule = async (req, res) => {
       });
     }
 
+    // Find existing schedule
     const existingSchedule = await Schedule.findById(id);
     if (!existingSchedule) {
       return res.status(404).json({ message: "Schedule not found" });
     }
 
+    console.log(`📋 Found existing schedule:`, {
+      id: existingSchedule._id,
+      teacher: existingSchedule.teacherName,
+      subject: existingSchedule.subjectName,
+      date: existingSchedule.classDate,
+      isRecurring: existingSchedule.isRecurring,
+    });
+
+    // Check if schedule is completed
     if (existingSchedule.sessionStatus === "completed") {
       return res.status(400).json({
         message: "Completed classes cannot be updated or rescheduled.",
       });
     }
 
+    // Supervisor permissions validation
     if (req.user.role !== "admin") {
       const supervisorDepartment = req.user.role.split("_")[1];
 
@@ -528,6 +553,7 @@ exports.updateSchedule = async (req, res) => {
       }
     }
 
+    // Validate teacher exists
     const teacherDoc = await Teacher.findOne({
       user: teacher || existingSchedule.teacherId,
     });
@@ -535,17 +561,20 @@ exports.updateSchedule = async (req, res) => {
       return res.status(404).json({ message: "Teacher not found" });
     }
 
+    // Validate students exist
     const studentDocs = await Student.find({ user: { $in: studentUserIds } });
     if (studentDocs.length !== studentUserIds.length) {
       return res.status(404).json({ message: "Some students not found" });
     }
 
+    // Get student names
     const studentUsers = await User.find({ _id: { $in: studentUserIds } });
     const studentUserMap = {};
     studentUsers.forEach((u) => {
       studentUserMap[u._id] = u.name;
     });
 
+    // Check student enrollment (non-admin only)
     if (req.user.role !== "admin") {
       for (const student of studentDocs) {
         const studentId = student.user.toString();
@@ -562,6 +591,7 @@ exports.updateSchedule = async (req, res) => {
       }
     }
 
+    // Check for student schedule conflicts
     const scheduleConflicts = await Promise.all(
       studentUserIds.map(async (studentId) => {
         const conflict = await Schedule.findOne({
@@ -586,6 +616,7 @@ exports.updateSchedule = async (req, res) => {
       });
     }
 
+    // Check for teacher schedule conflicts
     const teacherConflict = await Schedule.findOne({
       _id: { $ne: id },
       teacherId: teacher || existingSchedule.teacherId,
@@ -605,48 +636,58 @@ exports.updateSchedule = async (req, res) => {
       });
     }
 
+    // Prepare update data
     const studentNames = studentUserIds.map(
       (id) => studentUserMap[id] || "Unknown"
     );
+
+    const [startHour, startMinute] = startTime.split(":").map(Number);
+    const [endHour, endMinute] = endTime.split(":").map(Number);
+    const scheduledDuration =
+      endHour * 60 + endMinute - (startHour * 60 + startMinute);
+
+    const subjectDoc = await Subject.findById(subject);
 
     const updatedFields = {
       students: studentUserIds,
       studentNames,
       subject,
-      subjectName:
-        (await Subject.findById(subject))?.name || existingSchedule.subjectName,
-      subjectType:
-        (await Subject.findById(subject))?.type || existingSchedule.subjectType,
+      subjectName: subjectDoc?.name || existingSchedule.subjectName,
+      subjectType: subjectDoc?.type || existingSchedule.subjectType,
       day,
       startTime,
       endTime,
       classDate: new Date(classDate),
       rescheduleType,
+      scheduledDuration,
       isRecurring:
         typeof isRecurring === "boolean"
           ? isRecurring
           : existingSchedule.isRecurring,
       updatedBy: req.user._id,
-      updatedByRole: req.user.role,
     };
 
+    // Add teacher info if teacher is being updated
     if (teacher) {
       const teacherUser = await User.findById(teacher);
       updatedFields.teacherId = teacher;
       updatedFields.teacherName = teacherUser?.name || "Unknown";
     }
 
+    console.log(`🔄 Processing ${rescheduleType} update...`);
+
+    // Handle permanent vs temporary updates
     if (rescheduleType === "permanent") {
+      console.log("📝 Processing permanent update...");
+
+      // Update student schema if teacher is changing
       if (teacher && teacher !== existingSchedule.teacherId.toString()) {
         const newTeacherUser = await User.findById(teacher);
         if (!newTeacherUser) {
           return res.status(404).json({ message: "New teacher not found" });
         }
 
-        const studentsBeforeUpdate = await Student.find({
-          user: { $in: studentUserIds },
-          "assignedTeachers.subject._id": subject,
-        });
+        console.log("👥 Updating student schema with new teacher...");
 
         const updateResult = await Student.updateMany(
           {
@@ -663,32 +704,26 @@ exports.updateSchedule = async (req, res) => {
           }
         );
 
-        const studentsAfterUpdate = await Student.find({
-          user: { $in: studentUserIds },
-          "assignedTeachers.subject._id": subject,
-        });
+        console.log(
+          `✅ Updated ${updateResult.modifiedCount} students with new teacher`
+        );
       }
-      await Schedule.updateMany(
-        {
-          $or: [
-            { _id: existingSchedule._id },
-            {
-              recurrenceParentId:
-                existingSchedule.recurrenceParentId || existingSchedule._id,
-            },
-          ],
-          sessionStatus: { $ne: "completed" },
-          classDate: { $gte: new Date(existingSchedule.classDate) },
+
+      // FIXED: Only update the current schedule for permanent changes
+      // The cron job will handle future schedules based on this permanent change
+      const updateResult = await Schedule.findByIdAndUpdate(id, {
+        $set: {
+          ...updatedFields,
+          isTemporaryChange: false,
+          isTeacherTemporaryChange: false,
         },
-        {
-          $set: {
-            ...updatedFields,
-            isTemporaryChange: false,
-            isTeacherTemporaryChange: false,
-          },
-        }
-      );
+      });
+
+      console.log(`✅ Updated current schedule ${id} permanently`);
     } else {
+      console.log("⏰ Processing temporary update...");
+
+      // Temporary update logic - only update this specific schedule
       await Schedule.findByIdAndUpdate(id, {
         $set: {
           ...updatedFields,
@@ -698,9 +733,18 @@ exports.updateSchedule = async (req, res) => {
           status: "rescheduled",
         },
       });
+
+      console.log(`✅ Updated schedule ${id} temporarily`);
     }
 
-    return res.status(200).json({ message: "Schedule updated successfully" });
+    console.log(`🎉 Schedule update completed successfully`);
+
+    return res.status(200).json({
+      message: "Schedule updated successfully",
+      scheduleId: id,
+      rescheduleType: rescheduleType || "none",
+      updatedAt: new Date().toISOString(),
+    });
   } catch (error) {
     console.error("❌ Error in updateSchedule:", error.stack);
     return res.status(500).json({
