@@ -2738,6 +2738,8 @@ const AdminScheduleView = () => {
     isRecurring: true,
     recurrencePattern: "weekdays",
     customDays: [],
+    rescheduleType: "temporary",
+
   });
   const [sessionStatusCounts, setSessionStatusCounts] = useState({
     pending: 0,

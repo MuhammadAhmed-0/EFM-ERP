@@ -2121,40 +2121,40 @@ const SupervisorScheduleClass = () => {
     });
     setShowModal(true);
   };
-  const handleEditSubmit = async (e) => {
-    e.preventDefault();
-    setIsLoading(true);
+  // const handleEditSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
 
-    try {
-      const payload = {
-        students: formData.students,
-        teacher: formData.teacher,
-        subject: formData.subject,
-        day: formData.day,
-        startTime: formData.startTime,
-        endTime: formData.endTime,
-        classDate: format(new Date(formData.classDate), "yyyy-MM-dd"),
-        rescheduleType: formData.rescheduleType,
-      };
+  //   try {
+  //     const payload = {
+  //       students: formData.students,
+  //       teacher: formData.teacher,
+  //       subject: formData.subject,
+  //       day: formData.day,
+  //       startTime: formData.startTime,
+  //       endTime: formData.endTime,
+  //       classDate: format(new Date(formData.classDate), "yyyy-MM-dd"),
+  //       rescheduleType: formData.rescheduleType,
+  //     };
 
-      await axios.put(
-        `${BASE_URL}/api/schedules/update/${currentSchedule._id}`,
-        payload
-      );
+  //     await axios.put(
+  //       `${BASE_URL}/api/schedules/update/${currentSchedule._id}`,
+  //       payload
+  //     );
 
-      showNotification("Schedule updated successfully");
-      fetchSchedules();
-      setShowModal(false);
-      setCurrentSchedule(null);
-    } catch (error) {
-      showNotification(
-        error.response?.data?.message || "Error updating schedule",
-        "error"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  //     showNotification("Schedule updated successfully");
+  //     fetchSchedules();
+  //     setShowModal(false);
+  //     setCurrentSchedule(null);
+  //   } catch (error) {
+  //     showNotification(
+  //       error.response?.data?.message || "Error updating schedule",
+  //       "error"
+  //     );
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
