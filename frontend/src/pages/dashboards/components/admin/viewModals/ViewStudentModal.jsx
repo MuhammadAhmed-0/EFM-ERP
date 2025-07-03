@@ -923,11 +923,6 @@ const ViewStudentModal = ({
             value2={student.profile.clientName}
             icon2={FaUserFriends}
           />
-          <StudentInfoGrid
-            label1="Date of Birth"
-            value1={format(new Date(student.profile.dateOfBirth), "dd/MM/yyyy")}
-            icon1={FaCalendarAlt}
-          />
         </Box>
 
         {/* Status History */}

@@ -27,9 +27,7 @@ const studentSchema = new Schema({
     type: Number,
     required: true,
   },
-  dateOfBirth: { type: Date },
   grade: { type: String },
-  enrollmentDate: { type: Date, default: Date.now },
   status: {
     type: String,
     enum: ["trial", "regular", "drop", "freeze", "completed"],

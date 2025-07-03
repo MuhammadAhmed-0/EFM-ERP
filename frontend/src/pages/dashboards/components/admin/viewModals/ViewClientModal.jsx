@@ -564,14 +564,14 @@ const ViewClientModal = ({
 
   const getSubjectStatus = (student, subjectId) => {
     if (!student.subjectStatus || student.subjectStatus.length === 0) {
-      return true; 
+      return true;
     }
 
     const status = student.subjectStatus.find(
       (status) => status.subject.toString() === subjectId.toString()
     );
 
-    return status ? status.isActive : true; 
+    return status ? status.isActive : true;
   };
 
   const showNotification = (message, type = "success") => {
@@ -958,24 +958,34 @@ const ViewClientModal = ({
             label1="Registration Date"
             value1={format(new Date(clientData.registrationDate), "dd/MM/yyyy")}
             icon1={FaCalendarAlt}
-            label2="Number of Students"
-            value2={clientData.numberOfStudents || 0}
-            icon2={FaGraduationCap}
+            label2="Enrollment Date"
+            value2={
+              clientData.user?.enrollmentDate
+                ? format(new Date(clientData.user.enrollmentDate), "dd/MM/yyyy")
+                : "No Date"
+            }
+            icon2={FaCalendarAlt}
             isMobile={isMobile}
           />
           <StudentInfoGrid
-            label1="Created At"
-            value1={format(
+            label1="Number of Students"
+            value1={clientData.numberOfStudents || 0}
+            icon1={FaGraduationCap}
+            label2="Created At"
+            value2={format(
               new Date(clientData.createdAt),
               isMobile ? "dd/MM/yy HH:mm" : "dd/MM/yyyy HH:mm"
             )}
-            icon1={FaHistory}
-            label2="Last Updated"
-            value2={format(
+            icon2={FaHistory}
+            isMobile={isMobile}
+          />
+          <InfoRow
+            label="Last Updated"
+            value={format(
               new Date(clientData.updatedAt),
               isMobile ? "dd/MM/yy HH:mm" : "dd/MM/yyyy HH:mm"
             )}
-            icon2={FaHistory}
+            icon={FaHistory}
             isMobile={isMobile}
           />
         </Box>

@@ -3437,6 +3437,7 @@ const AdminScheduleView = () => {
         startTime: formData.startTime,
         endTime: formData.endTime,
         classDate: format(new Date(formData.classDate), "yyyy-MM-dd"),
+        rescheduleType: formData.rescheduleType,
         isRecurring: formData.isRecurring,
         recurrencePattern: formData.recurrencePattern,
         customDays: formData.customDays,

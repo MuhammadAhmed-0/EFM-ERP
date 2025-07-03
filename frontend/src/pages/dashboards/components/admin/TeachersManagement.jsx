@@ -29,7 +29,6 @@ import { format } from "date-fns";
 import axios from "axios";
 import "../../../../styles/components/Management.css";
 import { tableStyles } from "../../../../styles/modal/styles";
-import { getModalStyles } from "../../../../styles/modal/commonModalStyles";
 import InfoModal from "./infoModals/InfoModal";
 import { useInfoModal } from "../../../../hooks/useInfoModal";
 import ViewStaffModal from "./viewModals/ViewStaffModal";
@@ -1240,7 +1239,31 @@ const ModalContent = ({
             },
           }}
         />
-
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Enrollment Date"
+            value={formData.enrollmentDate}
+            onChange={(date) => handleDateChange(date, "enrollmentDate")}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                margin: "normal",
+                size: "small",
+                error: !!errors.enrollmentDate,
+                helperText:
+                  errors.enrollmentDate || "Date when teacher enrolled",
+                sx: {
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                },
+              },
+            }}
+          />
+        </LocalizationProvider>
         <Box sx={{ mb: 2 }}>
           <Typography
             variant="subtitle2"
@@ -1483,6 +1506,7 @@ const TeachersManagement = () => {
       endTime: "",
     },
     isActive: true,
+    enrollmentDate: null,
   });
   const { notification, showNotification, closeNotification } =
     useNotification();
@@ -1747,6 +1771,7 @@ const TeachersManagement = () => {
         endTime: "",
       },
       isActive: true,
+      enrollmentDate: new Date(),
     });
     setImagePreview("");
     setErrors({});
@@ -1780,6 +1805,9 @@ const TeachersManagement = () => {
       cnicNumber: teacher.profile?.cnicNumber || "",
       religion: teacher.profile?.religion || "",
       dateOfBirth: dateOfBirth,
+      enrollmentDate: teacher.enrollmentDate
+        ? new Date(teacher.enrollmentDate)
+        : null,
       availability: {
         days: teacher.profile?.availability?.days || [],
         startTime: teacher.profile?.availability?.startTime || "",
@@ -1802,6 +1830,7 @@ const TeachersManagement = () => {
         ...formData,
         email: formData.email?.toLowerCase(),
         dateOfBirth: format(new Date(formData.dateOfBirth), "yyyy-MM-dd"),
+        enrollmentDate: formData.enrollmentDate || new Date(),
         subjects: formData.subjects,
         manager: formData.manager,
         phoneNumber: formData.phoneNumber,
@@ -2121,6 +2150,7 @@ const TeachersManagement = () => {
                 <th>Role & Subjects</th>
                 <th>Manager</th>
                 <th>Status & Shift</th>
+                <th>Enrollment Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -2198,6 +2228,11 @@ const TeachersManagement = () => {
                     >
                       {teacher.profile?.shift || "N/A"}
                     </div>
+                  </td>
+                  <td>
+                    {teacher.enrollmentDate
+                      ? format(new Date(teacher.enrollmentDate), "dd/MM/yyyy")
+                      : "No Date"}
                   </td>
                   <td>
                     <div className="actions">

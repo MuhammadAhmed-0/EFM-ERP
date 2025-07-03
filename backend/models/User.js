@@ -55,6 +55,10 @@ const userSchema = new Schema(
       ],
       required: true,
     },
+    enrollmentDate: {
+      type: Date,
+      default: Date.now,
+    },
     isActive: {
       type: Boolean,
       default: true,

@@ -4,7 +4,7 @@ const Schedule = require("../models/Schedule");
 const FeeChalan = require("../models/FeeChalan");
 const Announcement = require("../models/Announcement");
 const MonthlyReport = require("../models/MonthlyReport");
-
+const User = require("../models/User");
 exports.getClientStudents = async (req, res) => {
   try {
     const clientUserId = req.user.id;
@@ -15,14 +15,29 @@ exports.getClientStudents = async (req, res) => {
     }
 
     const students = await Student.find({ client: client.user })
-      .populate("user", "name email gender role")
       .populate("subjects", "name type")
       .lean();
+
+    const studentUserIds = students.map((student) => student.user);
+
+    const users = await User.find({ _id: { $in: studentUserIds } })
+      .select("_id name email gender role enrollmentDate")
+      .lean();
+
+    const enrichedStudents = students.map((student) => {
+      const user = users.find(
+        (u) => u._id.toString() === student.user.toString()
+      );
+      return {
+        ...student,
+        user: user || null,
+      };
+    });
 
     return res.status(200).json({
       clientName: client.clientName,
       clientId: client.clientId,
-      students,
+      students: enrichedStudents,
     });
   } catch (error) {
     console.error("Error fetching client students:", error.message);
@@ -158,14 +173,36 @@ exports.getClientDashboardStats = async (req, res) => {
       .lean();
 
     const studentUserIds = clientStudents.map((student) => student.user);
+    const studentUsers = await User.find({
+      _id: { $in: studentUserIds },
+      role: "student",
+    })
+      .select("_id name email isActive enrollmentDate")
+      .lean();
 
     const unreadAnnouncements = await Announcement.countDocuments({
       $or: [{ "recipients.role": "client" }, { "recipients.role": "all" }],
       "readBy.user": { $ne: clientUserId },
     });
 
-    const totalStudents = clientStudents.length;
+    const totalStudents = studentUsers.length;
 
+    const enrollmentStats = {
+      total: totalStudents,
+      withEnrollmentDate: studentUsers.filter((user) => user.enrollmentDate)
+        .length,
+      withoutEnrollmentDate: studentUsers.filter((user) => !user.enrollmentDate)
+        .length,
+    };
+
+    const thirtyDaysAgo = new Date();
+    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
+
+    const recentEnrollments = studentUsers.filter((user) => {
+      if (!user.enrollmentDate) return false;
+      const enrollmentDate = new Date(user.enrollmentDate);
+      return enrollmentDate >= thirtyDaysAgo;
+    });
     const currentMonthFee = await FeeChalan.findOne({
       client: clientUserId,
       months: currentMonth,
@@ -192,13 +229,24 @@ exports.getClientDashboardStats = async (req, res) => {
         .length,
     };
 
+    const studentsDetails = studentUsers.map((user) => {
+      const studentRecord = clientStudents.find(
+        (s) => s.user.toString() === user._id.toString()
+      );
+      return {
+        studentId: studentRecord?._id,
+        userId: user._id,
+        name: user.name,
+        enrollmentDate: user.enrollmentDate,
+        isActive: user.isActive,
+      };
+    });
     const response = {
       success: true,
       stats: {
         unreadAnnouncements,
-        students: {
-          total: totalStudents,
-        },
+        students: enrollmentStats,
+        recentEnrollments: recentEnrollments.length,
         currentMonthFee: {
           amount: currentMonthFee?.amount || 0,
           status: currentMonthFee?.status || "N/A",
@@ -207,11 +255,12 @@ exports.getClientDashboardStats = async (req, res) => {
         },
         todayClasses: classesStats,
       },
+      studentsDetails: studentsDetails,
     };
-
     return res.status(200).json(response);
   } catch (error) {
-    console.error("Error in getClientDashboardStats:", error);
+    console.error("❌ ERROR in getClientDashboardStats:", error);
+    console.error("Error stack:", error.stack);
     return res.status(500).json({
       success: false,
       message: "Error fetching dashboard statistics",

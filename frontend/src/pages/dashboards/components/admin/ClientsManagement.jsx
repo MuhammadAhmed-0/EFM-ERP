@@ -791,7 +791,43 @@ const ModalContent = ({
             },
           }}
         />
-
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Enrollment Date"
+            value={
+              formData.enrollmentDate ? new Date(formData.enrollmentDate) : null
+            }
+            onChange={(date) => {
+              handleChange({
+                target: {
+                  name: "enrollmentDate",
+                  value: date,
+                },
+              });
+            }}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                margin: "normal",
+                size: "small",
+                error: !!errors.enrollmentDate,
+                helperText:
+                  errors.enrollmentDate || "Date when client enrolled",
+                sx: {
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiFormHelperText-root": {
+                    fontSize: { xs: "0.75rem", sm: "0.875rem" },
+                  },
+                },
+              },
+            }}
+          />
+        </LocalizationProvider>
         {!currentClient && (
           <>
             <FormControl fullWidth margin="normal" size="small">
@@ -1177,6 +1213,7 @@ const ClientsManagement = () => {
     referredByClientUserId: "",
     referralHandledByUserId: "",
     referredOnDate: "",
+    enrollmentDate: null,
   });
 
   const { notification, showNotification, closeNotification } =
@@ -1408,7 +1445,12 @@ const ClientsManagement = () => {
   const handleChange = (e) => {
     const { name, value } = e.target;
 
-    if (name === "referredByClientUserId" && !value) {
+    if (name === "enrollmentDate") {
+      setFormData((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    } else if (name === "referredByClientUserId" && !value) {
       setFormData((prev) => ({
         ...prev,
         [name]: value,
@@ -1451,6 +1493,7 @@ const ClientsManagement = () => {
       referredOnDate: "",
       freezeStartDate: new Date(),
       freezeEndDate: null,
+      enrollmentDate: new Date(),
     });
     setErrors({});
     setShowModal(true);
@@ -1496,6 +1539,9 @@ const ClientsManagement = () => {
       referredOnDate: client.referralRecords?.[0]?.referredOn || "",
       freezeStartDate: freezeStartDate,
       freezeEndDate: freezeEndDate,
+      enrollmentDate: client.user?.enrollmentDate
+        ? new Date(client.user.enrollmentDate)
+        : null,
     });
     setErrors({});
     setShowModal(true);
@@ -1558,6 +1604,7 @@ const ClientsManagement = () => {
         referralHandledByUserId: formData.referralHandledByUserId || null,
         referredOnDate: formData.referredOnDate || null,
         statusDateHistory: statusDateHistory,
+        enrollmentDate: formData.enrollmentDate || new Date(),
       };
       if (formData.status === "freeze") {
         submissionData.freezeStartDate = formData.freezeStartDate || new Date();
@@ -1616,7 +1663,10 @@ const ClientsManagement = () => {
         referredByClientUserId: formData.referredByClientUserId || null,
         referralHandledByUserId: formData.referralHandledByUserId || null,
         referredOnDate: formData.referredOnDate || null,
+        enrollmentDate: formData.enrollmentDate,
       };
+      console.log("Submission Data:", submissionData);
+      console.log("Enrollment Date:", formData.enrollmentDate);
       if (formData.status === "freeze") {
         submissionData.freezeStartDate = formData.freezeStartDate || new Date();
         submissionData.freezeEndDate = formData.freezeEndDate;
@@ -1955,7 +2005,7 @@ const ClientsManagement = () => {
                 <th>Location</th>
                 <th>Students & Fee</th>
                 <th>Status & Shift</th>
-                <th>Registration</th>
+                <th>Enrollment Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -2052,7 +2102,21 @@ const ClientsManagement = () => {
                       {client.shift}
                     </span>
                   </td>
-                  <td>{formatDate(client.registrationDate)}</td>
+                  <td>
+                    {client.user?.enrollmentDate ? (
+                      formatDate(client.user.enrollmentDate)
+                    ) : (
+                      <span
+                        style={{
+                          color: "#94a3b8",
+                          fontSize: "0.875rem",
+                          fontStyle: "italic",
+                        }}
+                      >
+                        No Date
+                      </span>
+                    )}
+                  </td>
                   <td>
                     <div className="actions">
                       <button

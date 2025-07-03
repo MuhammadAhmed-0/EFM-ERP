@@ -4,6 +4,72 @@ const Schedule = require("../models/Schedule");
 
 const TIMEZONE = "Asia/Karachi";
 
+const getMostRecentScheduleData = async (currentSchedule) => {
+  try {
+    const oneMonthAgo = moment().subtract(1, "month").toDate();
+
+    const recentSchedules = await Schedule.find({
+      $or: [
+        { _id: currentSchedule.recurrenceParentId || currentSchedule._id },
+        {
+          recurrenceParentId:
+            currentSchedule.recurrenceParentId || currentSchedule._id,
+        },
+      ],
+      students: { $in: currentSchedule.students },
+      subject: currentSchedule.subject,
+      classDate: { $gte: oneMonthAgo },
+    }).sort({ classDate: -1, updatedAt: -1 });
+
+    console.log(
+      `📊 Found ${recentSchedules.length} recent schedules in this series`
+    );
+
+    let scheduleToUse = null;
+    for (const schedule of recentSchedules) {
+      if (schedule.rescheduleType === "permanent") {
+        scheduleToUse = schedule;
+        console.log(`✅ Using permanent change from schedule ${schedule._id}`);
+        break;
+      }
+    }
+    if (!scheduleToUse) {
+      for (const schedule of recentSchedules) {
+        if (
+          !schedule.isTemporaryChange &&
+          !schedule.isTeacherTemporaryChange &&
+          schedule.rescheduleType !== "temporary"
+        ) {
+          scheduleToUse = schedule;
+          console.log(`📋 Using original schedule ${schedule._id}`);
+          break;
+        }
+      }
+    }
+
+    if (!scheduleToUse) {
+      const parentSchedule = await Schedule.findOne({
+        _id: currentSchedule.recurrenceParentId || currentSchedule._id,
+      });
+
+      if (parentSchedule) {
+        scheduleToUse = parentSchedule;
+        console.log(`👆 Using parent schedule ${parentSchedule._id}`);
+      } else {
+        scheduleToUse = currentSchedule;
+        console.log(
+          `🔄 Using current schedule ${currentSchedule._id} as fallback`
+        );
+      }
+    }
+
+    return scheduleToUse;
+  } catch (error) {
+    console.error("Error getting most recent schedule data:", error);
+    return currentSchedule;
+  }
+};
+
 const createNextRecurringSchedule = async (currentSchedule) => {
   try {
     if (!currentSchedule.isRecurring) {
@@ -22,37 +88,42 @@ const createNextRecurringSchedule = async (currentSchedule) => {
     }
 
     const existingSchedule = await Schedule.findOne({
+      $or: [
+        { _id: currentSchedule.recurrenceParentId || currentSchedule._id },
+        {
+          recurrenceParentId:
+            currentSchedule.recurrenceParentId || currentSchedule._id,
+        },
+      ],
       students: { $in: currentSchedule.students },
-      teacherId: currentSchedule.teacherId,
       subject: currentSchedule.subject,
       classDate: {
         $gte: moment(nextDate).startOf("day").toDate(),
         $lte: moment(nextDate).endOf("day").toDate(),
       },
-      startTime: currentSchedule.startTime,
-      endTime: currentSchedule.endTime,
     });
 
     if (existingSchedule) {
       console.log(
         `⚠️ Next schedule already exists for ${moment(nextDate).format(
           "YYYY-MM-DD"
-        )} at ${currentSchedule.startTime}, skipping...`
+        )}, skipping...`
       );
       return null;
     }
-    let scheduleToUse = currentSchedule;
-    if (
-      currentSchedule.isTemporaryChange ||
-      currentSchedule.isTeacherTemporaryChange
-    ) {
-      const parentSchedule = await Schedule.findOne({
-        _id: currentSchedule.recurrenceParentId || currentSchedule._id,
-      });
-      if (parentSchedule) {
-        scheduleToUse = parentSchedule;
+
+    let scheduleToUse = await getMostRecentScheduleData(currentSchedule);
+
+    console.log(
+      `🔄 Creating next schedule using data from ${scheduleToUse._id}:`,
+      {
+        teacher: scheduleToUse.teacherName,
+        startTime: scheduleToUse.startTime,
+        endTime: scheduleToUse.endTime,
+        rescheduleType: scheduleToUse.rescheduleType,
+        isTemporary: scheduleToUse.isTemporaryChange,
       }
-    }
+    );
 
     const newSchedule = new Schedule({
       students: scheduleToUse.students,
@@ -71,18 +142,22 @@ const createNextRecurringSchedule = async (currentSchedule) => {
       isRecurring: scheduleToUse.isRecurring,
       recurrencePattern: scheduleToUse.recurrencePattern,
       customDays: scheduleToUse.customDays,
-      recurrenceParentId:
-        currentSchedule.recurrenceParentId || currentSchedule._id,
+      recurrenceParentId: scheduleToUse.recurrenceParentId || scheduleToUse._id,
       scheduledDuration: scheduleToUse.scheduledDuration,
       createdBy: scheduleToUse.createdBy,
       updatedBy: scheduleToUse.createdBy,
+      isTemporaryChange: false,
+      isTeacherTemporaryChange: false,
+      rescheduleType: undefined,
     });
 
     await newSchedule.save();
     console.log(
-      `✅ Created next schedule for ${moment(nextDate).format(
-        "YYYY-MM-DD"
-      )} at ${currentSchedule.startTime}`
+      `✅ Created next schedule ${newSchedule._id} for ${moment(
+        nextDate
+      ).format("YYYY-MM-DD")} at ${scheduleToUse.startTime} with teacher ${
+        scheduleToUse.teacherName
+      }`
     );
     return newSchedule;
   } catch (error) {
@@ -207,6 +282,7 @@ const checkAndCreateRecurringSchedules = async () => {
 
     let processedCount = 0;
     let createdCount = 0;
+    const processedSeries = new Set();
 
     for (const schedule of todaySchedules) {
       const scheduleEndTime = moment(schedule.classDate).tz(TIMEZONE);
@@ -226,6 +302,14 @@ const checkAndCreateRecurringSchedules = async () => {
         )} | ${recurringStatus.padEnd(9)} |`
       );
 
+      const seriesId = schedule.recurrenceParentId || schedule._id;
+      if (processedSeries.has(seriesId.toString())) {
+        console.log(
+          `  ⏭️ Already processed this recurring series, skipping...`
+        );
+        continue;
+      }
+
       if (currentTime.isAfter(scheduleEndTime)) {
         console.log(
           `  ⏰ End time passed for schedule ${
@@ -237,11 +321,14 @@ const checkAndCreateRecurringSchedules = async () => {
           const newSchedule = await createNextRecurringSchedule(schedule);
           if (newSchedule) {
             createdCount++;
+            processedSeries.add(seriesId.toString());
             console.log(
               `  ✅ Created next schedule: ${moment(
                 newSchedule.classDate
               ).format("YYYY-MM-DD")} at ${newSchedule.startTime}`
             );
+          } else {
+            processedSeries.add(seriesId.toString());
           }
         } else {
           console.log(`  ⏭️ Schedule is not recurring, skipping...`);
@@ -264,6 +351,7 @@ const checkAndCreateRecurringSchedules = async () => {
     console.log(`   • Total schedules today: ${todaySchedules.length}`);
     console.log(`   • Schedules past end time: ${processedCount}`);
     console.log(`   • New schedules created: ${createdCount}`);
+    console.log(`   • Recurring series processed: ${processedSeries.size}`);
     console.log(
       `   • Current time: ${currentTime.format(
         "YYYY-MM-DD HH:mm:ss"
@@ -309,4 +397,7 @@ const startScheduleCronJob = () => {
 module.exports = {
   startScheduleCronJob,
   checkAndCreateRecurringSchedules,
+  getMostRecentScheduleData,
+  createNextRecurringSchedule,
+  calculateNextDate,
 };

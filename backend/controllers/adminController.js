@@ -552,6 +552,7 @@ exports.addUser = async (req, res) => {
       phoneNumber,
       createdBy: req.user.id,
       profilePicture: rest.profilePicture || null,
+      enrollmentDate: rest.enrollmentDate || new Date(),
       ...(staffId && { staffId }),
     });
 
@@ -874,10 +875,10 @@ exports.addUser = async (req, res) => {
       }
 
       if (role === "student") {
-        if (!rest.dateOfBirth || !rest.grade || !rest.clientId) {
+        if (!rest.grade || !rest.clientId) {
           await User.findByIdAndDelete(newUser._id);
           return res.status(400).json({
-            msg: "Date of birth, grade and client ID are required",
+            msg: "Grade and client ID are required",
           });
         }
 
@@ -1018,9 +1019,7 @@ exports.addUser = async (req, res) => {
           clientName: client.clientName || client.user.name,
           studentId: globalStudentId,
           studentNumber,
-          dateOfBirth: new Date(rest.dateOfBirth),
           grade: rest.grade,
-          enrollmentDate: currentDate,
           status: initialStatus,
           statusDates: {
             trial: {
@@ -1115,6 +1114,10 @@ exports.updateUser = async (req, res) => {
     if (address) user.address = address;
     if (profilePicture) user.profilePicture = profilePicture;
     if (gender) user.gender = gender;
+    if (roleSpecificFields.enrollmentDate) {
+      user.enrollmentDate = new Date(roleSpecificFields.enrollmentDate);
+    }
+    user.enrollmentDate = roleSpecificFields.enrollmentDate;
     if (password && user.role !== "student") {
       const salt = await bcrypt.genSalt(10);
       user.password = await bcrypt.hash(password, salt);
@@ -1399,9 +1402,6 @@ exports.updateUser = async (req, res) => {
             $set: {
               name: name || undefined,
               grade: roleSpecificFields.grade,
-              dateOfBirth: roleSpecificFields.dateOfBirth
-                ? new Date(roleSpecificFields.dateOfBirth)
-                : undefined,
               client: roleSpecificFields.client,
               clientName: roleSpecificFields.clientName,
               subjects: roleSpecificFields.subjects,
@@ -3380,7 +3380,10 @@ exports.getAllClientsWithStudents = async (req, res) => {
     }
 
     const clients = await Client.find(query)
-      .populate("user", "name email gender role isActive portalAccess")
+      .populate(
+        "user",
+        "name email gender role isActive portalAccess enrollmentDate"
+      )
       .lean();
 
     const clientIdMap = {};
@@ -3397,11 +3400,11 @@ exports.getAllClientsWithStudents = async (req, res) => {
     }
 
     const students = await Student.find({ user: { $in: studentUserIds } })
-      .populate("user", "name email gender role isActive")
+      .populate("user", "name email gender role isActive enrollmentDate")
       .populate("subjects", "name")
       .populate({
         path: "assignedTeachers.teacher._id",
-        select: "name email gender role isActive",
+        select: "name email gender role isActive enrollmentDate",
         options: { strictPopulate: false },
       })
       .populate({

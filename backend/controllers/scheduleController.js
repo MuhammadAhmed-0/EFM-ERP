@@ -462,7 +462,6 @@ exports.updateSchedule = async (req, res) => {
       endTime,
       classDate,
       rescheduleType,
-      teacherChangeType,
       isRecurring,
     } = req.body;
 
@@ -622,6 +621,7 @@ exports.updateSchedule = async (req, res) => {
       startTime,
       endTime,
       classDate: new Date(classDate),
+      rescheduleType,
       isRecurring:
         typeof isRecurring === "boolean"
           ? isRecurring
@@ -636,7 +636,38 @@ exports.updateSchedule = async (req, res) => {
       updatedFields.teacherName = teacherUser?.name || "Unknown";
     }
 
-    if (rescheduleType === "permanent" || teacherChangeType === "permanent") {
+    if (rescheduleType === "permanent") {
+      if (teacher && teacher !== existingSchedule.teacherId.toString()) {
+        const newTeacherUser = await User.findById(teacher);
+        if (!newTeacherUser) {
+          return res.status(404).json({ message: "New teacher not found" });
+        }
+
+        const studentsBeforeUpdate = await Student.find({
+          user: { $in: studentUserIds },
+          "assignedTeachers.subject._id": subject,
+        });
+
+        const updateResult = await Student.updateMany(
+          {
+            user: { $in: studentUserIds },
+            "assignedTeachers.subject._id": subject,
+          },
+          {
+            $set: {
+              "assignedTeachers.$.teacher._id": teacher,
+              "assignedTeachers.$.teacher.name": newTeacherUser.name,
+              "assignedTeachers.$.assignedBy": req.user._id,
+              "assignedTeachers.$.assignedAt": new Date(),
+            },
+          }
+        );
+
+        const studentsAfterUpdate = await Student.find({
+          user: { $in: studentUserIds },
+          "assignedTeachers.subject._id": subject,
+        });
+      }
       await Schedule.updateMany(
         {
           $or: [
@@ -662,7 +693,8 @@ exports.updateSchedule = async (req, res) => {
         $set: {
           ...updatedFields,
           isTemporaryChange: true,
-          isTeacherTemporaryChange: teacherChangeType === "temporary",
+          isTeacherTemporaryChange:
+            teacher && teacher !== existingSchedule.teacherId.toString(),
           status: "rescheduled",
         },
       });
@@ -677,7 +709,6 @@ exports.updateSchedule = async (req, res) => {
     });
   }
 };
-
 exports.deleteSchedule = async (req, res) => {
   try {
     const { id } = req.params;
@@ -2644,7 +2675,7 @@ exports.getTodaysTimetableForAdmin = async (req, res) => {
         id: schedule.teacherId?._id,
         name:
           schedule.teacherId?.name || schedule.teacherName || "Unknown Teacher",
-        gender: schedule.teacherId?.gender || "Unknown", 
+        gender: schedule.teacherId?.gender || "Unknown",
         isActive: schedule.teacherId?.isActive === true,
         timeSlot: `${schedule.startTime} to ${schedule.endTime}`,
       };

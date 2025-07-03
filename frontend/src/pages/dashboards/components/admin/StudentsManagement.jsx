@@ -461,18 +461,21 @@ const ModalContent = ({
             },
           }}
         />
-
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <DatePicker
-            label="Date of Birth"
-            value={formData.dateOfBirth ? new Date(formData.dateOfBirth) : null}
-            onChange={(date) => handleDateChange(date, "dateOfBirth")}
+            label="Enrollment Date"
+            value={
+              formData.enrollmentDate ? new Date(formData.enrollmentDate) : null
+            }
+            onChange={(date) => handleDateChange(date, "enrollmentDate")}
             slotProps={{
               textField: {
                 fullWidth: true,
                 margin: "normal",
                 size: "small",
-                required: true,
+                error: !!errors.enrollmentDate,
+                helperText:
+                  errors.enrollmentDate || "Date when student enrolled",
                 sx: {
                   "& .MuiInputBase-input": {
                     fontSize: { xs: "0.875rem", sm: "1rem" },
@@ -485,7 +488,6 @@ const ModalContent = ({
             }}
           />
         </LocalizationProvider>
-
         <Typography
           variant="subtitle1"
           sx={{
@@ -770,9 +772,9 @@ const StudentsManagement = () => {
     name: "",
     gender: "male",
     grade: "",
-    dateOfBirth: null,
     clientId: "",
     status: "trial",
+    enrollmentDate: null,
   });
   const BASE_URL = import.meta.env.VITE_BASE_URL;
   const SUBJECT_TYPE_OPTIONS = ["quran", "subjects"];
@@ -1063,8 +1065,6 @@ const StudentsManagement = () => {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Name is required";
     if (!formData.grade.trim()) newErrors.grade = "Grade is required";
-    if (!formData.dateOfBirth)
-      newErrors.dateOfBirth = "Date of birth is required";
     if (!formData.clientId) {
       newErrors.clientId = "Client is required";
     }
@@ -1162,12 +1162,12 @@ const StudentsManagement = () => {
         gender: formData.gender,
         role: "student",
         grade: formData.grade,
-        dateOfBirth: formData.dateOfBirth,
         clientId: formData.clientId,
         status: formData.status,
         subjects: subjectTeacherPairs.map((pair) => pair.subjectId),
         assignedTeachers: subjectTeacherPairs.map((pair) => pair.teacherId),
         statusDateHistory: statusDateHistory,
+        enrollmentDate: formData.enrollmentDate || new Date(),
       };
 
       await axios.post(`${BASE_URL}/api/admin/users`, payload, {
@@ -1215,11 +1215,11 @@ const StudentsManagement = () => {
         name: formData.name,
         gender: formData.gender,
         grade: formData.grade,
-        dateOfBirth: formData.dateOfBirth,
         clientId: formData.clientId,
         status: formData.status,
         subjects: subjectTeacherPairs.map((pair) => pair.subjectId),
         assignedTeachers: subjectTeacherPairs.map((pair) => pair.teacherId),
+        enrollmentDate: formData.enrollmentDate || new Date(),
       };
 
       if (formData.status === "freeze") {
@@ -1393,11 +1393,11 @@ const StudentsManagement = () => {
       name: "",
       gender: "male",
       grade: "",
-      dateOfBirth: null,
       clientId: "",
       status: "trial",
       freezeStartDate: new Date(),
       freezeEndDate: null,
+      enrollmentDate: new Date(),
     });
     setFreezeStartDate(new Date());
     setFreezeEndDate(null);
@@ -1434,11 +1434,13 @@ const StudentsManagement = () => {
       name: student.name,
       gender: student.gender,
       grade: student.profile.grade,
-      dateOfBirth: new Date(student.profile.dateOfBirth),
       clientId: student.profile.client?._id || student.profile.client || "",
       status: student.profile.status || "trial",
       freezeStartDate: freezeStartDate,
       freezeEndDate: freezeEndDate,
+      enrollmentDate: student.profile.enrollmentDate
+        ? new Date(student.profile.enrollmentDate)
+        : null,
     });
     const pairs = student.profile.assignedTeachers.map((assignment) => ({
       subjectId: assignment.subject._id._id,
@@ -1908,10 +1910,12 @@ const StudentsManagement = () => {
                     </div>
                   </td>
                   <td>
-                    {format(
-                      new Date(student.profile.enrollmentDate),
-                      "dd/MM/yyyy"
-                    )}
+                    {student.enrollmentDate
+                      ? format(
+                          new Date(student.enrollmentDate),
+                          "dd/MM/yyyy"
+                        )
+                      : "No Date"}
                   </td>
                   <td>
                     <div className="actions">

@@ -780,7 +780,33 @@ const ModalContent = ({
             },
           }}
         />
-
+        <LocalizationProvider dateAdapter={AdapterDateFns}>
+          <DatePicker
+            label="Enrollment Date"
+            value={
+              formData.enrollmentDate ? new Date(formData.enrollmentDate) : null
+            }
+            onChange={(date) => handleDateChange(date, "enrollmentDate")}
+            slotProps={{
+              textField: {
+                fullWidth: true,
+                margin: "normal",
+                size: "small",
+                error: !!errors.enrollmentDate,
+                helperText:
+                  errors.enrollmentDate || "Date when supervisor enrolled",
+                sx: {
+                  "& .MuiInputBase-input": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                  "& .MuiInputLabel-root": {
+                    fontSize: { xs: "0.875rem", sm: "1rem" },
+                  },
+                },
+              },
+            }}
+          />
+        </LocalizationProvider>
         <Box sx={{ mb: 2 }}>
           <Typography
             variant="subtitle2"
@@ -1012,6 +1038,7 @@ const SupervisorsManagement = () => {
       startTime: "",
       endTime: "",
     },
+    enrollmentDate: null,
   });
   const { notification, showNotification, closeNotification } =
     useNotification();
@@ -1039,6 +1066,7 @@ const SupervisorsManagement = () => {
         ...quranSups.data.users,
         ...subjectsSups.data.users,
       ];
+      console.log(allSupervisors);
       setSupervisors(allSupervisors);
       setFilteredSupervisors(allSupervisors);
       if (showSuccessMessage) {
@@ -1176,6 +1204,7 @@ const SupervisorsManagement = () => {
         startTime: "",
         endTime: "",
       },
+      enrollmentDate: new Date(),
     });
     setImagePreview("");
 
@@ -1205,6 +1234,9 @@ const SupervisorsManagement = () => {
       cnicNumber: supervisor.profile?.cnicNumber,
       religion: supervisor.profile?.religion,
       isActive: supervisor.isActive,
+      enrollmentDate: supervisor.enrollmentDate
+        ? new Date(supervisor.enrollmentDate)
+        : null,
       availability: {
         days: supervisor.profile?.availability?.days || [],
         startTime: supervisor.profile?.availability?.startTime || "",
@@ -1226,6 +1258,7 @@ const SupervisorsManagement = () => {
         ...formData,
         email: formData.email?.toLowerCase(),
         dateOfBirth: format(new Date(formData.dateOfBirth), "yyyy-MM-dd"),
+        enrollmentDate: formData.enrollmentDate || new Date(),
         manager: formData.manager,
         profilePicture: formData.profilePicture,
       };
@@ -1346,7 +1379,7 @@ const SupervisorsManagement = () => {
     filtered = filtered.sort((a, b) => {
       const staffIdA = parseInt(a.staffId) || 0;
       const staffIdB = parseInt(b.staffId) || 0;
-      return staffIdB - staffIdA; 
+      return staffIdB - staffIdA;
     });
     setFilteredSupervisors(filtered);
   }, [supervisors, searchTerm, selectedRole, selectedStatus]);
@@ -1504,6 +1537,7 @@ const SupervisorsManagement = () => {
                 <th>Role & Department</th>
                 <th>Manager</th>
                 <th>Status & Shift</th>
+                <th>Enrollment Date</th>
                 <th>Actions</th>
               </tr>
             </thead>
@@ -1584,6 +1618,14 @@ const SupervisorsManagement = () => {
                     >
                       {supervisor.profile?.shift || "N/A"}
                     </div>
+                  </td>
+                  <td>
+                    {supervisor.enrollmentDate
+                      ? format(
+                          new Date(supervisor.enrollmentDate),
+                          "dd/MM/yyyy"
+                        )
+                      : "No Date"}
                   </td>
                   <td>
                     <div className="actions">

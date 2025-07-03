@@ -615,12 +615,21 @@ const ViewStaffModal = ({
         </Typography>
         <Box sx={sectionCardStyles}>
           <InfoGrid
-            label1="Created At"
-            value1={formatDateTime(staff.createdAt)}
-            icon1={FaHistory}
-            label2="Last Updated"
-            value2={formatDateTime(staff.updatedAt)}
+            label1="Enrollment Date"
+            value1={
+              staff.enrollmentDate
+                ? formatDate(staff.enrollmentDate)
+                : "No Date"
+            }
+            icon1={FaCalendarAlt}
+            label2="Created At"
+            value2={formatDateTime(staff.createdAt)}
             icon2={FaHistory}
+          />
+          <InfoRow
+            label="Last Updated"
+            value={formatDateTime(staff.updatedAt)}
+            icon={FaHistory}
           />
         </Box>
 

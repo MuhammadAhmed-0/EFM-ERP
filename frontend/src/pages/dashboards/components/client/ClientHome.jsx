@@ -268,13 +268,7 @@ const ClientDashboardHome = () => {
                 <div className={styles.detailItem}>
                   <span className={styles.detailLabel}>Enrollment Date</span>
                   <span className={styles.detailValue}>
-                    {formatDate(selectedStudent.enrollmentDate)}
-                  </span>
-                </div>
-                <div className={styles.detailItem}>
-                  <span className={styles.detailLabel}>Date of Birth</span>
-                  <span className={styles.detailValue}>
-                    {formatDate(selectedStudent.dateOfBirth)}
+                    {formatDate(selectedStudent.user.enrollmentDate)}
                   </span>
                 </div>
               </div>
