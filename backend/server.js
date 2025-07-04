@@ -51,14 +51,14 @@ app.use((req, res, next) => {
   req.io = io;
   next();
 });
-const corsOptions = {
-  origin: "https://erp.efmpvt.com",
-  methods: ["GET", "POST", "PUT", "DELETE"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+// const corsOptions = {
+//   origin: "https://erp.efmpvt.com",
+//   methods: ["GET", "POST", "PUT", "DELETE"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+// };
 
-app.use(cors(corsOptions));
-// app.use(cors());
+// app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
@@ -79,6 +79,7 @@ app.use("/api/subjects", require("./routes/subjectRoutes"));
 app.use("/api/teachers", require("./routes/teacherRoutes"));
 app.use("/api/student-attendance", require("./routes/studentAttendanceRoutes"));
 app.use("/api/staff-attendance", require("./routes/staffAttendanceRoute"));
+app.use("/api/analytics", require("./routes/analyticsRoutes"));
 // app.use("/api/pdf", require("./routes/staffAttendanceRoute"));
 
 app.get("/", (req, res) => {

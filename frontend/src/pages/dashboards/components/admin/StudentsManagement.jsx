@@ -40,6 +40,7 @@ import SyncButton from "../../../../components/common/SyncButton";
 
 const ModalContent = ({
   formData,
+  setFormData,
   handleChange,
   handleSubmit,
   handleAddSubmit,
@@ -62,6 +63,22 @@ const ModalContent = ({
 }) => {
   const isMobile = window.innerWidth < 768;
   const isTablet = window.innerWidth >= 768 && window.innerWidth < 1024;
+
+  const handleGenderChange = (e) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      gender: value,
+    }));
+  };
+
+  const handleStatusChange = (e) => {
+    const value = e.target.value;
+    setFormData((prev) => ({
+      ...prev,
+      status: value,
+    }));
+  };
 
   const getResponsiveModalStyles = () => ({
     position: "absolute",
@@ -270,6 +287,7 @@ const ModalContent = ({
           />
         </FormControl>
 
+        {/* Use specific handler for status */}
         <FormControl fullWidth margin="normal" size="small">
           <InputLabel sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
             Status
@@ -278,7 +296,7 @@ const ModalContent = ({
             name="status"
             value={formData.status || "trial"}
             label="Status"
-            onChange={handleChange}
+            onChange={handleStatusChange}
             sx={{
               "& .MuiSelect-select": {
                 fontSize: { xs: "0.875rem", sm: "1rem" },
@@ -417,15 +435,16 @@ const ModalContent = ({
             )}
         </FormControl>
 
+        {/* Use specific handler for gender */}
         <FormControl fullWidth margin="normal" size="small">
           <InputLabel sx={{ fontSize: { xs: "0.875rem", sm: "1rem" } }}>
             Gender
           </InputLabel>
           <Select
             name="gender"
-            value={formData.gender}
+            value={formData.gender || "male"}
             label="Gender"
-            onChange={handleChange}
+            onChange={handleGenderChange}
             required
             sx={{
               "& .MuiSelect-select": {
@@ -660,6 +679,7 @@ const ModalContent = ({
         ))}
 
         <button
+          type="button"
           className="glass-add-btn"
           onClick={handleAddSubjectTeacher}
           style={{
@@ -688,6 +708,7 @@ const ModalContent = ({
           }}
         >
           <button
+            type="button"
             className="clear-filters-btn"
             onClick={() => setShowModal(false)}
             disabled={isLoading}
@@ -735,7 +756,6 @@ const ModalContent = ({
     </Box>
   );
 };
-
 const StudentsManagement = () => {
   const {
     adminPassword,
@@ -1911,10 +1931,7 @@ const StudentsManagement = () => {
                   </td>
                   <td>
                     {student.enrollmentDate
-                      ? format(
-                          new Date(student.enrollmentDate),
-                          "dd/MM/yyyy"
-                        )
+                      ? format(new Date(student.enrollmentDate), "dd/MM/yyyy")
                       : "No Date"}
                   </td>
                   <td>
@@ -1995,6 +2012,7 @@ const StudentsManagement = () => {
           handleRemoveSubjectTeacher={handleRemoveSubjectTeacher}
           subjectTeacherPairs={subjectTeacherPairs}
           clients={clients}
+          setFormData={setFormData}
         />
       </Modal>
       <NotificationSnackbar
