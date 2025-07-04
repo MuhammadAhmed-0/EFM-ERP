@@ -651,6 +651,7 @@ exports.addUser = async (req, res) => {
 
         const currentDate = new Date();
         const initialStatus = rest.status || "trial";
+     
         const statusDateHistory = {
           trial: [],
           regular: [],
@@ -658,6 +659,12 @@ exports.addUser = async (req, res) => {
           freeze: [],
           completed: [],
         };
+        statusDateHistory[initialStatus] =
+          statusDateHistory[initialStatus] || [];
+        statusDateHistory[initialStatus].push({
+          date: currentDate,
+          addedBy: req.user.id,
+        });
         if (initialStatus === "freeze") {
           statusDateHistory.freeze.push({
             date: currentDate,
@@ -983,7 +990,12 @@ exports.addUser = async (req, res) => {
           freeze: [],
           completed: [],
         };
-
+        statusDateHistory[initialStatus] =
+          statusDateHistory[initialStatus] || [];
+        statusDateHistory[initialStatus].push({
+          date: currentDate,
+          addedBy: req.user.id,
+        });
         if (initialStatus === "freeze") {
           statusDateHistory.freeze.push({
             date: currentDate,
